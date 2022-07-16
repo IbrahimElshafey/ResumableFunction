@@ -1,0 +1,15 @@
+C:\Users\Ibrahim\source\repos\WorkflowInCode.ConsoleTest\WorkflowInCode.ConsoleTest\obj\Debug\net6.0\WorkflowInCode.ConsoleTest.csproj.AssemblyReference.cache
+C:\Users\Ibrahim\source\repos\WorkflowInCode.ConsoleTest\WorkflowInCode.ConsoleTest\obj\Debug\net6.0\WorkflowInCode.ConsoleTest.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Ibrahim\source\repos\WorkflowInCode.ConsoleTest\WorkflowInCode.ConsoleTest\obj\Debug\net6.0\WorkflowInCode.ConsoleTest.AssemblyInfoInputs.cache
+C:\Users\Ibrahim\source\repos\WorkflowInCode.ConsoleTest\WorkflowInCode.ConsoleTest\obj\Debug\net6.0\WorkflowInCode.ConsoleTest.AssemblyInfo.cs
+C:\Users\Ibrahim\source\repos\WorkflowInCode.ConsoleTest\WorkflowInCode.ConsoleTest\obj\Debug\net6.0\WorkflowInCode.ConsoleTest.csproj.CoreCompileInputs.cache
+C:\Users\Ibrahim\source\repos\WorkflowInCode.ConsoleTest\WorkflowInCode.ConsoleTest\bin\Debug\net6.0\WorkflowInCode.ConsoleTest.exe
+C:\Users\Ibrahim\source\repos\WorkflowInCode.ConsoleTest\WorkflowInCode.ConsoleTest\bin\Debug\net6.0\WorkflowInCode.ConsoleTest.deps.json
+C:\Users\Ibrahim\source\repos\WorkflowInCode.ConsoleTest\WorkflowInCode.ConsoleTest\bin\Debug\net6.0\WorkflowInCode.ConsoleTest.runtimeconfig.json
+C:\Users\Ibrahim\source\repos\WorkflowInCode.ConsoleTest\WorkflowInCode.ConsoleTest\bin\Debug\net6.0\WorkflowInCode.ConsoleTest.dll
+C:\Users\Ibrahim\source\repos\WorkflowInCode.ConsoleTest\WorkflowInCode.ConsoleTest\bin\Debug\net6.0\WorkflowInCode.ConsoleTest.pdb
+C:\Users\Ibrahim\source\repos\WorkflowInCode.ConsoleTest\WorkflowInCode.ConsoleTest\obj\Debug\net6.0\WorkflowInCode.ConsoleTest.dll
+C:\Users\Ibrahim\source\repos\WorkflowInCode.ConsoleTest\WorkflowInCode.ConsoleTest\obj\Debug\net6.0\refint\WorkflowInCode.ConsoleTest.dll
+C:\Users\Ibrahim\source\repos\WorkflowInCode.ConsoleTest\WorkflowInCode.ConsoleTest\obj\Debug\net6.0\WorkflowInCode.ConsoleTest.pdb
+C:\Users\Ibrahim\source\repos\WorkflowInCode.ConsoleTest\WorkflowInCode.ConsoleTest\obj\Debug\net6.0\WorkflowInCode.ConsoleTest.genruntimeconfig.cache
+C:\Users\Ibrahim\source\repos\WorkflowInCode.ConsoleTest\WorkflowInCode.ConsoleTest\obj\Debug\net6.0\ref\WorkflowInCode.ConsoleTest.dll
