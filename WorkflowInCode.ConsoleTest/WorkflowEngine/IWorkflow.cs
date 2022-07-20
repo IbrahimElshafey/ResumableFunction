@@ -8,18 +8,29 @@ namespace WorkflowInCode.ConsoleTest.WorkflowEngine
 {
     public interface IWorkflow<WorkflowContextData>
     {
-        Task Ended();
-        Task ExpectNextStep<EventData>(Func<Task, EventData> nextStep);
+        Task Ended(dynamic x=null);
+        Task ExpectNextStep<EventData>(Func<Task, EventData> nextStep, string arrowText = null);
         Task RegisterStep<EventData>(
             IEvent<EventData> stepEvent,
             Func<Task, EventData> stepAction,
             Func<WorkflowContextData, EventData, bool> eventFilter = null);
+
         Task RegisterStartStep<EventData>(
           Func<Task, EventData> stepAction,
-          IEvent<EventData> stepEvent);
+          IEvent<EventData> stepEvent,
+          params NextExpectedStep[] expectedNextSteps);
 
-        //we should Unsubscribe timer events after the eventFilter method return true or calling it explict in workflow like
+        //we should Unsubscribe timer events after the eventFilter method return true or
+        //calling it explict in workflow like (this is the right solution)
         //ITimerJobs.Unsubscribe("EventNameUsed");
+
         //eventFilter == event activation function when return true the step action executed
+
+
+        Task RegisterStep<EventData>(
+            IEvent<EventData> stepEvent,
+            Func<Task, EventData> stepAction,
+            Func<WorkflowContextData, EventData, bool>? eventFilter = null,
+            params NextExpectedStep[] expectedNextSteps);
     }
 }
