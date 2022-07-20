@@ -8,6 +8,6 @@ namespace WorkflowInCode.ConsoleTest.WorkflowEngine
 {
     public interface ICommand
     {
-        Task Initiate();
+        Task Execute();
     }
 }

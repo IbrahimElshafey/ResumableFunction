@@ -12,7 +12,7 @@ namespace WorkflowInCode.ConsoleTest.WorkflowEngine
         {
 
         }
-        public async Task Initiate()
+        public async Task Execute()
         {
             
         }

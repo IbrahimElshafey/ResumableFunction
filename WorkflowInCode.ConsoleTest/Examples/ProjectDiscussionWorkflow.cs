@@ -71,17 +71,17 @@ namespace WorkflowInCode.ConsoleTest.Examples
             if (memperApproval.Accepted)
             {
                 await new BasicCommand("MemberAcceptedTopic",
-                    new { memperApproval.MemberId, ContextData.RequestBasicData.RequestId, ContextData.CurrentTopic.TopicId }).Initiate();
+                    new { memperApproval.MemberId, ContextData.RequestBasicData.RequestId, ContextData.CurrentTopic.TopicId }).Execute();
             }
             else if (memperApproval.Rejected)
             {
                 await new BasicCommand("MemberRejectedTopic",
-                    new { memperApproval.MemberId, ContextData.RequestBasicData.RequestId, ContextData.CurrentTopic.TopicId }).Initiate();
+                    new { memperApproval.MemberId, ContextData.RequestBasicData.RequestId, ContextData.CurrentTopic.TopicId }).Execute();
             }
             else if (memperApproval.RequestDataComplete)
             {
                 await new BasicCommand("MemberRequestDataCompleteForTopic",
-                  new { memperApproval.MemberId, ContextData.RequestBasicData.RequestId, ContextData.CurrentTopic.TopicId }).Initiate();
+                  new { memperApproval.MemberId, ContextData.RequestBasicData.RequestId, ContextData.CurrentTopic.TopicId }).Execute();
             }
             ContextData.CurrentTopicVotedMembersCount += 1;
             await SaveState();
@@ -89,13 +89,13 @@ namespace WorkflowInCode.ConsoleTest.Examples
             if (allMembersVoted)
             {
                 await new BasicCommand("SendTopicForChefApproval",
-                    new { memperApproval.MemberId, ContextData.RequestBasicData.RequestId, ContextData.CurrentTopic.TopicId }).Initiate();
-                await Workflow.ExpectNextStep(ChefTopicApprovalStep,"After all members voted on a topic");
+                    new { memperApproval.MemberId, ContextData.RequestBasicData.RequestId, ContextData.CurrentTopic.TopicId }).Execute();
+                await Workflow.ExpectNextStep<dynamic>(ChefTopicApprovalStep,"After all members voted on a topic");
             }
             else
             {
-                await Workflow.ExpectNextStep(MemberTopicApprovalStep,"Next member approval for current topic");
-                await Workflow.ExpectNextStep(ChefSkipsMembersDecisions,"Chef can skip topic discussion");
+                await Workflow.ExpectNextStep<dynamic>(MemberTopicApprovalStep,"Next member approval for current topic");
+                await Workflow.ExpectNextStep<dynamic>(ChefSkipsMembersDecisions,"Chef can skip topic discussion");
             }
         }
 
@@ -105,8 +105,8 @@ namespace WorkflowInCode.ConsoleTest.Examples
             await SaveState();
             if (chefResponse.SkipMembers)
             {
-                await new BasicCommand("SendTopicForChefApproval", ContextData.CurrentTopic.Id).Initiate();
-                await Workflow.ExpectNextStep(ChefTopicApprovalStep,"After chef skip he will approve");
+                await new BasicCommand("SendTopicForChefApproval", ContextData.CurrentTopic.Id).Execute();
+                await Workflow.ExpectNextStep<dynamic>(ChefTopicApprovalStep,"After chef skip he will approve");
             }
         }
         private async Task ChefTopicApprovalStep(dynamic chefResponse)
@@ -115,12 +115,12 @@ namespace WorkflowInCode.ConsoleTest.Examples
             await SaveState();
             if (chefResponse.Rejected)
             {
-                await new BasicCommand("ChefRejectedTopic", ContextData.CurrentTopic.TopicId).Initiate();
+                await new BasicCommand("ChefRejectedTopic", ContextData.CurrentTopic.TopicId).Execute();
             }
 
             else if (chefResponse.Accepted)
             {
-                await new BasicCommand("ChefAcceptedTopic", ContextData.CurrentTopic.TopicId).Initiate();
+                await new BasicCommand("ChefAcceptedTopic", ContextData.CurrentTopic.TopicId).Execute();
             }
             var isLastTopic = ContextData.CurrentTopic == ContextData.Topics.Last();
             await (isLastTopic ? DiscussNextTopic() : TriggerFinalApproval());
@@ -132,15 +132,15 @@ namespace WorkflowInCode.ConsoleTest.Examples
             await SaveState();
             if (chefResponse.Accepted)
             {
-                await new BasicCommand("ChefAcceptedRequest", ContextData.RequestBasicData.RequestId).Initiate();
+                await new BasicCommand("ChefAcceptedRequest", ContextData.RequestBasicData.RequestId).Execute();
             }
             else if (chefResponse.Rejected)
             {
-                await new BasicCommand("ChefRejectedRequest", ContextData.RequestBasicData.RequestId).Initiate();
+                await new BasicCommand("ChefRejectedRequest", ContextData.RequestBasicData.RequestId).Execute();
             }
             else if (chefResponse.CompleteData)
             {
-                await new BasicCommand("ChefRequestDataComplete", ContextData.RequestBasicData.RequestId).Initiate();
+                await new BasicCommand("ChefRequestDataComplete", ContextData.RequestBasicData.RequestId).Execute();
             }
             await Workflow.End();
         }
@@ -148,15 +148,15 @@ namespace WorkflowInCode.ConsoleTest.Examples
         private async Task ChefCanSkipTopic(string arrowName)
         {
             await new BasicCommand("ChefCanSkipTopic",
-                            new { ContextData.RequestBasicData.RequestId, ContextData.CurrentTopic.TopicId }).Initiate();
-            await Workflow.ExpectNextStep(ChefSkipsMembersDecisions, arrowName);
+                            new { ContextData.RequestBasicData.RequestId, ContextData.CurrentTopic.TopicId }).Execute();
+            await Workflow.ExpectNextStep<dynamic>(ChefSkipsMembersDecisions, arrowName);
         }
 
         private async Task SendTopicInvitationsToMembers(string arrowName)
         {
             await new BasicCommand("SendDiscussionRequestToMembers",
-                    new { ContextData.Members, ContextData.RequestBasicData.RequestId, ContextData.CurrentTopic.TopicId }).Initiate();
-            await Workflow.ExpectNextStep(MemberTopicApprovalStep,arrowName);
+                    new { ContextData.Members, ContextData.RequestBasicData.RequestId, ContextData.CurrentTopic.TopicId }).Execute();
+            await Workflow.ExpectNextStep<dynamic>(MemberTopicApprovalStep,arrowName);
         }
 
         private async Task DiscussNextTopic()
@@ -171,8 +171,8 @@ namespace WorkflowInCode.ConsoleTest.Examples
 
         private async Task TriggerFinalApproval()
         {
-            await new BasicCommand("TopicsDiscussionFinished", ContextData.CurrentTopic.Id).Initiate();
-            await Workflow.ExpectNextStep(ChefFinalApprovalStep,"Chef final approval after last topic");
+            await new BasicCommand("TopicsDiscussionFinished", ContextData.CurrentTopic.Id).Execute();
+            await Workflow.ExpectNextStep<dynamic>(ChefFinalApprovalStep,"Chef final approval after last topic");
         }
 
 

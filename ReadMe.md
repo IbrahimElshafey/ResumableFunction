@@ -33,10 +33,11 @@ Is when we ask the system/external service to do something
 Ask system/external service to return some data we need to know to execute a workflow.
 
 ## Workflow Step
-Some code that will be execuetd when an event occured,after workflow engine received an event it will trigger the right workflow instance.
+Some code that will be execuetd when one or more events received,after workflow engine receive an event it will trigger the right workflow instance.
 ![Workflow step defined in code!](./img/workflow_step.png)
+![Workflow step defined in code!](./img/workflow_step2.png)
 
-## Events Collector
+### Register step method
 Subscribe to one or more external events and based on some logic it will fire internal events that feed to the engine events queue directly, internal and external events can be used to trigger a workflow step execution.
 
 An example is when a collector subscribe to events (X,Y,Z) and publish event Z when all three recived. this emulate `Task.WhenAll(X,Y,Z)`
@@ -44,9 +45,9 @@ An example is when a collector subscribe to events (X,Y,Z) and publish event Z w
 Another example is a collector subscribes to events (X,Y,Z) and publish event Z if any one recieved. this emulate `Task.WhenAny(X,Y,Z)`
 
 ## Internal Events
-Are events generated be event collector or by direct request to the engine to add an event to events queue.
+Are events generated be event collector method or by direct request from external to the engine to add an event to events queue.
 
-## Workflow Instance 
+## Workflow Instance Class
 ### Context Data
 ### Runtime Data
 
