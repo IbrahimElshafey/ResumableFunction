@@ -10,38 +10,38 @@ namespace WorkflowInCode.ConsoleTest.Examples
 
     public class ProjectDiscussionWorkflow : WorkflowInstance<ProjectDiscussionWorkflow_ContextData>
     {
-        public ProjectDiscussionWorkflow(IWorkflow<ProjectDiscussionWorkflow_ContextData> workflow) : base(workflow)
+        public ProjectDiscussionWorkflow(IWorkflow workflow) : base(workflow)
         {
-            workflow.RegisterStartStep(
-                stepAction: DiscussionStartedStep,
-                stepEvent: new BasicEvent<dynamic>("DiscussionStartedOnRequest"));
+            workflow.RegisterStep(
+                stepEvent: new BasicEvent<dynamic>("DiscussionStartedOnRequest"),
+                stepAction: DiscussionStartedStep);
 
             workflow.RegisterStep(
                stepEvent: new BasicEvent<dynamic>("MemberActionDoneOnTopic"),
                stepAction: MemberTopicApprovalStep,
-               eventFilter: (contextData, eventData) =>
-                contextData.RequestBasicData.RequestId == eventData.RequestId &&
-                contextData.CurrentTopic.TopicId == eventData.TopicId);
+               eventFilter: (eventData) =>
+                ContextData.RequestBasicData.RequestId == eventData.RequestId &&
+                ContextData.CurrentTopic.TopicId == eventData.TopicId);
 
             workflow.RegisterStep(
               stepEvent: new BasicEvent<dynamic>("ChefSkipsMembersDecisions"),
               stepAction: ChefSkipsMembersDecisions,
-              eventFilter: (contextData, eventData) =>
-               contextData.RequestBasicData.RequestId == eventData.RequestId &&
-               contextData.CurrentTopic.TopicId == eventData.TopicId);
+              eventFilter: (eventData) =>
+               ContextData.RequestBasicData.RequestId == eventData.RequestId &&
+               ContextData.CurrentTopic.TopicId == eventData.TopicId);
 
             workflow.RegisterStep(
               stepEvent: new BasicEvent<dynamic>("ChefActionDoneOnTopic"),
               stepAction: ChefTopicApprovalStep,
-              eventFilter: (contextData, eventData) =>
-               contextData.RequestBasicData.RequestId == eventData.RequestId &&
-               contextData.CurrentTopic.TopicId == eventData.TopicId);
+              eventFilter: (eventData) =>
+               ContextData.RequestBasicData.RequestId == eventData.RequestId &&
+               ContextData.CurrentTopic.TopicId == eventData.TopicId);
 
             workflow.RegisterStep(
              stepEvent: new BasicEvent<dynamic>("ChefFinalActionDoneOnRequest"),
              stepAction: ChefFinalApprovalStep,
-             eventFilter: (contextData, eventData) =>
-              contextData.RequestBasicData.RequestId == eventData.RequestId);
+             eventFilter: (eventData) =>
+              ContextData.RequestBasicData.RequestId == eventData.RequestId);
         }
 
 
@@ -142,7 +142,7 @@ namespace WorkflowInCode.ConsoleTest.Examples
             {
                 await new BasicCommand("ChefRequestDataComplete", ContextData.RequestBasicData.RequestId).Initiate();
             }
-            await Workflow.Ended();
+            await Workflow.End();
         }
 
         private async Task ChefCanSkipTopic(string arrowName)

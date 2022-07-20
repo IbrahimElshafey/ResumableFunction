@@ -8,7 +8,7 @@
     /// When engine recived an event it add it to it's internal events queue
     /// </summary>
     /// <typeparam name="EventData"></typeparam>
-    public interface IExternalEvent<EventData>:IEvent<EventData>
+    public interface IExternalEvent<EventData> : IEvent<EventData>
     {
         /// <summary>
         /// The engine will execute this function when a workflow class activated

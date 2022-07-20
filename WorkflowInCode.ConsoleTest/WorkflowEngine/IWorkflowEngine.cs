@@ -8,6 +8,6 @@ namespace WorkflowInCode.ConsoleTest.WorkflowEngine
 {
     public interface IWorkflowEngine
     {
-        Task RegisterEvent<EventData>(IExternalEvent<EventData> externalEvent,);
+        //Task RegisterEvent<EventData>(IExternalEvent<EventData> externalEvent,);
     }
 }

@@ -3,10 +3,10 @@
     public abstract class WorkflowInstance<WorkflowContextData>
     {
         public string WorkflowId { get; private set; }
-        public IWorkflow<WorkflowContextData> Workflow { get; }
+        public IWorkflow Workflow { get; }
         public WorkflowContextData ContextData { get; private set; }
 
-        public WorkflowInstance(IWorkflow<WorkflowContextData> workflow)
+        public WorkflowInstance(IWorkflow workflow)
         {
             Workflow = workflow;
             WorkflowId = Guid.NewGuid().ToString();

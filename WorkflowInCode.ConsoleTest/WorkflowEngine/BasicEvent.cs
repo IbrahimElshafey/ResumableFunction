@@ -6,19 +6,16 @@ using System.Threading.Tasks;
 
 namespace WorkflowInCode.ConsoleTest.WorkflowEngine
 {
-    public class BasicEvent<T> : IExternalEvent<T>
+    public class BasicEvent<EventData> : IExternalEvent<EventData>
     {
-        private readonly string eventName;
-
         public BasicEvent(string eventName)
         {
-            this.eventName = eventName;
+            this.Name = eventName;
         }
-        public async Task<T> ReceivingEvent(Func<T, bool> filter, string stepName)
-        {
-            //throw new NotImplementedException();
-            return default;
-        }
+
+        public string Name { get; private set; }
+
+        public EventData Data => default;
 
         public async Task Subscribe()
         {
