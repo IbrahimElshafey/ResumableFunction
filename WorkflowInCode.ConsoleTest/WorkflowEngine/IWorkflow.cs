@@ -11,13 +11,13 @@ namespace WorkflowInCode.ConsoleTest.WorkflowEngine
         Task Ended(dynamic x=null);
         Task ExpectNextStep<EventData>(Func<Task, EventData> nextStep, string arrowText = null);
         Task RegisterStep<EventData>(
-            IEvent<EventData> stepEvent,
+            IExternalEvent<EventData> stepEvent,
             Func<Task, EventData> stepAction,
             Func<WorkflowContextData, EventData, bool> eventFilter = null);
 
         Task RegisterStartStep<EventData>(
           Func<Task, EventData> stepAction,
-          IEvent<EventData> stepEvent,
+          IExternalEvent<EventData> stepEvent,
           params NextExpectedStep[] expectedNextSteps);
 
         //we should Unsubscribe timer events after the eventFilter method return true or
@@ -28,7 +28,7 @@ namespace WorkflowInCode.ConsoleTest.WorkflowEngine
 
 
         Task RegisterStep<EventData>(
-            IEvent<EventData> stepEvent,
+            IExternalEvent<EventData> stepEvent,
             Func<Task, EventData> stepAction,
             Func<WorkflowContextData, EventData, bool>? eventFilter = null,
             params NextExpectedStep[] expectedNextSteps);

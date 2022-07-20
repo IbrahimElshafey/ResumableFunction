@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace WorkflowInCode.ConsoleTest.WorkflowEngine
 {
-    public class BasicEvent<T> : IEvent<T>
+    public class BasicEvent<T> : IExternalEvent<T>
     {
         private readonly string eventName;
 
