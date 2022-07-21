@@ -9,9 +9,9 @@ namespace WorkflowInCode.ConsoleTest.Examples
 {
     internal class WorkflowScenarioOne : WorkflowInstance<WorkflowScenarioOne_ContextData>
     {
-      
 
-       
+
+
         public WorkflowScenarioOne(IWorkflow workflow) : base(workflow)
         {
             /*
@@ -27,61 +27,56 @@ namespace WorkflowInCode.ConsoleTest.Examples
             //eventsCollectorFunction: A method that collect events
             //stepAction: The code the engine execute when the eventsCollectorFunction return true
             workflow.RegisterStep(
-             stepTriggers:new StepTriggers()
+             stepTriggers: new AllOfEvents()
                 .AddEventTrigger(
-                    new BasicEvent<dynamic>("PmoApproval"),(eventData) => ContextData.ProjectAddedEvent.ProjectId == eventData.ProjectId)
+                    new BasicEvent<dynamic>("PmoApproval"),
+                    (eventData) => ContextData.ProjectAddedEvent.ProjectId == eventData.ProjectId && eventData.IsAccepted)
                 .AddEventTrigger(
-                    new BasicEvent<dynamic>("OwnerApproval"), (eventData) => ContextData.ProjectAddedEvent.ProjectId == eventData.ProjectId)
+                    new BasicEvent<dynamic>("OwnerApproval"),
+                    (eventData) => ContextData.ProjectAddedEvent.ProjectId == eventData.ProjectId && eventData.IsAccepted)
                 .AddEventTrigger(
-                    new BasicEvent<dynamic>("SponsorApproval"), (eventData) => ContextData.ProjectAddedEvent.ProjectId == eventData.ProjectId),
-             eventsCollectorFunction:CollectApprovalResponses,
-             stepAction:ThreeApproved);
+                    new BasicEvent<dynamic>("SponsorApproval"),
+                    (eventData) => ContextData.ProjectAddedEvent.ProjectId == eventData.ProjectId && eventData.IsAccepted),
+             eventsCollectorFunction: CollectApprovalResponses);
 
             workflow.RegisterStep(
-                new StepTriggers()
+             stepTriggers: new AnyOneOfEvents()
                 .AddEventTrigger(
-                    new BasicEvent<dynamic>("PmoApproval"), (eventData) => ContextData.ProjectAddedEvent.ProjectId == eventData.ProjectId)
+                    new BasicEvent<dynamic>("PmoApproval"),
+                    (eventData) => ContextData.ProjectAddedEvent.ProjectId == eventData.ProjectId && eventData.IsRejected)
                 .AddEventTrigger(
-                    new BasicEvent<dynamic>("OwnerApproval"), (eventData) => ContextData.ProjectAddedEvent.ProjectId == eventData.ProjectId)
+                    new BasicEvent<dynamic>("OwnerApproval"),
+                    (eventData) => ContextData.ProjectAddedEvent.ProjectId == eventData.ProjectId && eventData.IsRejected)
                 .AddEventTrigger(
-                    new BasicEvent<dynamic>("SponsorApproval"), (eventData) => ContextData.ProjectAddedEvent.ProjectId == eventData.ProjectId),
-                CollectRejectResponses,
-                OneRejected);
+                    new BasicEvent<dynamic>("SponsorApproval"),
+                    (eventData) => ContextData.ProjectAddedEvent.ProjectId == eventData.ProjectId && eventData.IsRejected),
+             eventsCollectorFunction: CollectRejectResponses);
         }
 
-        private async Task OneRejected(dynamic arg)
+        private async Task CollectRejectResponses(dynamic approvalEvent)
         {
             await new BasicCommand("MarkProjectAsRejected", ContextData.ProjectAddedEvent.ProjectId).Execute();
             await Workflow.End();
         }
-
-        private async Task<bool> CollectRejectResponses(dynamic approvalEvent)
+        private async Task CollectApprovalResponses(dynamic approvalEvent)
         {
-            return approvalEvent.IsReject;
-        }
-        private async Task<bool> CollectApprovalResponses(dynamic approvalEvent)
-        {
-            if (approvalEvent.IsAccept)
+            ContextData.ThreeApprovalCounter += 1;
+            await SaveState();
+            if (ContextData.ThreeApprovalCounter == 3)
             {
-                ContextData.ThreeApprovalCounter += 1;
-                await SaveState();
+                await new BasicCommand("MarkProjectAsApproved", ContextData.ProjectAddedEvent.ProjectId).Execute();
+                await Workflow.End();
             }
-            return ContextData.ThreeApprovalCounter == 3;
         }
 
-        private async Task ThreeApproved(dynamic threeApproved)
-        {
-            await new BasicCommand("MarkProjectAsApproved",ContextData.ProjectAddedEvent.ProjectId).Execute();
-            await Workflow.End();
-        }
 
         private async Task ProjectAdded(dynamic projectAddedEvent)
         {
             ContextData.ProjectAddedEvent = projectAddedEvent;
             await SaveState();
             await new BasicCommand("SendInvitations", projectAddedEvent.Id).Execute();
-            await Workflow.ExpectNextStep<dynamic>(ThreeApproved);
-            await Workflow.ExpectNextStep<dynamic>(OneRejected);
+            await Workflow.ExpectNextStep<dynamic>(CollectApprovalResponses);
+            await Workflow.ExpectNextStep<dynamic>(CollectRejectResponses);
         }
     }
     class WorkflowScenarioOne_ContextData

@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.3.32519.111
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WorkflowInCode.ConsoleTest", "WorkflowInCode.ConsoleTest\WorkflowInCode.ConsoleTest.csproj", "{96F9D7BB-450F-4FCF-83F5-8FBA1ABF5AD4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WorkflowInCode.ConsoleTest", "WorkflowInCode.ConsoleTest\WorkflowInCode.ConsoleTest.csproj", "{96F9D7BB-450F-4FCF-83F5-8FBA1ABF5AD4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestSomething", "TestSomething\TestSomething.csproj", "{EEB7FD2D-83B0-4E2E-BBCC-528B6C9AAA52}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{96F9D7BB-450F-4FCF-83F5-8FBA1ABF5AD4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{96F9D7BB-450F-4FCF-83F5-8FBA1ABF5AD4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{96F9D7BB-450F-4FCF-83F5-8FBA1ABF5AD4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EEB7FD2D-83B0-4E2E-BBCC-528B6C9AAA52}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EEB7FD2D-83B0-4E2E-BBCC-528B6C9AAA52}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EEB7FD2D-83B0-4E2E-BBCC-528B6C9AAA52}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EEB7FD2D-83B0-4E2E-BBCC-528B6C9AAA52}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

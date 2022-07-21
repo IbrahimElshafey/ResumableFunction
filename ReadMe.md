@@ -4,8 +4,13 @@ I evaluated the existing solutions and found that there is no solution that fits
 * [MassTransit](https://masstransit-project.com/)
 * [Durable Task Framework](https://github.com/Azure/durabletask)
 * [D-Async](https://github.com/Dasync/Dasync)
+* [Workflow Core](https://github.com/danielgerlag/workflow-core)
 
-All are intelligent but do not solve the problem well
+All these solutions are intelligent ans awesome but do not solve the problem well and easy.
+
+Then best one may de the Durable Task Framework from Microsoft the D-Async or the opposit.
+
+
 
 # How?
 * External events occurred
@@ -45,8 +50,11 @@ An example is when a collector subscribe to events (X,Y,Z) and publish event Z w
 Another example is a collector subscribes to events (X,Y,Z) and publish event Z if any one recieved. this emulate `Task.WhenAny(X,Y,Z)`
 
 ## Internal Events
-Are events generated be event collector method or by direct request from external to the engine to add an event to events queue.
+Are events generated be event collector method or by direct request from external service or filter method to the engine to add an event to events queue.
 
+The idea here is that you may receive a very generic event such as "request_updated" that contains "RequestId" but no other usful data,so you listen to that event and in the filter method you make a query to get the order itself.If your workflow should be triggred when request status become cancled for example then you shoud save the request status every time event fired,compre the value with the new one and when changed to cancel fire internal event that start the workflow.
+
+# Workflow engine
 ## Workflow Instance Class
 ### Context Data
 ### Runtime Data

@@ -25,16 +25,16 @@ namespace WorkflowInCode.ConsoleTest.Examples
               SponsorApproval,
               eventData => ContextData.ProjectAddedEvent.ProjectId == eventData.ProjectId && eventData.IsApproved);
 
-            //stepEvent: Is the events that fire the action we want to take 
+            //stepEvent: Is the event that fire the action we want to execute 
             //stepAction: The code we execute after event fired
-            //eventFilter: To find the right workflow instance that must be loaded
+            //eventFilter: Filter to find the right workflow instance that must be loaded
             workflow.RegisterStep(
               stepEvent: new BasicEvent<dynamic>("PmoApproval"),
               stepAction:PmoApproval,
               eventFilter:eventData => ContextData.ProjectAddedEvent.ProjectId == eventData.ProjectId && eventData.IsApproved);
 
             workflow.RegisterStep(
-              new StepTriggers()
+              new AnyOneOfEvents()
                   .AddEventTrigger(
                        new BasicEvent<dynamic>("OwnerApproval"),
                       eventData => ContextData.ProjectAddedEvent.ProjectId == eventData.ProjectId && eventData.IsRejected)
@@ -44,8 +44,7 @@ namespace WorkflowInCode.ConsoleTest.Examples
                   .AddEventTrigger(
                      new BasicEvent<dynamic>("PmoApproval"),
                       eventData => ContextData.ProjectAddedEvent.ProjectId == eventData.ProjectId && eventData.IsRejected),
-              CollectRejectResponses,
-              OneRejected);
+              CollectRejectResponses);
         }
 
         private async Task PmoApproval(dynamic pmoApproval)

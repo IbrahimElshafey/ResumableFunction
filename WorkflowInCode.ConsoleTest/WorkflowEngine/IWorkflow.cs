@@ -9,25 +9,19 @@ namespace WorkflowInCode.ConsoleTest.WorkflowEngine
     public interface IWorkflow
     {
         /// <summary>
-        /// Must be called in 
+        /// Must be called at least once 
         /// </summary>
         /// <returns></returns>
         Task End();
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <typeparam name="EventData"></typeparam>
-        /// <param name="nextStep"></param>
-        /// <param name="arrowText"></param>
-        /// <returns></returns>
+      
         Task ExpectNextStep<EventData>(Func<EventData, Task> nextStep, string arrowText = null);
         
         /// <summary>
         /// Workflow step that executed when an event received
         /// </summary>
         /// <typeparam name="EventData"></typeparam>
-        /// <param name="stepEvent">Is the events that fire the action we want to take</param>
+        /// <param name="stepEvent">Is the event that fire the action we want to take</param>
         /// <param name="stepAction">The code we execute after event fired</param>
         /// <param name="eventFilter">To find the right workflow instance that must be loaded</param>
         /// <returns></returns>
@@ -42,9 +36,8 @@ namespace WorkflowInCode.ConsoleTest.WorkflowEngine
         /// <typeparam name="T"></typeparam>
         /// <param name="stepTriggers">Multiple events that activate the step</param>
         /// <param name="eventsCollectorFunction">A method that collect events</param>
-        /// <param name="stepAction">The code the engine execute when the eventsCollectorFunction return true</param>
         /// <returns></returns>
-        Task RegisterStep<T>(StepTriggers stepTriggers, Func<object, Task<bool>> eventsCollectorFunction, Func<Task, T> stepAction);
+        Task RegisterStep(EventCollection stepTriggers, Func<object, Task> eventsCollectorFunction);
 
         /// <summary>
         /// Create new events that used internally inside 
