@@ -6,57 +6,55 @@ I evaluated the existing solutions and found that there is no solution that fits
 * [D-Async](https://github.com/Dasync/Dasync)
 * [Workflow Core](https://github.com/danielgerlag/workflow-core)
 
-All these solutions are intelligent ans awesome but do not solve the problem well and easy.
+All these solutions are intelligent and awesome but do not solve the problem well and easily.
 
-Then best one may de the Durable Task Framework from Microsoft the D-Async or the opposit.
+The best one may de the Durable Task Framework from Microsoft the D-Async or the opposite.
 
 
 
-# How?
+# Events-based workflow?
 * External events occurred
 * We define a workflow based on the events in code
-* The workflow engine subscribes to events and when an event is received it searches for the workflows that are related to that event
-* The engine will get the active running instances for each matched workflow, and for each instance, the engine will check if the instance waits for the event received.
-* If the workflow instance already waits for the future event the workflow engine will run/resume the workflow step related.
-* If the event is a start event then the engine will start a new instance of the matched workflows.
-* If the event didn’t match with any instance then the engine will add it to the errors queue
+* We define workflow steps that triggered by one or more events
+    ![Workflow based on events!](./img/define_workflow_steps.png)
+* The step action will be executed when the event is received, step action is a method like the below:
+    ![Workflow based on events!](./img/step_action_example.png)
+    Or
+    ![Workflow based on events!](./img/step_action_example2.png)
+* The image below shows how workflow and events connections (Entity Model)
+    ![Workflow based on events!](./img/Workflow_State_Data_Model.png)
 
+# What engine do when a new workflow is registered?
+* Find all steps in the workflow and add them to the steps repository.
+* Find all steps events and add them to the events repository.
+* Subscribe to all events in the workflow.
+* The engine will add an inactive instance to the instances repository and link it to the events that start the workflow. 
+
+# What engine do when an event is received?
+* When an event is received the engine will search for instances that wait for that type of event.
+* The engine will load the workflow-related classes from its DLLs if not loaded
+* The engine will load the activated instances context data to memory
+* The engine will execute the step actions for each step that waits for the received event
 
 # The main parts to define a workflow in code are:
 ## External Events
 * Any pub/sub event like (RabbitMQ, Redis Pub/Sub, Service Bus,...etc)
-* The engine will provide an API to inject/add/append event directly, this will enable me (as an example) to write a job/service that monitors a legacy system database log and send events directly to the engine. 
+* The engine will provide an API to inject/add/append events directly, this will enable scenarios like writing a job/service that monitors a legacy system database log and send events directly to the engine. 
 
 ## Commands
 Is when we ask the system/external service to do something
 * Raise event to other parties (RabbitMQ, Service Bus, etc)
 * Direct call an API endpoint on other parties
-* Save data to Database table
+* Save data to a Database table
 * Execute any custom logic
 
-## Quries
+## Queries
 Ask system/external service to return some data we need to know to execute a workflow.
 
 ## Workflow Step
-Some code that will be execuetd when one or more events received,after workflow engine receive an event it will trigger the right workflow instance.
-![Workflow step defined in code!](./img/workflow_step.png)
-![Workflow step defined in code!](./img/workflow_step2.png)
-
-### Register step method
-Subscribe to one or more external events and based on some logic it will fire internal events that feed to the engine events queue directly, internal and external events can be used to trigger a workflow step execution.
-
-An example is when a collector subscribe to events (X,Y,Z) and publish event Z when all three recived. this emulate `Task.WhenAll(X,Y,Z)`
-
-Another example is a collector subscribes to events (X,Y,Z) and publish event Z if any one recieved. this emulate `Task.WhenAny(X,Y,Z)`
+Some code will be executed when one or more events are received, after the workflow engine receive an event it will trigger the right workflow instance.
 
 ## Internal Events
-Are events generated be event collector method or by direct request from external service or filter method to the engine to add an event to events queue.
-
-The idea here is that you may receive a very generic event such as "request_updated" that contains "RequestId" but no other usful data,so you listen to that event and in the filter method you make a query to get the order itself.If your workflow should be triggred when request status become cancled for example then you shoud save the request status every time event fired,compre the value with the new one and when changed to cancel fire internal event that start the workflow.
-
-# Workflow engine
-## Workflow Instance Class
-### Context Data
-### Runtime Data
+The idea here is that you may receive a very generic event such as "request_updated" that contains "RequestId" but no other useful data, so you listen to that event and publish other meaningful events that you use inside the workflow.
 
 # How to define workflow in code based on events?

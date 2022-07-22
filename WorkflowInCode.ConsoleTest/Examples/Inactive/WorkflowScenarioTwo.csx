@@ -44,7 +44,7 @@ namespace WorkflowInCode.ConsoleTest.Examples
                   .AddEventTrigger(
                      new BasicEvent<dynamic>("PmoApproval"),
                       eventData => ContextData.ProjectAddedEvent.ProjectId == eventData.ProjectId && eventData.IsRejected),
-              CollectRejectResponses);
+              WhenAnyRejectResponse);
         }
 
         private async Task PmoApproval(dynamic pmoApproval)
@@ -78,12 +78,7 @@ namespace WorkflowInCode.ConsoleTest.Examples
             await Workflow.ExpectNextStep<dynamic>(SponsorApproval);
         }
 
-        private Task<bool> CollectRejectResponses(dynamic approvalEvent)
-        {
-            return Task.FromResult(approvalEvent.IsRejected);
-        }
-
-        private async Task OneRejected(Task arg)
+        private async Task WhenAnyRejectResponse(dynamic approvalEvent)
         {
             await new BasicCommand("MarkProjectAsRejected", ContextData.ProjectAddedEvent.ProjectId).Execute();
             await Workflow.End();

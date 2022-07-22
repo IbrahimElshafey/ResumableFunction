@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using WorkflowInCode.ConsoleTest.WorkflowEngine;
 
-namespace WorkflowInCode.ConsoleTest.Examples
+namespace WorkflowInCode.ConsoleTest.Examples.Inactive
 {
     internal class WorkflowScenarioOne : WorkflowInstance<WorkflowScenarioOne_ContextData>
     {

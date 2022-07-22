@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WorkflowInCode.ConsoleTest.Examples
+namespace WorkflowInCode.ConsoleTest.Examples.Inactive
 {
     public class EncryptionSystemSigleStep
     {
@@ -27,13 +27,13 @@ namespace WorkflowInCode.ConsoleTest.Examples
                 else if (secretaryResponse.CompleteData)
                 {
                     await Command("SecrataryRequestCompleteData", encryptionSystemData.SystemId);
-                    var userResponse =await ReceivingEvent("UserCompletedDataResponse");
-                    if(userResponse.Cancled)
+                    var userResponse = await ReceivingEvent("UserCompletedDataResponse");
+                    if (userResponse.Cancled)
                     {
                         await Command("UserCancledRequest", encryptionSystemData.SystemId);
                         await EndWorkflow();
                     }
-                    else if(userResponse.RequestReview)
+                    else if (userResponse.RequestReview)
                     {
                         await Command("SendNewEncryptionSystemToSecretaryReview", encryptionSystemData);
                     }
@@ -59,10 +59,10 @@ namespace WorkflowInCode.ConsoleTest.Examples
         {
             //throw new NotImplementedException();
         }
-        private async Task<Data> Query<Data>(string name,string parameters)
+        private async Task<Data> Query<Data>(string name, string parameters)
         {
             return default;
-        } 
+        }
         private async Task Command(string commandName, dynamic commandData, string stepName = "")
         {
             //throw new NotImplementedException();

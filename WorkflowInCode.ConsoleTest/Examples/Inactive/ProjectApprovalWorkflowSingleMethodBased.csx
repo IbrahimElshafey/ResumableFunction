@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WorkflowInCode.ConsoleTest.Examples
+namespace WorkflowInCode.ConsoleTest.Examples.Inactive
 {
     internal class ProjectApprovalWorkflowSingleMethodBased
     {

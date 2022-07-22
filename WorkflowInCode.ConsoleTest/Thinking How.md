@@ -1,11 +1,11 @@
-﻿# Workflow engine responsiabilties
-* Parse the workflow method and find that each branch has an end
-* Find events in the function
-* Subscribe to the events
-* When event received the engine will run it aggainst related filter methods
-* The engine will activate the instance
-* Resume the execution
-* Save the context before waiting for the next event
-* Reload the context when event recevied and instance activated
+﻿# What engine do when a new workflow is registered?
+* Find all steps in the workflow and add them to the steps repository.
+* Find all steps events and add them to the events repository.
+* Subscribe to all events in the workflow.
+* The engine will add an inactive instance to the instances repository and link it to the events that start the workflow. 
 
-https://docs.google.com/document/d/1TDzOILQo_QeXSzA9PI-HsqqBZ6SJu0EectyV89NJi_k/edit
+# What engine do when an event is received?
+* When an event is received the engine will search for instances that wait for that type of event.
+* The engine will load the workflow related classes from its DLLs if not laoded
+* The engine will load the the activated instances context data to memory
+* The engine will execuet the step actions mathched

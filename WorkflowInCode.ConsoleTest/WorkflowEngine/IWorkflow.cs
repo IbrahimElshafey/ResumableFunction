@@ -15,7 +15,7 @@ namespace WorkflowInCode.ConsoleTest.WorkflowEngine
         Task End();
 
       
-        Task ExpectNextStep<EventData>(Func<EventData, Task> nextStep, string arrowText = null);
+        Task ExpectNextStep(string stepName);
         
         /// <summary>
         /// Workflow step that executed when an event received
@@ -23,12 +23,12 @@ namespace WorkflowInCode.ConsoleTest.WorkflowEngine
         /// <typeparam name="EventData"></typeparam>
         /// <param name="stepEvent">Is the event that fire the action we want to take</param>
         /// <param name="stepAction">The code we execute after event fired</param>
-        /// <param name="eventFilter">To find the right workflow instance that must be loaded</param>
+        /// <param name="eventFilter">To find the right workflow instance that must be loaded(You must write this inside the step body)</param>
         /// <returns></returns>
         Task RegisterStep<EventData>(
+            string stepName,
             IEvent<EventData> stepEvent,
-            Func<EventData, Task> stepAction,
-            Func<EventData, bool> eventFilter = null);
+            Func<EventData, Task> stepAction);
 
         /// <summary>
         /// Workflow step that executed when an multiple events received
@@ -37,10 +37,11 @@ namespace WorkflowInCode.ConsoleTest.WorkflowEngine
         /// <param name="stepTriggers">Multiple events that activate the step</param>
         /// <param name="eventsCollectorFunction">A method that collect events</param>
         /// <returns></returns>
-        Task RegisterStep(EventCollection stepTriggers, Func<object, Task> eventsCollectorFunction);
+        Task RegisterStep(string stepName,EventCollection stepTriggers, Func<object, Task> eventsCollectorFunction);
 
         /// <summary>
-        /// Create new events that used internally inside 
+        /// Create new events that used internally
+        /// the engine will activate the workflow steps that can be triggred by workflow engine directly
         /// </summary>
         /// <typeparam name="EventData"></typeparam>
         /// <param name="internalEvent"></param>

@@ -1,11 +1,11 @@
 ﻿using WorkflowInCode.ConsoleTest.WorkflowEngine;
 
-namespace WorkflowInCode.ConsoleTest.Examples
+namespace WorkflowInCode.ConsoleTest.Examples.Inactive
 {
     //go to سيناريوهات.md for more details
-    internal class WorkflowScenarioThree : WorkflowInstance<WorkflowScenarioThree_ContextData>
+    internal class SplitAndMerge : WorkflowInstance<WorkflowScenarioThree_ContextData>
     {
-        public WorkflowScenarioThree(IWorkflow workflow) : base(workflow)
+        public SplitAndMerge(IWorkflow workflow) : base(workflow)
         {
             /*
              * البداية
@@ -14,11 +14,13 @@ namespace WorkflowInCode.ConsoleTest.Examples
              * بعد انتهاء التتابع الأول والثاني يتم الإنهاء 
              */
             workflow.RegisterStep(
+                    "Start",
                   new BasicEvent<dynamic>("Start"),
                   AfterStart);
 
             workflow.RegisterStep(
-                new OrdredSequnceEvents()
+                "ABC_Branch",
+                new OrderedSequenceEvents()
                     .AddEventTrigger(
                          new BasicEvent<dynamic>("A"),
                         eventData => ContextData.Id == eventData.Id)
@@ -31,7 +33,8 @@ namespace WorkflowInCode.ConsoleTest.Examples
                 CollectEventsAbc);
 
             workflow.RegisterStep(
-               new OrdredSequnceEvents()
+                "XYZ_Branch",
+               new OrderedSequenceEvents()
                    .AddEventTrigger(
                         new BasicEvent<dynamic>("X"),
                        eventData => ContextData.Id == eventData.Id)
@@ -44,37 +47,36 @@ namespace WorkflowInCode.ConsoleTest.Examples
                CollectEventsXyz);
 
             workflow.RegisterStep(
-            new UnordredEvents()
+            "Merge_ABC_XYZ",
+            new AllOfEvents()
                .AddEventTrigger(
-                    new BasicEvent<dynamic>("XyzPathFinished"),
+                    new InternalEvent<dynamic>("XyzPathFinished"),
                    eventData => ContextData.Id == eventData.Id)
                .AddEventTrigger(
-                   new BasicEvent<dynamic>("AbcPathFinished"),
+                   new InternalEvent<dynamic>("AbcPathFinished"),
                    eventData => ContextData.Id == eventData.Id),
            CollectTwoParallelPaths);
         }
 
-        private async Task AfterTwoParallelPathsEnded(object arg)
-        {
-            await Workflow.End();
-        }
 
-        private async Task<bool> CollectTwoParallelPaths(object arg)
+
+        private async Task CollectTwoParallelPaths(object arg)
         {
-            this.ContextData.TwoParallelPaths += 1;
+            ContextData.TwoParallelPaths += 1;
             await SaveState();
-            return ContextData.TwoParallelPaths == 2;
+            if (ContextData.TwoParallelPaths == 2)
+                await Workflow.End();
         }
 
 
 
         private async Task CollectEventsXyz(object arg)
         {
-            this.ContextData.XyzCounter += 1;
+            ContextData.XyzCounter += 1;
             await SaveState();
             if (ContextData.XyzCounter == 3)
             {
-                await Workflow.PushInternalEvent(new InternalEvent<object>("XyzPathFinished", new { WorkflowId }));
+                await Workflow.PushInternalEvent(new InternalEvent<object>("XyzPathFinished"));
             }
         }
 
@@ -82,20 +84,20 @@ namespace WorkflowInCode.ConsoleTest.Examples
 
         private async Task CollectEventsAbc(object eventData)
         {
-            this.ContextData.AbcCounter += 1;
+            ContextData.AbcCounter += 1;
             await SaveState();
             if (ContextData.AbcCounter == 3)
             {
-                await Workflow.PushInternalEvent(new InternalEvent<object>("AbcPathFinished", new { WorkflowId }));
+                await Workflow.PushInternalEvent(new InternalEvent<object>("AbcPathFinished"));
             }
         }
 
         private async Task AfterStart(dynamic startEvent)
         {
-            this.ContextData.Id += startEvent.Id;
+            ContextData.Id += startEvent.Id;
             await SaveState();
-            await Workflow.ExpectNextStep<dynamic>(CollectEventsAbc);
-            await Workflow.ExpectNextStep<dynamic>(CollectEventsXyz);
+            await Workflow.ExpectNextStep("ABC_Branch");
+            await Workflow.ExpectNextStep("XYZ_Branch");
         }
     }
 

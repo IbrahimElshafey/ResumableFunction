@@ -12,7 +12,7 @@
 * Instance Id (Name+GUID)
 * Waiting for event (Next event)
 * Status (Running,Ended)
-* Version
+* Version 
 
 # Workflow Instance Histroy
 * Instance Id

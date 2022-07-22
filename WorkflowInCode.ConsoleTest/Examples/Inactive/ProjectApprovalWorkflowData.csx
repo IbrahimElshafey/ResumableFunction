@@ -1,4 +1,4 @@
-﻿namespace WorkflowInCode.ConsoleTest.Examples
+﻿namespace WorkflowInCode.ConsoleTest.Examples.Inactive
 {
     public class ProjectApprovalWorkflowData
     {
