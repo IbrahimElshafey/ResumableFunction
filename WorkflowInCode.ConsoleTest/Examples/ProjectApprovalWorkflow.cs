@@ -2,15 +2,17 @@
 
 namespace WorkflowInCode.ConsoleTest.Examples
 {
-    internal class ProjectApprovalWorkflow : WorkflowInstance<ProjectApprovalWorkflow_ContextData>
+    internal class ProjectApprovalWorkflow : WorkflowDefinition<ProjectApprovalWorkflow_ContextData>
     {
         /*
          * بعد إضافة مشروع يتم ارسال دعوة مالك المشروع
          * ننتظر موافقة مالك المشروع ثم موافقة راعي المشروع ثم موافقة مدير المشروع بشكل متتابع
          * إذا رفض أحدهم يتم إلغاء المشروع وإعلام الآخرين
          */
-        public ProjectApprovalWorkflow(IWorkflow workflow) : base(workflow)
+        public ProjectApprovalWorkflow(IWorkflowEngine workflow) : base(workflow)
         {
+            workflow.RegisterGlobalEventFilter((eventData) => eventData.ProjectId = CurrentInstance.ContextData.ProjectAddedEvent.ProjectId);
+            
             workflow.RegisterStep(
                 "ProjectAdded",
                 new BasicEvent<dynamic>("ProjectAdded"),
@@ -39,51 +41,51 @@ namespace WorkflowInCode.ConsoleTest.Examples
               new AnyOneOfEvents()
                   .AddEventTrigger(
                        new BasicEvent<dynamic>("OwnerApproval"),
-                      eventData => ContextData.ProjectAddedEvent.ProjectId == eventData.ProjectId && eventData.IsRejected)
+                      eventData => CurrentInstance.ContextData.ProjectAddedEvent.ProjectId == eventData.ProjectId && eventData.IsRejected)
                   .AddEventTrigger(
                       new BasicEvent<dynamic>("SponsorApproval"),
-                      eventData => ContextData.ProjectAddedEvent.ProjectId == eventData.ProjectId && eventData.IsRejected)
+                      eventData => CurrentInstance.ContextData.ProjectAddedEvent.ProjectId == eventData.ProjectId && eventData.IsRejected)
                   .AddEventTrigger(
                      new BasicEvent<dynamic>("PmoApproval"),
-                      eventData => ContextData.ProjectAddedEvent.ProjectId == eventData.ProjectId && eventData.IsRejected),
+                      eventData => CurrentInstance.ContextData.ProjectAddedEvent.ProjectId == eventData.ProjectId && eventData.IsRejected),
               WhenAnyRejectResponse);
         }
 
         private async Task PmoApproval(dynamic pmoApproval)
         {
-            if (ContextData.ProjectAddedEvent.ProjectId == pmoApproval.ProjectId && pmoApproval.IsApproved)
+            if (CurrentInstance.ContextData.ProjectAddedEvent.ProjectId == pmoApproval.ProjectId && pmoApproval.IsApproved)
             {
-                ContextData.PmoApproval = pmoApproval;
-                await SaveState();
+                CurrentInstance.ContextData.PmoApproval = pmoApproval;
+                await Workflow.SaveState();
                 await Workflow.End();
             }
         }
 
         private async Task SponsorApproval(dynamic sponsorApproval)
         {
-            if (ContextData.ProjectAddedEvent.ProjectId == sponsorApproval.ProjectId && sponsorApproval.IsApproved)
+            if (CurrentInstance.ContextData.ProjectAddedEvent.ProjectId == sponsorApproval.ProjectId && sponsorApproval.IsApproved)
             {
-                ContextData.SponsorApproval = sponsorApproval;
-                await SaveState();
-                await new BasicCommand("AskPmoApproval", ContextData.ProjectAddedEvent.Id).Execute();
+                CurrentInstance.ContextData.SponsorApproval = sponsorApproval;
+                await Workflow.SaveState();
+                await new BasicCommand("AskPmoApproval", CurrentInstance.ContextData.ProjectAddedEvent.Id).Execute();
                 await Workflow.ExpectNextStep("PmoApproval");
             }
         }
 
         private async Task ProjectAdded(dynamic projectAddedEvent)
         {
-            ContextData.ProjectAddedEvent = projectAddedEvent;
-            await SaveState();
+            CurrentInstance.ContextData.ProjectAddedEvent = projectAddedEvent;
+            await Workflow.SaveState();
             await new BasicCommand("AskOwnerApproval", projectAddedEvent.Id).Execute();
             await Workflow.ExpectNextStep("OwnerApproval");
         }
 
         private async Task OwnerApproval(dynamic ownerApproval)
         {
-            if (ContextData.ProjectAddedEvent.ProjectId == ownerApproval.ProjectId && ownerApproval.IsApproved)
+            if (CurrentInstance.ContextData.ProjectAddedEvent.ProjectId == ownerApproval.ProjectId && ownerApproval.IsApproved)
             {
-                ContextData.OwnerApproval = ownerApproval;
-                await SaveState();
+                CurrentInstance.ContextData.OwnerApproval = ownerApproval;
+                await Workflow.SaveState();
                 await new BasicCommand("AskSponsorApproval", ownerApproval.Id).Execute();
                 await Workflow.ExpectNextStep("SponsorApproval");
             }
@@ -91,7 +93,7 @@ namespace WorkflowInCode.ConsoleTest.Examples
 
         private async Task WhenAnyRejectResponse(dynamic approvalEvent)
         {
-            await new BasicCommand("MarkProjectAsRejected", ContextData.ProjectAddedEvent.ProjectId).Execute();
+            await new BasicCommand("MarkProjectAsRejected", CurrentInstance.ContextData.ProjectAddedEvent.ProjectId).Execute();
             await Workflow.End();
         }
     }

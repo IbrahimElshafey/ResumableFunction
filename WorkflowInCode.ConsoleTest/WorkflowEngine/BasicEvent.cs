@@ -22,6 +22,13 @@ namespace WorkflowInCode.ConsoleTest.WorkflowEngine
             //throw new NotImplementedException();
         }
 
+        public string UniqueIdentifier => Name;
+
+        /// <summary>
+        /// Will be set when event registred by the engine
+        /// </summary>
+        public int DataBaseIdentifier { get; private set; }
+
         public async Task Unsubscribe()
         {
             //throw new NotImplementedException();

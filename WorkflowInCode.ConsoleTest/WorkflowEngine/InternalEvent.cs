@@ -8,6 +8,7 @@
     /// <typeparam name="EventData"></typeparam>
     public class InternalEvent<EventData> : IEvent<EventData>
     {
+        public Guid InstanceId { get; set; }
         public InternalEvent(string name) => this.Name = name;
         public string Name { get; private set;}
 

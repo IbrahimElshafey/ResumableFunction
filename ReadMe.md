@@ -1,14 +1,16 @@
+**Project Status: Under Analysis**
+
 # Why this project?
 I want to write workflow in code.
-I evaluated the existing solutions and found that there is no solution that fits all scenario
+I evaluated the existing solutions and found that there is no solution that fits all scenarios
 * [MassTransit](https://masstransit-project.com/)
 * [Durable Task Framework](https://github.com/Azure/durabletask)
 * [D-Async](https://github.com/Dasync/Dasync)
 * [Workflow Core](https://github.com/danielgerlag/workflow-core)
+* [Infinitic](https://github.com/infiniticio/infinitic)
 
 All these solutions are intelligent and awesome but do not solve the problem well and easily.
 
-The best one may de the Durable Task Framework from Microsoft the D-Async or the opposite.
 
 
 
@@ -31,9 +33,9 @@ The best one may de the Durable Task Framework from Microsoft the D-Async or the
 * The engine will add an inactive instance to the instances repository and link it to the events that start the workflow. 
 
 # What engine do when an event is received?
-* When an event is received the engine will search for instances that wait for that type of event.
-* The engine will load the workflow-related classes from its DLLs if not loaded
+* When an event is received the engine will search for instances that wait for that type of event (Search in expected events table).
 * The engine will load the activated instances context data to memory
+* The engine will apply the filter method of the workflow step to the event data to check if instance should be activated
 * The engine will execute the step actions for each step that waits for the received event
 
 # The main parts to define a workflow in code are:

@@ -24,5 +24,16 @@
         /// </summary>
         /// <returns>Nothing or Error</returns>
         Task Unsubscribe();
+
+        /// <summary>
+        /// The engine will call this method to determine if the event is defined before in old workflows
+        /// ,This method must return uniqe string for the event.
+        /// 
+        /// For Example:the name must be the same if two diffrent work flow subscribe to the same RabbitMq topic
+        /// in this case the method must return something like "RabbitMQ-TopicName" for the two events
+        /// </summary>
+        /// <returns></returns>
+        string UniqueIdentifier { get; }
+        int DataBaseIdentifier { get; }
     }
 }

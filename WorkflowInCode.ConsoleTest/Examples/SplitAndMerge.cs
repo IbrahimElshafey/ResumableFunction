@@ -3,9 +3,9 @@
 namespace WorkflowInCode.ConsoleTest.Examples.Inactive
 {
     //go to سيناريوهات.md for more details
-    internal class SplitAndMerge : WorkflowInstance<WorkflowScenarioThree_ContextData>
+    internal class SplitAndMerge : WorkflowDefinition<WorkflowScenarioThree_ContextData>
     {
-        public SplitAndMerge(IWorkflow workflow) : base(workflow)
+        public SplitAndMerge(IWorkflowEngine workflow) : base(workflow)
         {
             /*
              * البداية
@@ -23,13 +23,13 @@ namespace WorkflowInCode.ConsoleTest.Examples.Inactive
                 new OrderedSequenceEvents()
                     .AddEventTrigger(
                          new BasicEvent<dynamic>("A"),
-                        eventData => ContextData.Id == eventData.Id)
+                        eventData => CurrentInstance.ContextData.Id == eventData.Id)
                     .AddEventTrigger(
                         new BasicEvent<dynamic>("B"),
-                        eventData => ContextData.Id == eventData.Id)
+                        eventData => CurrentInstance.ContextData.Id == eventData.Id)
                     .AddEventTrigger(
                        new BasicEvent<dynamic>("C"),
-                        eventData => ContextData.Id == eventData.Id),
+                        eventData => CurrentInstance.ContextData.Id == eventData.Id),
                 CollectEventsAbc);
 
             workflow.RegisterStep(
@@ -37,13 +37,13 @@ namespace WorkflowInCode.ConsoleTest.Examples.Inactive
                new OrderedSequenceEvents()
                    .AddEventTrigger(
                         new BasicEvent<dynamic>("X"),
-                       eventData => ContextData.Id == eventData.Id)
+                       eventData => CurrentInstance.ContextData.Id == eventData.Id)
                    .AddEventTrigger(
                        new BasicEvent<dynamic>("Y"),
-                       eventData => ContextData.Id == eventData.Id)
+                       eventData => CurrentInstance.ContextData.Id == eventData.Id)
                    .AddEventTrigger(
                       new BasicEvent<dynamic>("Z"),
-                       eventData => ContextData.Id == eventData.Id),
+                       eventData => CurrentInstance.ContextData.Id == eventData.Id),
                CollectEventsXyz);
 
             workflow.RegisterStep(
@@ -51,10 +51,10 @@ namespace WorkflowInCode.ConsoleTest.Examples.Inactive
             new AllOfEvents()
                .AddEventTrigger(
                     new InternalEvent<dynamic>("XyzPathFinished"),
-                   eventData => ContextData.Id == eventData.Id)
+                   eventData => CurrentInstance.ContextData.Id == eventData.Id)
                .AddEventTrigger(
                    new InternalEvent<dynamic>("AbcPathFinished"),
-                   eventData => ContextData.Id == eventData.Id),
+                   eventData => CurrentInstance.ContextData.Id == eventData.Id),
            CollectTwoParallelPaths);
         }
 
@@ -62,9 +62,9 @@ namespace WorkflowInCode.ConsoleTest.Examples.Inactive
 
         private async Task CollectTwoParallelPaths(object arg)
         {
-            ContextData.TwoParallelPaths += 1;
-            await SaveState();
-            if (ContextData.TwoParallelPaths == 2)
+            CurrentInstance.ContextData.TwoParallelPaths += 1;
+            await Workflow.SaveState();
+            if (CurrentInstance.ContextData.TwoParallelPaths == 2)
                 await Workflow.End();
         }
 
@@ -72,9 +72,9 @@ namespace WorkflowInCode.ConsoleTest.Examples.Inactive
 
         private async Task CollectEventsXyz(object arg)
         {
-            ContextData.XyzCounter += 1;
-            await SaveState();
-            if (ContextData.XyzCounter == 3)
+            CurrentInstance.ContextData.XyzCounter += 1;
+            await Workflow.SaveState();
+            if (CurrentInstance.ContextData.XyzCounter == 3)
             {
                 await Workflow.PushInternalEvent(new InternalEvent<object>("XyzPathFinished"));
             }
@@ -84,9 +84,9 @@ namespace WorkflowInCode.ConsoleTest.Examples.Inactive
 
         private async Task CollectEventsAbc(object eventData)
         {
-            ContextData.AbcCounter += 1;
-            await SaveState();
-            if (ContextData.AbcCounter == 3)
+            CurrentInstance.ContextData.AbcCounter += 1;
+            await Workflow.SaveState();
+            if (CurrentInstance.ContextData.AbcCounter == 3)
             {
                 await Workflow.PushInternalEvent(new InternalEvent<object>("AbcPathFinished"));
             }
@@ -94,8 +94,8 @@ namespace WorkflowInCode.ConsoleTest.Examples.Inactive
 
         private async Task AfterStart(dynamic startEvent)
         {
-            ContextData.Id += startEvent.Id;
-            await SaveState();
+            CurrentInstance.ContextData.Id += startEvent.Id;
+            await Workflow.SaveState();
             await Workflow.ExpectNextStep("ABC_Branch");
             await Workflow.ExpectNextStep("XYZ_Branch");
         }
