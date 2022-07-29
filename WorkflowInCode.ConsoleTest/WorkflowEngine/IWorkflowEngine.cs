@@ -23,8 +23,9 @@ namespace WorkflowInCode.ConsoleTest.WorkflowEngine
             Func<EventData, Task> stepAction,
             Func<EventData, bool>? eventFilter = null);
 
+        Task<List<EventData>> GetStepEventsHistory<EventData>();
         /// <summary>
-        /// Workflow step that executed when an multiple events received
+        /// [to be deleted] Workflow step that executed when an multiple events received
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="stepTriggers">Multiple events that activate the step</param>
@@ -33,11 +34,21 @@ namespace WorkflowInCode.ConsoleTest.WorkflowEngine
         Task RegisterStep(string stepName, EventCollection stepTriggers, Func<object, Task> eventsCollectorFunction);
 
         /// <summary>
-        /// The engine will update the expected steps-events list for the active instance
+        /// [to be deleted] The engine will update the expected steps-events list for the active instance
         /// </summary>
         /// <param name="stepName">step name you defined when registration</param>
         /// <returns></returns>
         Task ExpectNextStep(string stepName);
+
+        /// <summary>
+        /// The engine will update the expected steps-events list for the active instance
+        /// </summary>
+        /// <param name="stepName">step name you defined when registration</param>
+        /// <returns></returns>
+        Task AddEventExpectation<EventData>(IEvent<EventData> expectedEvent);
+        Task AddEventExpectation(string expectedEvent);
+
+
         /// <summary>
         /// Must be called at least once when the workflow ended
         /// When this method called the engine will mark the instance as finished
@@ -53,6 +64,7 @@ namespace WorkflowInCode.ConsoleTest.WorkflowEngine
         /// <param name="internalEvent"></param>
         /// <returns></returns>
         Task PushInternalEvent<EventData>(InternalEvent<EventData> internalEvent);
+        Task PushInternalEvent(string name,dynamic data=null);
 
 
 
@@ -63,7 +75,6 @@ namespace WorkflowInCode.ConsoleTest.WorkflowEngine
         void RegisterGlobalEventFilter(Func<dynamic, Task<bool>> globalFilterMethod);
 
         Task SaveState();
-        Task<WorkflowContextData> LoadState<WorkflowContextData>();
     }
 
     public enum EventsExpectationMethod

@@ -7,5 +7,5 @@
 # What engine do when an event is received?
 * When an event is received the engine will search for instances that wait for that type of event.
 * The engine will load the workflow related classes from its DLLs if not laoded
-* The engine will load the the activated instances context data to memory
+* The engine will load the the load instances context data to memory
 * The engine will execuet the step actions mathched

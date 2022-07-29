@@ -9,5 +9,8 @@
         public Guid WorkflowId { get; private set; }
        
         public WorkflowContextData ContextData { get; private set; }
+
+        public List<string> LastExecutedSteps { get; private set; }= new List<string>();
+        public List<string> NextExpectedSteps { get; private set; }= new List<string>();
     }
 }

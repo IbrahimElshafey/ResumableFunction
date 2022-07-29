@@ -10,5 +10,7 @@
             Workflow = workflow;
             Name = name ?? GetType().Name;
         }
+
+        public abstract void RegisterSteps();
     }
 }

@@ -36,7 +36,7 @@ All these solutions are intelligent and awesome but do not solve the problem wel
 * When an event is received the engine will search for instances that wait for that type of event (Search in expected events table).
 * The engine will load the activated instances context data to memory
 * The engine will apply the filter method of the workflow step to the event data to check if instance should be activated
-* The engine will execute the step actions for each step that waits for the received event
+* For activated instances the workflow engine will execuete the step action method that linked to the received event
 
 # The main parts to define a workflow in code are:
 ## External Events

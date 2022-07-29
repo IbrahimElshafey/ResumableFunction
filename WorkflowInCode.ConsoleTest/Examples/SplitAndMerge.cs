@@ -7,55 +7,7 @@ namespace WorkflowInCode.ConsoleTest.Examples.Inactive
     {
         public SplitAndMerge(IWorkflowEngine workflow) : base(workflow)
         {
-            /*
-             * البداية
-             * بعد البداية يمكن تنفيذ العمليات أ,ب,ج بالتتابع
-             * بعد البداية يمكن تنفيذ العمليات س,ص,ع بالتتابع
-             * بعد انتهاء التتابع الأول والثاني يتم الإنهاء 
-             */
-            workflow.RegisterStep(
-                    "Start",
-                  new BasicEvent<dynamic>("Start"),
-                  AfterStart);
 
-            workflow.RegisterStep(
-                "ABC_Branch",
-                new OrderedSequenceEvents()
-                    .AddEventTrigger(
-                         new BasicEvent<dynamic>("A"),
-                        eventData => CurrentInstance.ContextData.Id == eventData.Id)
-                    .AddEventTrigger(
-                        new BasicEvent<dynamic>("B"),
-                        eventData => CurrentInstance.ContextData.Id == eventData.Id)
-                    .AddEventTrigger(
-                       new BasicEvent<dynamic>("C"),
-                        eventData => CurrentInstance.ContextData.Id == eventData.Id),
-                CollectEventsAbc);
-
-            workflow.RegisterStep(
-                "XYZ_Branch",
-               new OrderedSequenceEvents()
-                   .AddEventTrigger(
-                        new BasicEvent<dynamic>("X"),
-                       eventData => CurrentInstance.ContextData.Id == eventData.Id)
-                   .AddEventTrigger(
-                       new BasicEvent<dynamic>("Y"),
-                       eventData => CurrentInstance.ContextData.Id == eventData.Id)
-                   .AddEventTrigger(
-                      new BasicEvent<dynamic>("Z"),
-                       eventData => CurrentInstance.ContextData.Id == eventData.Id),
-               CollectEventsXyz);
-
-            workflow.RegisterStep(
-            "Merge_ABC_XYZ",
-            new AllOfEvents()
-               .AddEventTrigger(
-                    new InternalEvent<dynamic>("XyzPathFinished"),
-                   eventData => CurrentInstance.ContextData.Id == eventData.Id)
-               .AddEventTrigger(
-                   new InternalEvent<dynamic>("AbcPathFinished"),
-                   eventData => CurrentInstance.ContextData.Id == eventData.Id),
-           CollectTwoParallelPaths);
         }
 
 
@@ -98,6 +50,59 @@ namespace WorkflowInCode.ConsoleTest.Examples.Inactive
             await Workflow.SaveState();
             await Workflow.ExpectNextStep("ABC_Branch");
             await Workflow.ExpectNextStep("XYZ_Branch");
+        }
+
+        public override void RegisterSteps()
+        {
+            /*
+              * البداية
+              * بعد البداية يمكن تنفيذ العمليات أ,ب,ج بالتتابع
+              * بعد البداية يمكن تنفيذ العمليات س,ص,ع بالتتابع
+              * بعد انتهاء التتابع الأول والثاني يتم الإنهاء 
+              */
+            Workflow.RegisterStep(
+                    "Start",
+                  new BasicEvent<dynamic>("Start"),
+                  AfterStart);
+
+            Workflow.RegisterStep(
+                "ABC_Branch",
+                new OrderedSequenceEvents()
+                    .AddEventTrigger(
+                         new BasicEvent<dynamic>("A"),
+                        eventData => CurrentInstance.ContextData.Id == eventData.Id)
+                    .AddEventTrigger(
+                        new BasicEvent<dynamic>("B"),
+                        eventData => CurrentInstance.ContextData.Id == eventData.Id)
+                    .AddEventTrigger(
+                       new BasicEvent<dynamic>("C"),
+                        eventData => CurrentInstance.ContextData.Id == eventData.Id),
+                CollectEventsAbc);
+
+            Workflow.RegisterStep(
+                "XYZ_Branch",
+               new OrderedSequenceEvents()
+                   .AddEventTrigger(
+                        new BasicEvent<dynamic>("X"),
+                       eventData => CurrentInstance.ContextData.Id == eventData.Id)
+                   .AddEventTrigger(
+                       new BasicEvent<dynamic>("Y"),
+                       eventData => CurrentInstance.ContextData.Id == eventData.Id)
+                   .AddEventTrigger(
+                      new BasicEvent<dynamic>("Z"),
+                       eventData => CurrentInstance.ContextData.Id == eventData.Id),
+               CollectEventsXyz);
+
+            Workflow.RegisterStep(
+            "Merge_ABC_XYZ",
+            new AllOfEvents()
+               .AddEventTrigger(
+                    new InternalEvent<dynamic>("XyzPathFinished"),
+                   eventData => CurrentInstance.ContextData.Id == eventData.Id)
+               .AddEventTrigger(
+                   new InternalEvent<dynamic>("AbcPathFinished"),
+                   eventData => CurrentInstance.ContextData.Id == eventData.Id),
+           CollectTwoParallelPaths);
         }
     }
 

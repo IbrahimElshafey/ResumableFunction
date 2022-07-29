@@ -11,44 +11,7 @@ namespace WorkflowInCode.ConsoleTest.Examples
          */
         public ProjectApprovalWorkflow(IWorkflowEngine workflow) : base(workflow)
         {
-            workflow.RegisterGlobalEventFilter((eventData) => eventData.ProjectId = CurrentInstance.ContextData.ProjectAddedEvent.ProjectId);
             
-            workflow.RegisterStep(
-                "ProjectAdded",
-                new BasicEvent<dynamic>("ProjectAdded"),
-                ProjectAdded);
-
-            workflow.RegisterStep(
-              "OwnerApproval",
-              new BasicEvent<dynamic>("OwnerApproval"),
-              OwnerApproval);
-
-            workflow.RegisterStep(
-                "SponsorApproval",
-              new BasicEvent<dynamic>("SponsorApproval"),
-              SponsorApproval);
-
-            //stepEvent: Is the event that fire the action we want to execute 
-            //stepAction: The code we execute after event fired
-            //eventFilter: Filter to find the right workflow instance that must be loaded
-            workflow.RegisterStep(
-              "PmoApproval",
-              stepEvent: new BasicEvent<dynamic>("PmoApproval"),
-              stepAction: PmoApproval);
-
-            workflow.RegisterStep(
-              "AnyOneReject",
-              new AnyOneOfEvents()
-                  .AddEventTrigger(
-                       new BasicEvent<dynamic>("OwnerApproval"),
-                      eventData => CurrentInstance.ContextData.ProjectAddedEvent.ProjectId == eventData.ProjectId && eventData.IsRejected)
-                  .AddEventTrigger(
-                      new BasicEvent<dynamic>("SponsorApproval"),
-                      eventData => CurrentInstance.ContextData.ProjectAddedEvent.ProjectId == eventData.ProjectId && eventData.IsRejected)
-                  .AddEventTrigger(
-                     new BasicEvent<dynamic>("PmoApproval"),
-                      eventData => CurrentInstance.ContextData.ProjectAddedEvent.ProjectId == eventData.ProjectId && eventData.IsRejected),
-              WhenAnyRejectResponse);
         }
 
         private async Task PmoApproval(dynamic pmoApproval)
@@ -95,6 +58,48 @@ namespace WorkflowInCode.ConsoleTest.Examples
         {
             await new BasicCommand("MarkProjectAsRejected", CurrentInstance.ContextData.ProjectAddedEvent.ProjectId).Execute();
             await Workflow.End();
+        }
+
+        public override void RegisterSteps()
+        {
+            Workflow.RegisterGlobalEventFilter((eventData) => eventData.ProjectId = CurrentInstance.ContextData.ProjectAddedEvent.ProjectId);
+
+            Workflow.RegisterStep(
+                "ProjectAdded",
+                new BasicEvent<dynamic>("ProjectAdded"),
+                ProjectAdded);
+
+            Workflow.RegisterStep(
+              "OwnerApproval",
+              new BasicEvent<dynamic>("OwnerApproval"),
+              OwnerApproval);
+
+            Workflow.RegisterStep(
+                "SponsorApproval",
+              new BasicEvent<dynamic>("SponsorApproval"),
+              SponsorApproval);
+
+            //stepEvent: Is the event that fire the action we want to execute 
+            //stepAction: The code we execute after event fired
+            //eventFilter: Filter to find the right workflow instance that must be loaded
+            Workflow.RegisterStep(
+              "PmoApproval",
+              stepEvent: new BasicEvent<dynamic>("PmoApproval"),
+              stepAction: PmoApproval);
+
+            Workflow.RegisterStep(
+              "AnyOneReject",
+              new AnyOneOfEvents()
+                  .AddEventTrigger(
+                       new BasicEvent<dynamic>("OwnerApproval"),
+                      eventData => CurrentInstance.ContextData.ProjectAddedEvent.ProjectId == eventData.ProjectId && eventData.IsRejected)
+                  .AddEventTrigger(
+                      new BasicEvent<dynamic>("SponsorApproval"),
+                      eventData => CurrentInstance.ContextData.ProjectAddedEvent.ProjectId == eventData.ProjectId && eventData.IsRejected)
+                  .AddEventTrigger(
+                     new BasicEvent<dynamic>("PmoApproval"),
+                      eventData => CurrentInstance.ContextData.ProjectAddedEvent.ProjectId == eventData.ProjectId && eventData.IsRejected),
+              WhenAnyRejectResponse);
         }
     }
 
