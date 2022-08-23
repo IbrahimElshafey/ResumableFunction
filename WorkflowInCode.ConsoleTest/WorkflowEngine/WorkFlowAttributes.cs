@@ -9,3 +9,9 @@ internal class WorkFlowStep : Attribute
 {
    
 }
+
+[AttributeUsage(AttributeTargets.Property, Inherited = false, AllowMultiple = false)]
+internal class EventFilterData : Attribute
+{
+
+}

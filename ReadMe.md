@@ -33,10 +33,10 @@ All these solutions are intelligent and awesome but do not solve the problem wel
 * The engine will add an inactive instance to the instances repository and link it to the events that start the workflow. 
 
 # What engine do when an event is received?
-* When an event is received the engine will search for instances that wait for that type of event (Search in expected events table).
-* The engine will load the activated instances context data to memory
-* The engine will apply the filter method of the workflow step to the event data to check if instance should be activated
-* For activated instances the workflow engine will execuete the step action method that linked to the received event
+* When an event is received the engine will search for instances that wait for that type of event.
+* The engine will load the workflow related classes from its DLLs if not laoded
+* The engine will load the the load instances context data to memory
+* The engine will execuet the step actions mathched
 
 # The main parts to define a workflow in code are:
 ## External Events

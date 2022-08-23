@@ -19,10 +19,10 @@ namespace WorkflowInCode.ConsoleTest.Examples
             //OrderedEvents();
             //OrderedEventsWithBack();
             //SplitAndMerge();
-            //SplitAndCollect();
+            SplitAndCollectOne();
         }
 
-        private void SplitAndCollect()
+        private void SplitAndCollectOne()
         {
             //event1 then (event2 or event3) then end
             Workflow.RegisterStep(
@@ -30,15 +30,15 @@ namespace WorkflowInCode.ConsoleTest.Examples
                 new BasicEvent<dynamic>("Event1"),
                 async (eventData) =>
                 {
-                    await Workflow.AddEventExpectation("Event2");
-                    await Workflow.AddEventExpectation("Event3");
+                    await Workflow.ExpectNextStep("Event2 Received");
+                    await Workflow.ExpectNextStep("Event3 Received");
                 });
             Workflow.RegisterStep(
-               "Event3 Received",
+               "Event2 Received",
                new BasicEvent<dynamic>("Event2"),
                async (eventData) =>
                {
-                   await Workflow.PushInternalEvent("CollectEvents2or3");
+                   await CollectEvents2or3(eventData);
                });
 
             Workflow.RegisterStep(
@@ -46,17 +46,17 @@ namespace WorkflowInCode.ConsoleTest.Examples
                new BasicEvent<dynamic>("Event3"),
                async (eventData) =>
                {
-                   await Workflow.PushInternalEvent("CollectEvents2or3");
+                   //await Workflow.PushInternalEvent("CollectEvents2or3");
+                   await CollectEvents2or3(eventData);
                });
 
-            Workflow.RegisterStep(
-               "Collect Events 2 or 3",
-               new BasicEvent<dynamic>("CollectEvents2or3"),
-               async (eventData) =>
-               {
-                   await new BasicCommand("SomeThing", "Data").Execute();
-                   await Workflow.End();
-               });
+         
+            async Task CollectEvents2or3(object eventData)
+            {
+                await new BasicCommand("After one event of Event2 and Event3 Matched", "Data").Execute();
+                await Workflow.RemoveExpectations();
+                await Workflow.End();//will throw exception if expectation list is not empty
+            }
         }
 
         private void SplitAndMerge()
@@ -67,15 +67,15 @@ namespace WorkflowInCode.ConsoleTest.Examples
                 new BasicEvent<dynamic>("Event1"),
                 async (eventData) =>
                 {
-                    await Workflow.AddEventExpectation("Event2");
-                    await Workflow.AddEventExpectation("Event3");
+                    await Workflow.ExpectNextStep("Event2 Received");
+                    await Workflow.ExpectNextStep("Event3 Received");
                 });
             Workflow.RegisterStep(
-               "Event3 Received",
+               "Event2 Received",
                new BasicEvent<dynamic>("Event2"),
                async (eventData) =>
                {
-                   await Workflow.PushInternalEvent("CollectEvents2and3");
+                   await CollectEvents2and3(eventData);
                });
 
             Workflow.RegisterStep(
@@ -83,21 +83,17 @@ namespace WorkflowInCode.ConsoleTest.Examples
                new BasicEvent<dynamic>("Event3"),
                async (eventData) =>
                {
-                   await Workflow.PushInternalEvent("CollectEvents2and3");
+                   await CollectEvents2and3(eventData);
                });
-
-            Workflow.RegisterStep(
-               "Collect Events 2 and 3",
-               new BasicEvent<dynamic>("CollectEvents2and3"),
-               async (eventData) =>
-               {
-                   CurrentInstance.ContextData.CollectorCounter += 1;
-                   if (CurrentInstance.ContextData.CollectorCounter == 2)
-                   {
-                       await new BasicCommand("SomeThing","Data").Execute();
-                       await Workflow.End();
-                   }
-               });
+            async Task CollectEvents2and3(object eventData)
+            {
+                CurrentInstance.ContextData.CollectorCounter += 1;
+                if (CurrentInstance.ContextData.CollectorCounter == 2)
+                {
+                    await new BasicCommand("SomeThing", "Data").Execute();
+                    await Workflow.End();
+                }
+            }
         }
 
         private void OrderedEventsWithBack()
@@ -105,14 +101,14 @@ namespace WorkflowInCode.ConsoleTest.Examples
             Workflow.RegisterStep(
                 "Event1 Received",
                 new BasicEvent<dynamic>("Event1"),
-                async (eventData) => await Workflow.AddEventExpectation("Event2"));
+                async (eventData) => await Workflow.ExpectNextStep("Event2 Received"));
             
             Workflow.RegisterStep(
                 "Event2 Received",
                 new BasicEvent<dynamic>("Event2"),
                 async (eventData) => 
                 {
-                    await Workflow.AddEventExpectation("Event3");
+                    await Workflow.ExpectNextStep("Event3 Received");
                 });
             
             Workflow.RegisterStep(
@@ -121,7 +117,7 @@ namespace WorkflowInCode.ConsoleTest.Examples
                 async (eventData) =>
                 {
                     if(eventData.Rejected)
-                        await Workflow.AddEventExpectation("Event1");
+                        await Workflow.ExpectNextStep("Event1 Received");
                     if(eventData.Accepted)
                         await Workflow.End();
                 });
@@ -133,12 +129,12 @@ namespace WorkflowInCode.ConsoleTest.Examples
             Workflow.RegisterStep(
                 "Event1 Received",
                 new BasicEvent<dynamic>("Event1"),
-                async (eventData) => await Workflow.AddEventExpectation("Event2"));
+                async (eventData) => await Workflow.ExpectNextStep("Event2 Received"));
             
             Workflow.RegisterStep(
                 "Event2 Received",
                 new BasicEvent<dynamic>("Event2"),
-                async (eventData) => await Workflow.AddEventExpectation("Event3"));
+                async (eventData) => await Workflow.ExpectNextStep("Event3 Received"));
             
             Workflow.RegisterStep(
                 "Event3 Received",
@@ -161,27 +157,24 @@ namespace WorkflowInCode.ConsoleTest.Examples
             Workflow.RegisterStep(
                 "Event1 Received",
                 new BasicEvent<dynamic>("Event1"),
-                async (eventData) => await Workflow.PushInternalEvent("CollectEvents", "Event1"));
+                async (eventData) => await CollectEvents(eventData));
             
             Workflow.RegisterStep(
                 "Event2 Received",
                 new BasicEvent<dynamic>("Event2"),
-                async (eventData) => await Workflow.PushInternalEvent("CollectEvents", "Event2"));
+                async (eventData) => await CollectEvents(eventData));
             
             Workflow.RegisterStep(
                 "Event3 Received",
                 new BasicEvent<dynamic>("Event3"),
-                async (eventData) => await Workflow.PushInternalEvent("CollectEvents", "Event3"));
+                async (eventData) => await CollectEvents(eventData));
             
-            Workflow.RegisterStep(
-               "Collect Events",
-               new InternalEvent<dynamic>("CollectEvents"),
-               async (eventData) =>
-               {
-                   CurrentInstance.ContextData.Counter += 1;
-                   if (CurrentInstance.ContextData.Counter == 3)
-                       await new BasicCommand("AfterAllEnded", "").Execute();
-               });
+            async Task CollectEvents(object eventData)
+            {
+                CurrentInstance.ContextData.Counter += 1;
+                if (CurrentInstance.ContextData.Counter == 3)
+                    await new BasicCommand("AfterAllEnded", "").Execute();
+            }
         }
     }
 }
