@@ -7,7 +7,7 @@ using WorkflowInCode.ConsoleTest.WorkflowEngine;
 
 namespace WorkflowInCode.ConsoleTest.Examples
 {
-    internal class ScenarioFive2 : WorkflowDefinition<dynamic>
+    internal class ScenarioFive3 : WorkflowDefinition<dynamic>
     {
         /*
 			* البداية هي دخول موظف جديد للشركة
