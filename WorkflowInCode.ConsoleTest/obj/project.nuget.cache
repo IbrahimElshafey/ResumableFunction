@@ -1,15 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "IJBUfpNwO0GDcYSEtu8i2JHBLPts7G9/v77znU9Tr2/YEYNGSdQ3aM88Wt2eLZQlrzkM1D2yi0WNzeBz91UdOQ==",
+  "dgSpecHash": "9bJI4BHN3fQ/P7e9OZqsTw83HH9+DAw9dePq50soTyz0O4p3y5+ZpWjKdHvKixJxkLj1rwYo61AgwuDpvqIT2A==",
   "success": true,
-  "projectFilePath": "C:\\Users\\Ibrahim\\source\\repos\\WorkflowInCode.ConsoleTest\\WorkflowInCode.ConsoleTest\\WorkflowInCode.ConsoleTest.csproj",
+  "projectFilePath": "D:\\Workflow\\WorkflowInCode\\WorkflowInCode.ConsoleTest\\WorkflowInCode.ConsoleTest.csproj",
   "expectedPackageFiles": [],
-  "logs": [
-    {
-      "code": "NU1803",
-      "level": "Warning",
-      "warningLevel": 1,
-      "message": "You are running the 'restore' operation with an 'http' source, 'http://nuget.syncfusion.com/nuget_xamarin/nuget/getsyncfusionpackages/xamarin/'. Support for 'http' sources will be removed in a future version."
-    }
-  ]
+  "logs": []
 }
