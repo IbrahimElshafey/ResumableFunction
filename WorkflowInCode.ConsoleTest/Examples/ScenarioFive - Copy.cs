@@ -7,7 +7,7 @@ using WorkflowInCode.ConsoleTest.WorkflowEngine;
 
 namespace WorkflowInCode.ConsoleTest.Examples
 {
-    internal class ScenarioFive : WorkflowDefinition<dynamic>
+    internal class ScenarioSix : WorkflowDefinition<dynamic>
     {
         private const string FirstDayPlan = "Ask Manager For First Day Plan";
         private const string ManagerMachineSpecefications = "Manager Submit Machine Specefications";
@@ -17,26 +17,25 @@ namespace WorkflowInCode.ConsoleTest.Examples
         private const string EmployeePreferences = "After Employee Preferences Response";
 
         /*
-* البداية هي دخول موظف جديد للشركة
-* بعد البداية يمكن تنفيذ العمليات
-* رسالة ترحيب بالموظف فيها أفراد إدارته
-* رسالة لمدير الموظف لتحديد مواصفات الجهاز المطلوبة للموظف الجديد
-* ارسال مهمة لقسم الأي تي لتخصيص جهاز مناسب للوظيفة بعد رد المدير بالمواصفات
-* إذا فشل في تخصيص جهاز يرسل طلب لقسم المشتريات لشراء جهاز
-* يرسل طلب للمدير بإمكانيات أفضل جهاز متاح
-* إذا جاءت موافقة المدير يتم الغاء طلب الشراء إذا لم يكن تمت الموافقة عليه
-* إذا جاءت موافقة قسم المشتريات يتم اعلام المدير
-* ارسال مهمة للمدير المباشر للموظف الجديد بتخصيص خطة عمل وتعريف بالشركة
-* بعد البداية يمكن تنفيذ العمليات
-* ارسال مهمة للمتقدم لمرفة تفضيلاته في وجبات الطعام وأوقات العمل
-* ارسال ردود المتقدم لقسم الموارد البشرية للمراجعة
-* بعد انتهاء التتابع الأول والثاني يتم
-* ارسال رسالة للمتقدم بتأكيد موعد أول يوم عمل
-* وبمواصفات الجهاز والبرامج عليه 
-* وخطة المدير لليوم الأول
-* ورأي قسم الموارد في أوقات العمل والوجبات
-*/
-        public ScenarioFive(IWorkflowEngine workflow, string name = null) : base(workflow, name)
+        * البداية هي دخول موظف جديد للشركة
+        * بعد البداية يمكن تنفيذ العمليات
+            * رسالة ترحيب بالموظف فيها أفراد إدارته
+            * رسالة لمدير الموظف لتحديد مواصفات الجهاز المطلوبة للموظف الجديد
+                * ارسال مهمة لقسم الأي تي لتخصيص جهاز مناسب للوظيفة بعد رد المدير بالمواصفات
+                    * إذا فشل في تخصيص جهاز يرسل طلب لقسم المشتريات لشراء جهاز
+                    * يرسل طلب للمدير بإمكانيات أفضل جهاز متاح أو بتخصيص الجهاز
+                        * إذا جاءت موافقة المدير يتم الغاء طلب الشراء إذا لم يكن تمت الموافقة عليه
+                        * إذا جاءت موافقة قسم المشتريات يتم اعلام المدير وقسم الأي تي
+            * ارسال مهمة للمدير المباشر للموظف الجديد بتخصيص خطة عمل وتعريف بالشركة
+            * ارسال مهمة للمتقدم لمرفة تفضيلاته في وجبات الطعام وأوقات العمل
+                * ارسال ردود المتقدم لقسم الموارد البشرية للمراجعة
+        * بعد انتهاء السابق
+            * ارسال رسالة للمتقدم بتأكيد موعد أول يوم عمل
+            * وبمواصفات الجهاز والبرامج عليه 
+            * وخطة المدير لليوم الأول
+            * ورأي قسم الموارد في أوقات العمل والوجبات
+        */
+        public ScenarioSix(IWorkflowEngine workflow, string name = null) : base(workflow, name)
         {
             
 
@@ -54,6 +53,12 @@ namespace WorkflowInCode.ConsoleTest.Examples
                {
                    await new BasicCommand("SendWelcomeOnBoardEmail", newEmployeeAcceptedEvent.EmployeeId).Execute();
 
+                   await Workflow.UserTask(
+                       taskName: ManagerMachineSpecefications,
+                       initiationCommand: new BasicCommand("AskManagerForMachineSpecefications", newEmployeeAcceptedEvent.EmployeeId),
+                       userActionEvent: new BasicEvent<dynamic>("ManagerSubmitForMachineSpecefications"),
+                       afterUserAction:async(eventdata)=>await Workflow.UserTask()
+                       );
                    await new BasicCommand("AskManagerForMachineSpecefications", newEmployeeAcceptedEvent.EmployeeId).Execute();
                    await Workflow.ExpectNextStep(ManagerMachineSpecefications);
 
