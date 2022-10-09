@@ -19,33 +19,36 @@
 */
 var empData = WaitEvent(NewEmpAdded);
 Command(WelcomeNewEmp,empData);
-var machineSpecs = Task(AskManagerAboutMachineSpecs,empData);
-askManagerAboutMachineSpecs.AfterActionDone(
-		var itResponse = Task(AskItForMachine,machineSpecs);
-		itResponse.AfterActionDone(
+var machineSpecsResponse = Task(AskManagerAboutMachineSpecs,empData);
+machineSpecsResponse.AfterDone(
+		var itResponse = Task(AskItForMachine,machineSpecsResponse);
+		itResponse.AfterDone(
 			if(itResponse.NoMachine)
 			{
 				var bestMachineResponse = Task(AskManagerToAcceptBestMachine,itResponse.BestMachineSpecs);
-				var askSalesForNewMachine = Task(askSalesForNewMachine,machineSpecs);
-				bestMachineResponse.AfterActionDone(
+				var askSalesForNewMachine = Task(askSalesForNewMachine,machineSpecsResponse);
+				bestMachineResponse.AfterDone(
 					if(bestMachineResponse.AcceptBestExist)
 						askSalesForNewMachine.Cancel();
+						TaskDone(machinReady);
 				);
-				askSalesForNewMachine.AfterActionDone(
+				askSalesForNewMachine.AfterDone(
 					if(askSalesForNewMachine.Accepted)
 						Command(NewMachineWillBePurchased);
+						TaskDone(machinReady);
 				);
 				
 			}
 			else if(itResponse.MachineReady)
-				Command(MachineReady,machineSpecs);
+				Command(MachineReady,machineSpecsResponse);
+				TaskDone(machinReady);
 		);
 	);
 var firstDayPlan = Task(AskManagerAboutFirstDayPlan,empData);
 var empPreferences = Task(AskEmpAboutPreferences,empData);
-empPreferences.AfterActionDone(
+empPreferences.AfterDone(
 	var hrReviewPrefrences = Task(HrReviewPrefrences,empPreferences);
 );
 
-AfterActionsDone(machineSpecs,firstDayPlan,empPreferences)
+AfterAllActionsDone(machinReady,firstDayPlan,empPreferences)
 	.Run(Command(NewWelcomeEmpDetailedMessage));
