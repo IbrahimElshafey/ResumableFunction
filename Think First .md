@@ -18,7 +18,7 @@
 		* ورأي قسم الموارد في أوقات العمل والوجبات
 */
 var empData = WaitEvent(NewEmpAdded);
-Command(WelcomeNewEmp,empData);
+var hrWelcomeNewEmp = Task(WelcomeNewEmp,empData);
 var machineSpecsResponse = Task(AskManagerAboutMachineSpecs,empData);
 machineSpecsResponse.AfterDone(
 		var itResponse = Task(AskItForMachine,machineSpecsResponse);
@@ -50,5 +50,5 @@ empPreferences.AfterDone(
 	var hrReviewPrefrences = Task(HrReviewPrefrences,empPreferences);
 );
 
-AfterAllActionsDone(machinReady,firstDayPlan,empPreferences)
+AfterAllActionsDone(hrWelcomeNewEmp,machinReady,firstDayPlan,empPreferences)
 	.Run(Command(NewWelcomeEmpDetailedMessage));

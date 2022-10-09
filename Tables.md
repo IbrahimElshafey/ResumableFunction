@@ -44,6 +44,12 @@
 * Workflow Instance Id (FK)
 * Step Id (FK)
 
+# Start Events (Contain events that will raise a new workflow instance)
+* Id
+* Event/s Id
+* Workflow Id
+* Event/s Collector
+
 # What engine do when an event is received?
 * When an event is received the engine will search for instances that wait for that type of event (Search in expected events table).
 * After search you will get list where each item contains(workflow instance,workfow step)
