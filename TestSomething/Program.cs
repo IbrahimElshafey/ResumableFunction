@@ -8,3 +8,8 @@ public class Program
         //Test loading class in dll and execute method in it
     }
 }
+
+public class EnumLike
+{
+
+}

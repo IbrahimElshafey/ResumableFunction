@@ -7,7 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Engine\" />
     <Folder Include="WorkflowInstance\" />
   </ItemGroup>
 
