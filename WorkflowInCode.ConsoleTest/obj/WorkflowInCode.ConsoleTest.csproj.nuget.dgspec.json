@@ -1,35 +1,35 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Ibrahim\\source\\repos\\WorkflowInCode.ConsoleTest\\WorkflowInCode.ConsoleTest\\WorkflowInCode.ConsoleTest.csproj": {}
+    "D:\\Workflow\\WorkflowInCode\\WorkflowInCode.ConsoleTest\\WorkflowInCode.ConsoleTest.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Ibrahim\\source\\repos\\WorkflowInCode.ConsoleTest\\WorkflowInCode.ConsoleTest\\WorkflowInCode.ConsoleTest.csproj": {
+    "D:\\Workflow\\WorkflowInCode\\WorkflowInCode.ConsoleTest\\WorkflowInCode.ConsoleTest.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Ibrahim\\source\\repos\\WorkflowInCode.ConsoleTest\\WorkflowInCode.ConsoleTest\\WorkflowInCode.ConsoleTest.csproj",
+        "projectUniqueName": "D:\\Workflow\\WorkflowInCode\\WorkflowInCode.ConsoleTest\\WorkflowInCode.ConsoleTest.csproj",
         "projectName": "WorkflowInCode.ConsoleTest",
-        "projectPath": "C:\\Users\\Ibrahim\\source\\repos\\WorkflowInCode.ConsoleTest\\WorkflowInCode.ConsoleTest\\WorkflowInCode.ConsoleTest.csproj",
-        "packagesPath": "C:\\Users\\Ibrahim\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Ibrahim\\source\\repos\\WorkflowInCode.ConsoleTest\\WorkflowInCode.ConsoleTest\\obj\\",
+        "projectPath": "D:\\Workflow\\WorkflowInCode\\WorkflowInCode.ConsoleTest\\WorkflowInCode.ConsoleTest.csproj",
+        "packagesPath": "C:\\Users\\imohamed\\.nuget\\packages\\",
+        "outputPath": "D:\\Workflow\\WorkflowInCode\\WorkflowInCode.ConsoleTest\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages",
-          "C:\\Microsoft\\Xamarin\\NuGet\\",
-          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\Ibrahim\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\imohamed\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "net6.0"
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+<<<<<<< HEAD
           "C:\\Program Files\\dotnet\\library-packs": {},
+=======
+>>>>>>> 6138699f302f3b3c6b6a2e7a2e25a641117526ec
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -63,7 +63,11 @@
               "privateAssets": "all"
             }
           },
+<<<<<<< HEAD
           "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.100\\RuntimeIdentifierGraph.json"
+=======
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.400\\RuntimeIdentifierGraph.json"
+>>>>>>> 6138699f302f3b3c6b6a2e7a2e25a641117526ec
         }
       }
     }
