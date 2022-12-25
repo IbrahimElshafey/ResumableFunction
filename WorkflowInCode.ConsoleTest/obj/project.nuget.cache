@@ -1,12 +1,15 @@
 {
   "version": 2,
-<<<<<<< HEAD
-  "dgSpecHash": "yTsp+2807bynAupIvq+2XHyaYtv1kRuO28OKIEPwzYBz6wY2UxSsvb+7Uf7BZMfdu3NPLLoR0roha3m9zj4LTg==",
-=======
   "dgSpecHash": "9bJI4BHN3fQ/P7e9OZqsTw83HH9+DAw9dePq50soTyz0O4p3y5+ZpWjKdHvKixJxkLj1rwYo61AgwuDpvqIT2A==",
->>>>>>> 6138699f302f3b3c6b6a2e7a2e25a641117526ec
   "success": true,
   "projectFilePath": "D:\\Workflow\\WorkflowInCode\\WorkflowInCode.ConsoleTest\\WorkflowInCode.ConsoleTest.csproj",
   "expectedPackageFiles": [],
-  "logs": []
+  "logs": [
+    {
+      "code": "Undefined",
+      "level": "Warning",
+      "warningLevel": 1,
+      "message": "Problem reading the cache file D:\\Workflow\\WorkflowInCode\\WorkflowInCode.ConsoleTest\\obj\\project.nuget.cache : Invalid property identifier character: <. Path 'version', line 3, position 0."
+    }
+  ]
 }
