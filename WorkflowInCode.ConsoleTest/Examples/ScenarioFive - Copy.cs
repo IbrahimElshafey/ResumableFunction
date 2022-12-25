@@ -7,6 +7,13 @@ using WorkflowInCode.ConsoleTest.WorkflowEngine;
 
 namespace WorkflowInCode.ConsoleTest.Examples
 {
+    //internal class ScenarioLoop : WorkflowDefinition<dynamic>
+    //{
+    //    public override void RegisterSteps()
+    //    {
+    //        throw new NotImplementedException();
+    //    }
+    //}
     internal class ScenarioSix : WorkflowDefinition<dynamic>
     {
         private const string FirstDayPlan = "Ask Manager For First Day Plan";
@@ -53,12 +60,12 @@ namespace WorkflowInCode.ConsoleTest.Examples
                {
                    await new BasicCommand("SendWelcomeOnBoardEmail", newEmployeeAcceptedEvent.EmployeeId).Execute();
 
-                   await Workflow.UserTask(
-                       taskName: ManagerMachineSpecefications,
-                       initiationCommand: new BasicCommand("AskManagerForMachineSpecefications", newEmployeeAcceptedEvent.EmployeeId),
-                       userActionEvent: new BasicEvent<dynamic>("ManagerSubmitForMachineSpecefications"),
-                       afterUserAction:async(eventdata)=>await Workflow.UserTask()
-                       );
+                   //await Workflow.UserTask(
+                   //    taskName: ManagerMachineSpecefications,
+                   //    initiationCommand: new BasicCommand("AskManagerForMachineSpecefications", newEmployeeAcceptedEvent.EmployeeId),
+                   //    userActionEvent: new BasicEvent<dynamic>("ManagerSubmitForMachineSpecefications"),
+                   //    afterUserAction:async(eventdata)=>await Workflow.UserTask()
+                   //    );
                    await new BasicCommand("AskManagerForMachineSpecefications", newEmployeeAcceptedEvent.EmployeeId).Execute();
                    await Workflow.ExpectNextStep(ManagerMachineSpecefications);
 
