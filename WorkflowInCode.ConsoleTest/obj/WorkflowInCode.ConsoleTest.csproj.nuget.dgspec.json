@@ -26,6 +26,10 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+<<<<<<< HEAD
+          "C:\\Program Files\\dotnet\\library-packs": {},
+=======
+>>>>>>> 6138699f302f3b3c6b6a2e7a2e25a641117526ec
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -59,7 +63,11 @@
               "privateAssets": "all"
             }
           },
+<<<<<<< HEAD
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.100\\RuntimeIdentifierGraph.json"
+=======
           "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.400\\RuntimeIdentifierGraph.json"
+>>>>>>> 6138699f302f3b3c6b6a2e7a2e25a641117526ec
         }
       }
     }
