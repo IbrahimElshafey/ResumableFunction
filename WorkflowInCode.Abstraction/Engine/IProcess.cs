@@ -6,21 +6,38 @@ using System.Threading.Tasks;
 
 namespace WorkflowInCode.Abstraction.Engine
 {
-    public interface IProcess
+    public interface IProcess<InputType, OutputType> : IProcess
     {
-        //wake up command,output event,
-        Task WakeUpCommand(IProcessInput input);
-        IEvent<IProcessOutput> OutEvent {  get; }
+        new IProcess<InputType, OutputType> Fire();
+        new ISubscribeEvent<OutputType> OutputEvent { get; }
+        new OutputType Output { get; }
+        new InputType Input { get; }
+        new Dictionary<string, Func<OutputType, bool>> OutputNodes { get; }
+
+    }
+
+    public interface IProcess: IWorkflowProcessingUnit
+    {
+        IProcess Fire();
+        IProcess Fire(IProcessInput input);
+        IProcess Cancel();
+        ISubscribeEvent<IProcessOutput> OutputEvent {  get; }
         IProcessOutput Output {  get; }
         IProcessInput Input {  get; }
 
-        ProcessOutputNode OutputNodes { get; }
+        Dictionary<string, ProcessOutputNode> OutputNodes { get; }
+
+        ProcessOutputNode Any => null;
     }
 
-    public interface ProcessOutputNode
+    public interface IWorkflowProcessingUnit
     {
-        string Name { get; }
-        void SetOutput(IProcessOutput processOutput);
-        bool IsActive();
+
     }
+
+    public interface ProcessOutputNode: IWorkflowProcessingUnit
+    {
+
+    }
+
 }

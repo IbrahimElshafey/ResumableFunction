@@ -1,8 +1,8 @@
 ﻿namespace WorkflowInCode.Abstraction.Engine
 {
-    public interface IEvent<T>
+    public interface ISubscribeEvent<T>
     {
         T EventData { get; }
-        void Fire();
+        void Subscribe();
     }
 }

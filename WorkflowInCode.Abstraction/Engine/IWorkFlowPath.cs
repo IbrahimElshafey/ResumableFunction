@@ -1,10 +1,8 @@
 ﻿namespace WorkflowInCode.Abstraction.Engine
 {
-    public interface IWorkFlowPath
+    public interface IWorkFlowPath: IWorkflowProcessingUnit
     {
-        IWorkFlowPath ThenProcess<InputType, OutputType>(IProcess process, Func<OutputType, bool> nextStepFilter);
-        void EndPath<InputType, OutputType>(IProcess process);
-
-        void ThenParallelPaths(params IWorkFlowPath[] paths);
+        IWorkFlowPath End();
+        IWorkFlowPath Then(IWorkflowProcessingUnit node);
     }
 }
