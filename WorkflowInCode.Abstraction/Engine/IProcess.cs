@@ -18,8 +18,9 @@ namespace WorkflowInCode.Abstraction.Engine
 
     public interface IProcess: IWorkflowProcessingUnit
     {
-        IProcess Fire();
-        IProcess Fire(IProcessInput input);
+        IProcess WakeUp();
+        IProcess WakeUp(IProcessInput input);
+        IProcess WakeUp(object input);
         IProcess Cancel();
         ISubscribeEvent<IProcessOutput> OutputEvent {  get; }
         IProcessOutput Output {  get; }
@@ -27,7 +28,6 @@ namespace WorkflowInCode.Abstraction.Engine
 
         Dictionary<string, ProcessOutputNode> OutputNodes { get; }
 
-        ProcessOutputNode Any => null;
     }
 
     public interface IWorkflowProcessingUnit

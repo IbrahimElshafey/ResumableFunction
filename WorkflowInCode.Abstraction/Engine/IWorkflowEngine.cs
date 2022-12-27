@@ -5,32 +5,48 @@ namespace WorkflowInCode.Abstraction.Engine
     public static class WorkflowEngine
     {
         public static IWorkFlowPath Path(string path, params IWorkflowProcessingUnit[] nodes) { return null; }
-        public static IWorkFlowPath Path(string path, IWorkflowProcessingUnit nodes) { return null; }
-        public static IWorkflowProcessingUnit SameTime(string timeName, params IWorkflowProcessingUnit[] processes) { return null; }
-        public static IWorkflowProcessingUnit SameTime(string timeName,WaitOption waitOption, params IWorkflowProcessingUnit[] processes) { return null; }
-        public static IWorkflowProcessingUnit AnyOf(string name,params IWorkflowProcessingUnit[] nodes) { return null; }
-        public static IWorkflowProcessingUnit Selct(string name,WaitOption waitOption,params IWorkflowProcessingUnit[] nodes) { return null; }
-        public static IWorkflowProcessingUnit StartEvent<T>(ISubscribeEvent<T> subscribeEvent) { return null; }
+        public static IWorkFlowPath GoToPath(string path,bool fromStart=true) { return null; }
+        public static IWorkflowProcessingUnit SameStart(string timeName,Selection waitOption, params IWorkflowProcessingUnit[] processes) { return null; }
+        public static IWorkflowProcessingUnit SelectOf(string name, Selection waitOption, params IWorkflowProcessingUnit[] nodes) { return null; }
     }
 
-    public class WaitOption
+    public class Selection
     {
-        public static WaitOption One = null;
-        public static WaitOption ZeroOrOne = null;
-        public static WaitOption OneOrMore = null;
-        public static WaitOption All = null;
-        public static WaitOption InRange(int min, int max) => null;
+        /// <summary>
+        /// Wait until any path complete and cancel others
+        /// </summary>
+        public static Selection FirstOneAndCancelOthers = nameof(FirstOneAndCancelOthers);
+        /// <summary>
+        /// Wait until any path complete
+        /// </summary>
+        public static Selection FirstOne = nameof(FirstOne);
+        public static Selection ZeroOrFirstOne = nameof(ZeroOrFirstOne);
+        /// <summary>
+        /// Wait for all paths to finish
+        /// </summary>
+        public static Selection AllCompleted = nameof(AllCompleted);
+     
+        /// <summary>
+        /// Wait all paths where first step successed
+        /// </summary>
+        public static Selection StartedPaths = nameof(StartedPaths);
+        public static Selection InRange(int min, int max) => null;
         private string _Name;
 
-        private WaitOption(string name)
+        private Selection(string name)
         {
             _Name = name;
         }
         public override bool Equals(object? obj)
         {
-            if (obj is WaitOption x) 
+            if (obj is Selection x) 
                 obj = x._Name;
             return _Name.Equals(obj);
+        }
+
+        public static implicit operator Selection(string name)
+        {
+            return new Selection(name);
         }
     }
 }

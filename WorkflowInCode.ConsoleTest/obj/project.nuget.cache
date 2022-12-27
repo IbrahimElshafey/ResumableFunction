@@ -4,12 +4,5 @@
   "success": true,
   "projectFilePath": "D:\\Workflow\\WorkflowInCode\\WorkflowInCode.ConsoleTest\\WorkflowInCode.ConsoleTest.csproj",
   "expectedPackageFiles": [],
-  "logs": [
-    {
-      "code": "Undefined",
-      "level": "Warning",
-      "warningLevel": 1,
-      "message": "Problem reading the cache file D:\\Workflow\\WorkflowInCode\\WorkflowInCode.ConsoleTest\\obj\\project.nuget.cache : Invalid property identifier character: <. Path 'version', line 3, position 0."
-    }
-  ]
+  "logs": []
 }

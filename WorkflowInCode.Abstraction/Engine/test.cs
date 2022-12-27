@@ -9,25 +9,32 @@ namespace WorkflowInCode.Abstraction.Engine
         private readonly IFakeProcess Manager3Approval;
         private readonly IFakeProcess2 Applicant;
 
-        public test(IFakeProcess p1, IFakeProcess p2, IFakeProcess p3, IFakeProcess2 applicant)
+        public test(IFakeProcess p1, IFakeProcess p2, IFakeProcess p3, IFakeProcess2 ap)
         {
-            this.Manager1Approval = p1;
-            this.Manager2Approval = p2;
-            this.Manager3Approval = p3;
-            this.Applicant = applicant;
+            Manager1Approval = p1;
+            Manager2Approval = p2;
+            Manager3Approval = p3;
+            Applicant = ap;
             ////Sequence
 
-            Path("AcceptancePath", StartEvent(Applicant.OutputEvent), Manager1Approval.Fire().Accept, Manager2Approval.Fire().Accept, Manager3Approval.Fire().Accept);
+            Path("AcceptancePath",
+                Applicant.Submit, 
+                Manager1Approval.WakeUp().Accept,
+                Manager2Approval.WakeUp().Accept, 
+                Manager3Approval.WakeUp().Accept);
             //Path("Acceptance",Applicant.Start,Manager1.Accept,Manager2.Accept,Manager3.Accept)
-            Path("Rejection", AnyOf("AnyRejection", Manager1Approval.Reject, Manager2Approval.Reject, Manager3Approval.Reject)).End();
+            Path("Rejection", 
+                SelectOf("AnyRejection",Selection.FirstOne, 
+                    Manager1Approval.Reject,
+                    Manager2Approval.Reject,
+                    Manager3Approval.Reject),
+                    Applicant.WakeUp("Rejected"));
             //any rework the process start again
-            Path("Rework", AnyOf("AnyRework", Manager1Approval.Rework, Manager2Approval.Rework, Manager3Approval.Rework)).Then(Applicant.Fire().ReSubmit);
+            Path("Rework", SelectOf("AnyRework", Selection.FirstOne, Manager1Approval.Rework, Manager2Approval.Rework, Manager3Approval.Rework, Applicant.WakeUp().ReSubmit));
 
             //Custom rework path
             //Path("Manager2Rework",Manager2.Rework,Applicant.Start,Manager2.Any)
-            Path("Manager2Rework", Manager2Approval.Rework)
-                .Then(Applicant.Fire().ReSubmit)
-                .Then(Manager2Approval.Fire().Any);
+            Path("Manager2Rework", Manager2Approval.Rework, Applicant.WakeUp().ReSubmit, Manager2Approval.WakeUp());
 
 
             //Pattern 1 (Sequence)
@@ -37,19 +44,20 @@ namespace WorkflowInCode.Abstraction.Engine
             //Pattern 2(Parallel Split)
             //After completion of the capture enrolment task, run the create student profile and issue enrolment confirmation tasks simultaneously.
             //Path("EnrolmentPath",Enrolment.Finshed,SameTime(CreateProfile.Done,EnrollmentConfirmation.Done))
-            Path("EnrolmentPath", Manager1Approval.Fire().Accept)
-                .Then(SameTime("TwoManagersApproval", Manager2Approval.Fire().Accept, Manager3Approval.Fire().Accept));
+            Path("EnrolmentPath", 
+                Manager1Approval.WakeUp().Accept,
+                SameStart("TwoManagersApproval", Selection.AllCompleted, Manager2Approval.WakeUp().Accept, Manager3Approval.WakeUp().Accept));
 
             //Pattern 3 (Synchronization) (Do Step3 only after both Step1 and Step2 are completed)
             //Path("Process",SameTime(Step1.Fire().Done,Step2.Fire().Done),Step3.Fire().Done)
             //Path("Fail",Any(Step1.Fail,Step2.Fail,Step3.Fail),ErrorHappened.Fire().Done)
-            Path("Approval", SameTime("TwoManagersStart", WaitOption.All, Manager1Approval.Fire(), Manager2Approval.Fire()), Manager3Approval.Fire());
+            Path("Approval", SameStart("TwoManagersStart", Selection.AllCompleted, Manager1Approval.WakeUp(), Manager2Approval.WakeUp()), Manager3Approval.WakeUp());
 
 
             //Pattern 4 (Exclusive Choice) [after a, do b or c]
             //this is by default the branching nodes
             //Path("Process",A.Done,SameTime(Optional(1,B.Done,C.Done)))
-            Path("Process", Manager1Approval.Fire().Accept, SameTime("TwoManagersAndOneIsSufficent", WaitOption.One, Manager2Approval.Fire(), Manager3Approval.Fire()));
+            Path("Process", Manager1Approval.WakeUp().Accept, SameStart("TwoManagersAndOneIsSufficent", Selection.FirstOne, Manager2Approval.WakeUp(), Manager3Approval.WakeUp()));
 
 
             //Pattern 5 (Simple Merge) [as pattern 3 Synchronization]
@@ -59,8 +67,8 @@ namespace WorkflowInCode.Abstraction.Engine
             //Path("despatch-police",Start.PoliceRequired,Police.Any)
             //Path("despatch-ambulance",Start.AmbulanceRequired,Ambulance.Any)
             //Path("despatch-fire",Start.FireRequired,Fire.Any)
-            Path("Manager2", StartEvent(Applicant.OutputEvent), Manager1Approval.Fire().Manager2Activated, Manager2Approval.Fire().Accept);
-            Path("Manager3", Manager1Approval.Manager3Activated, Manager3Approval.Fire().Accept);
+            Path("Manager2", Applicant.Submit, Manager1Approval.WakeUp().Manager2Activated, Manager2Approval.WakeUp().Accept);
+            Path("Manager3", Manager1Approval.Manager3Activated, Manager3Approval.WakeUp().Accept);
 
             //Path("emergency call",Call.Received,
             //SameTime("AfterCall",
@@ -89,6 +97,14 @@ namespace WorkflowInCode.Abstraction.Engine
 
             */
 
+            Path("Request Approval", Applicant.Submit, Manager1Approval.WakeUp().Accept,
+                SameStart(
+                    "Manager2&3",
+                    Selection.StartedPaths,
+                    Path("Manager2Path", Manager2Approval.WakeUp().CanAccept, Manager2Approval.Accept),
+                    Path("Manager3Path", Manager3Approval.WakeUp().CanAccept, Manager3Approval.Accept)
+                    ));
+
             //Pattern 8(Multi - Merge) as simple merge 5
 
             /* Pattern 9 (Structured Discriminator)(1-out-of-M join.)
@@ -100,6 +116,16 @@ namespace WorkflowInCode.Abstraction.Engine
              *  SameTime("Check",CheckBreathing.Done,CheckPulse.Done)
              */
 
+            Path("Request Approval", Applicant.Submit, Manager1Approval.WakeUp().Accept,
+                SameStart(
+                    "First Manager Approval",
+                    Selection.FirstOneAndCancelOthers,
+                    Manager2Approval.WakeUp().Accept,
+                    Manager3Approval.WakeUp().Accept)
+                );
+            Path("Any Manager Reject",
+                SelectOf("Any Rejection", Selection.FirstOne, Manager1Approval.Reject, Manager2Approval.Reject, Manager3Approval.Reject), Applicant.WakeUp().ReSubmit,
+                GoToPath("Request Approval"));
             //Optional operator
             //Path("AcceptancePath",Manager1.Accept,Optional(Manager2.Accept),Manager3.Accept)
             //Order opertaor for SameTime tasks
@@ -153,12 +179,16 @@ namespace WorkflowInCode.Abstraction.Engine
 
     public interface IFakeProcess2 : IProcess
     {
-        new IFakeProcess2 Fire();
+        new IFakeProcess2 WakeUp();
+        
+
         ProcessOutputNode ReSubmit => null;
+        ProcessOutputNode Submit => null;
     }
     public interface IFakeProcess : IProcess
     {
-        new IFakeProcess Fire();
+        new IFakeProcess WakeUp();
+        ProcessOutputNode CanAccept => null;
         ProcessOutputNode Accept => null;
         ProcessOutputNode Reject => null;
         ProcessOutputNode Rework => null;

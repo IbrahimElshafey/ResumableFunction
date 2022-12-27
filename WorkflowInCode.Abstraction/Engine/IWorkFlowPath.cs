@@ -3,6 +3,6 @@
     public interface IWorkFlowPath: IWorkflowProcessingUnit
     {
         IWorkFlowPath End();
-        IWorkFlowPath Then(IWorkflowProcessingUnit node);
+        //IWorkFlowPath Then(IWorkflowProcessingUnit node);
     }
 }
