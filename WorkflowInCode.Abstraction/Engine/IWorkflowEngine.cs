@@ -6,8 +6,7 @@ namespace WorkflowInCode.Abstraction.Engine
     {
         public static IWorkFlowPath Path(string path, params IWorkflowProcessingUnit[] nodes) { return null; }
         public static IWorkFlowPath GoToPath(string path,bool fromStart=true) { return null; }
-        public static IWorkflowProcessingUnit SameStart(string timeName,Selection waitOption, params IWorkflowProcessingUnit[] processes) { return null; }
-        public static IWorkflowProcessingUnit SelectOf(string name, Selection waitOption, params IWorkflowProcessingUnit[] nodes) { return null; }
+        public static IWorkflowProcessingUnit Combine(string timeName,Selection waitOption, params IWorkflowProcessingUnit[] processes) { return null; }
     }
 
     public class Selection
