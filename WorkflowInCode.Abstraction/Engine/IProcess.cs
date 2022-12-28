@@ -19,11 +19,11 @@ namespace WorkflowInCode.Abstraction.Engine
 
     public interface IProcess: IWorkflowProcessingUnit
     {
-        [WaitResult]
+        [ProcessNode]
         IProcess WakeUp();
-        [WaitResult]
+        [ProcessNode]
         IProcess WakeUp(IProcessInput input);
-        [WaitResult]
+        [ProcessNode]
         IProcess WakeUp(object input);
         IProcess Cancel();
         ISubscribeEvent<IProcessOutput> OutputEvent {  get; }
@@ -34,16 +34,6 @@ namespace WorkflowInCode.Abstraction.Engine
 
         ProcessOutputNode NoWait { get; }
         ProcessOutputNode Anything { get; }
-
-    }
-
-    public interface IWorkflowProcessingUnit
-    {
-
-    }
-
-    public interface ProcessOutputNode: IWorkflowProcessingUnit
-    {
 
     }
 

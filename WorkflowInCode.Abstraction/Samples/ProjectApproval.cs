@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using WorkflowInCode.Abstraction.Engine;
-using static WorkflowInCode.Abstraction.Engine.WorkflowEngine;
+using static WorkflowInCode.Abstraction.Engine.Workflow;
 namespace WorkflowInCode.Abstraction.Samples
 {
     /*
@@ -21,22 +21,28 @@ namespace WorkflowInCode.Abstraction.Samples
         public ProjectApproval2(Project p, ManagerResponse po, ManagerResponse ps, ManagerResponse pm)
         {
             Project = p;
-            ProjectOwner=po;
-            ProjectSponsor=ps;
-            ProjectManager=pm;
-            //
-            Path("Project Approval", 
+            ProjectOwner = po;
+            ProjectSponsor = ps;
+            ProjectManager = pm;
+            DefineProcesses(() => new IProcess[]
+            {
+                Project,
+                ProjectOwner,
+                ProjectSponsor,
+                ProjectManager
+            });
+            DefinePaths(
+            () => Path("Project Approval",
                 Project.Created,
-                ProjectOwner.WakeUp().Accept,
-                ProjectSponsor.WakeUp().Accept,
-                ProjectManager.WakeUp().Accept);
-
-            Path("Project Rejected",
-                Combine("Any Manager Send Reject", Selection.FirstOne, 
+                ProjectOwner.AskApproval().Accept,
+                ProjectSponsor.AskApproval().Accept,
+                ProjectManager.AskApproval().Accept),
+            () => Path("Project Rejected",
+                Combine("Any Manager Send Reject", Selection.FirstOne,
                     ProjectOwner.Reject,
                     ProjectSponsor.Reject,
                     ProjectManager.Reject),
-                Project.InformAllAboutRejection());
+                Project.InformAllAboutRejection()));
         }
     }
 }

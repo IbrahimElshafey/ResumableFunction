@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 using WorkflowInCode.Abstraction.Engine;
-using static WorkflowInCode.Abstraction.Engine.WorkflowEngine;
+using static WorkflowInCode.Abstraction.Engine.Workflow;
 namespace WorkflowInCode.Abstraction.Samples
 {
     public class test

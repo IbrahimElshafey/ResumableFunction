@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using WorkflowInCode.Abstraction.Engine;
-using static WorkflowInCode.Abstraction.Engine.WorkflowEngine;
+using static WorkflowInCode.Abstraction.Engine.Workflow;
 namespace WorkflowInCode.Abstraction.Samples
 {
     /*
@@ -29,9 +29,9 @@ namespace WorkflowInCode.Abstraction.Samples
             //
             Path("Project Approval",
                 Project.Created,
-                ProjectOwner.WakeUp().Accept,
-                ProjectSponsor.WakeUp().NoWait,
-                ProjectManager.WakeUp().Accept);
+                ProjectOwner.AskApproval().Accept,
+                ProjectSponsor.AskApproval().NoWait,
+                ProjectManager.AskApproval().Accept);
 
             Path("Project Rejected",
                 Combine("Any Manager Send Reject", Selection.FirstOne,
@@ -44,8 +44,10 @@ namespace WorkflowInCode.Abstraction.Samples
 
     public interface ManagerResponse : IProcess
     {
-        [WaitResult]
-        new ManagerResponse WakeUp();
+        [ProcessNode(WaitEvent = null)]
+        ManagerResponse AskApproval();
+        
+        [ProcessOutputNode(nameof(AskApproval))]
         ProcessOutputNode Accept { get; }
         ProcessOutputNode Reject { get; }
 
@@ -58,7 +60,18 @@ namespace WorkflowInCode.Abstraction.Samples
     }
 
     [AttributeUsage(AttributeTargets.Method, Inherited = false, AllowMultiple = false)]
-    sealed class WaitResultAttribute : Attribute
+    sealed class ProcessNodeAttribute : Attribute
     {
+        public Type WaitEvent { get; set; }
+    }
+
+    [AttributeUsage(AttributeTargets.Property, Inherited = true, AllowMultiple = true)]
+    sealed class ProcessOutputNodeAttribute : Attribute
+    {
+        public string ProcessNodeName { get; }
+        public ProcessOutputNodeAttribute(string processNodeName)
+        {
+            ProcessNodeName = processNodeName;
+        }
     }
 }
