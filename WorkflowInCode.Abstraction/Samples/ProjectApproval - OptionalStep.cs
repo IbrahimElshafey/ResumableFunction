@@ -16,62 +16,72 @@ namespace WorkflowInCode.Abstraction.Samples
          */
     public class ProjectApproval
     {
-        public Project Project;
-        public ManagerResponse ProjectOwner;
-        public ManagerResponse ProjectSponsor;
-        public ManagerResponse ProjectManager;
-        public ProjectApproval(Project p, ManagerResponse po, ManagerResponse ps, ManagerResponse pm)
+        public ProjectSubmitter ProjectSubmitter;
+        public ManagerApprovalProcess ProjectOwner;
+        public ManagerApprovalProcess ProjectSponsor;
+        public ManagerApprovalProcess ProjectManager;
+        public ProjectApproval(ProjectSubmitter p, ManagerApprovalProcess po, ManagerApprovalProcess ps, ManagerApprovalProcess pm)
         {
-            Project = p;
+            ProjectSubmitter = p;
             ProjectOwner = po;
             ProjectSponsor = ps;
             ProjectManager = pm;
             //
             Path("Project Approval",
-                Project.Created,
-                ProjectOwner.AskApproval().Accept,
-                ProjectSponsor.AskApproval().NoWait,
-                ProjectManager.AskApproval().Accept);
+                ProjectSubmitter.Created,
+                Path("",
+                    ProjectOwner.AskApproval(ProjectSubmitter.Project).Accepted,
+                    ProjectSponsor.AskApproval(ProjectSubmitter.Project)).Parallel(),
+                ProjectManager.AskApproval(ProjectSubmitter.Project).Accepted).Sequential();
 
             Path("Project Rejected",
-                Combine("Any Manager Send Reject", Selection.FirstOne,
-                    ProjectOwner.Reject,
-                    ProjectSponsor.Reject,
-                    ProjectManager.Reject),
-                Project.InformAllAboutRejection()); ;
+                Path("Any Manager Send Reject", ProjectOwner.Rejected,
+                    ProjectSponsor.Rejected,
+                    ProjectManager.Rejected),
+                ProjectSubmitter.InformAllAboutRejection());
         }
     }
 
-    public interface ManagerResponse : IProcess
+    public interface ManagerApprovalProcess : IWorkFlowProcess
     {
-        [ProcessNode(WaitEvent = null)]
-        ManagerResponse AskApproval();
+       
+
+        ManagerApprovalProcess AskApproval(Project project);
+
         
-        [ProcessOutputNode(nameof(AskApproval))]
-        ProcessOutputNode Accept { get; }
-        ProcessOutputNode Reject { get; }
+        ManagerApprovalProcess SendApproval(Project project);
+
+        
+        bool Accepted { get; }
+
+        
+        bool Rejected { get; }
 
     }
-    public interface Project : IProcess
+    public interface ProjectSubmitter : IWorkFlowProcess
     {
-        public Project Created { get; }
+        [PersistData]
+        Project Project { get; }
+        ProjectSubmitter Create(Project project);
 
-        ProcessOutputNode InformAllAboutRejection();
+        
+        bool Created { get; }
+
+        
+        bool InformAllAboutRejection();
     }
 
-    [AttributeUsage(AttributeTargets.Method, Inherited = false, AllowMultiple = false)]
-    sealed class ProcessNodeAttribute : Attribute
+    public class ProjectApprovalResult
     {
-        public Type WaitEvent { get; set; }
+        public int ProjectId { get; set; }
+        public bool Accepted { get; set; }
+        public bool Rejected { get; set; }
     }
 
-    [AttributeUsage(AttributeTargets.Property, Inherited = true, AllowMultiple = true)]
-    sealed class ProcessOutputNodeAttribute : Attribute
+    public class Project
     {
-        public string ProcessNodeName { get; }
-        public ProcessOutputNodeAttribute(string processNodeName)
-        {
-            ProcessNodeName = processNodeName;
-        }
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public DateTime DueDate { get; set; }
     }
 }

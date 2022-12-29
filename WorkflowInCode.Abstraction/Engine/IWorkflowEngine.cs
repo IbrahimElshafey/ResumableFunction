@@ -6,10 +6,14 @@ namespace WorkflowInCode.Abstraction.Engine
 {
     public static class Workflow
     {
-        public static IWorkFlowPath DefineProcesses(Expression<Func<IProcess[]>> processes) { return null; }
-        public static IWorkFlowPath DefinePaths(params Expression<Func<IWorkFlowPath>>[] paths) { return null; }
-        public static IWorkFlowPath Path(string path, params IWorkflowProcessingUnit[] nodes) { return null; }
-        public static IWorkFlowPath GoToPath(string path,bool fromStart=true) { return null; }
-        public static IWorkflowProcessingUnit Combine(string timeName,Selection waitOption, params IWorkflowProcessingUnit[] processes) { return null; }
+        public static Input InputOf<Input, Output>(Func<Input,Output> func) { return default; }
+        public static IWorkFlowPath Path(string path, params object[] nodes) { return null; }
+    }
+
+    public class WorkflowDefinition 
+    {
+        public void DefineProcesses(Expression<Func<object[]>> processes) { }
+        public void DefinePaths(params Expression<Func<IWorkFlowPath>>[] paths) { }
     }
 }
+    

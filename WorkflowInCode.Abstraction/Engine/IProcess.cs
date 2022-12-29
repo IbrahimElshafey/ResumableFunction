@@ -1,40 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using WorkflowInCode.Abstraction.Samples;
 
 namespace WorkflowInCode.Abstraction.Engine
 {
-    public interface IProcess<InputType, OutputType> : IProcess
+    public interface IWorkFlowProcess
     {
-        new IProcess<InputType, OutputType> Fire();
-        new ISubscribeEvent<OutputType> OutputEvent { get; }
-        new OutputType Output { get; }
-        new InputType Input { get; }
-        new Dictionary<string, Func<OutputType, bool>> OutputNodes { get; }
 
+        //public abstract void DefineTask(
+        //    Expression<Func<object, object>> initiateTaskFunc,
+        //    Expression<Func<object, object>> replyToTaskFunc,
+        //    Expression<bool[]> outPutNodes);
     }
 
-    public interface IProcess: IWorkflowProcessingUnit
+    public record LongRunningTask<Input, Output>(
+        Func<Input, Output> Initiate,
+        Func<Input, Output> Reply,
+        Output Data,
+        Expression<Func<Input,Output,bool>> MatchingFunction)
     {
-        [ProcessNode]
-        IProcess WakeUp();
-        [ProcessNode]
-        IProcess WakeUp(IProcessInput input);
-        [ProcessNode]
-        IProcess WakeUp(object input);
-        IProcess Cancel();
-        ISubscribeEvent<IProcessOutput> OutputEvent {  get; }
-        IProcessOutput Output {  get; }
-        IProcessInput Input {  get; }
-
-        Dictionary<string, ProcessOutputNode> OutputNodes { get; }
-
-        ProcessOutputNode NoWait { get; }
-        ProcessOutputNode Anything { get; }
-
     }
 
 }

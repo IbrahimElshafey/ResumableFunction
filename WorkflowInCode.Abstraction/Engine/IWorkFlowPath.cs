@@ -1,8 +1,16 @@
 ﻿namespace WorkflowInCode.Abstraction.Engine
 {
-    public interface IWorkFlowPath: IWorkflowProcessingUnit
+    public interface IWorkFlowCombination
     {
-        IWorkFlowPath End();
-        //IWorkFlowPath Then(IWorkflowProcessingUnit node);
+        bool RunAll { get; set; }
+    }
+    public interface IWorkFlowPath
+    {
+        IWorkFlowPath AllMustStart();
+        IWorkFlowPath AllMustFinish();
+        IWorkFlowPath FirstMatchAndCancelOthers();
+        IWorkFlowPath FirstMatch();
+        IWorkFlowPath Parallel();
+        IWorkFlowPath Sequential();
     }
 }

@@ -14,34 +14,34 @@ namespace WorkflowInCode.Abstraction.Samples
          */
     public class ProjectApproval2
     {
-        public Project Project;
-        public ManagerResponse ProjectOwner;
-        public ManagerResponse ProjectSponsor;
-        public ManagerResponse ProjectManager;
-        public ProjectApproval2(Project p, ManagerResponse po, ManagerResponse ps, ManagerResponse pm)
+        public ProjectSubmitter Project;
+        public ManagerApprovalProcess ProjectOwner;
+        public ManagerApprovalProcess ProjectSponsor;
+        public ManagerApprovalProcess ProjectManager;
+        public ProjectApproval2(ProjectSubmitter p, ManagerApprovalProcess po, ManagerApprovalProcess ps, ManagerApprovalProcess pm)
         {
             Project = p;
             ProjectOwner = po;
             ProjectSponsor = ps;
             ProjectManager = pm;
-            DefineProcesses(() => new IProcess[]
+            var wf = new WorkflowDefinition();
+            wf.DefineProcesses(() => new IWorkFlowProcess[]
             {
                 Project,
                 ProjectOwner,
                 ProjectSponsor,
                 ProjectManager
             });
-            DefinePaths(
+            wf.DefinePaths(
             () => Path("Project Approval",
                 Project.Created,
-                ProjectOwner.AskApproval().Accept,
-                ProjectSponsor.AskApproval().Accept,
-                ProjectManager.AskApproval().Accept),
+                ProjectOwner.AskApproval().Accepted,
+                ProjectSponsor.AskApproval().Accepted,
+                ProjectManager.AskApproval().Accepted),
             () => Path("Project Rejected",
-                Combine("Any Manager Send Reject", Selection.FirstOne,
-                    ProjectOwner.Reject,
-                    ProjectSponsor.Reject,
-                    ProjectManager.Reject),
+                Path("Any Manager Send Reject", ProjectOwner.Rejected,
+                    ProjectSponsor.Rejected,
+                    ProjectManager.Rejected),
                 Project.InformAllAboutRejection()));
         }
     }
