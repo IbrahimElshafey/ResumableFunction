@@ -14,35 +14,37 @@ namespace WorkflowInCode.Abstraction.Samples
          */
     public class ProjectApproval2
     {
-        public ProjectSubmitter Project;
-        public ManagerApprovalProcess ProjectOwner;
-        public ManagerApprovalProcess ProjectSponsor;
-        public ManagerApprovalProcess ProjectManager;
-        public ProjectApproval2(ProjectSubmitter p, ManagerApprovalProcess po, ManagerApprovalProcess ps, ManagerApprovalProcess pm)
+        public ProjectRequest ProjectRequest;
+        public ManagerApproval OwnerApproval;
+        public ManagerApproval SponsorApproval;
+        public ManagerApproval ManagerApproval;
+        public ProjectApproval2(ProjectRequest p, ManagerApproval po, ManagerApproval ps, ManagerApproval pm)
         {
-            Project = p;
-            ProjectOwner = po;
-            ProjectSponsor = ps;
-            ProjectManager = pm;
+            ProjectRequest = p;
+            OwnerApproval = po;
+            SponsorApproval = ps;
+            ManagerApproval = pm;
             var wf = new WorkflowDefinition();
-            wf.DefineProcesses(() => new IWorkFlowProcess[]
+            wf.DefineProcesses(() => new LongRunningTask[]
             {
-                Project,
-                ProjectOwner,
-                ProjectSponsor,
-                ProjectManager
+                ProjectRequest,
+                OwnerApproval,
+                SponsorApproval,
+                ManagerApproval
             });
+
             wf.DefinePaths(
             () => Path("Project Approval",
-                Project.Created,
-                ProjectOwner.AskApproval().Accepted,
-                ProjectSponsor.AskApproval().Accepted,
-                ProjectManager.AskApproval().Accepted),
+                ProjectRequest.Result.Created,
+                OwnerApproval.Initiate(ProjectRequest.Project).Result.Accepted,
+                SponsorApproval.Initiate(ProjectRequest.Project).Result.Accepted,
+                ManagerApproval.Initiate(ProjectRequest.Project).Result.Accepted),
             () => Path("Project Rejected",
-                Path("Any Manager Send Reject", ProjectOwner.Rejected,
-                    ProjectSponsor.Rejected,
-                    ProjectManager.Rejected),
-                Project.InformAllAboutRejection()));
+                Path("Any Manager Send Reject",
+                    OwnerApproval.Result.Rejected,
+                    SponsorApproval.Result.Rejected,
+                    ManagerApproval.Result.Rejected).FirstMatch(),
+                ProjectRequest.InformAllAboutRejection()));
         }
     }
 }

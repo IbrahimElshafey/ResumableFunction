@@ -12,7 +12,7 @@ namespace WorkflowInCode.Abstraction.Engine
 
     public class WorkflowDefinition 
     {
-        public void DefineProcesses(Expression<Func<object[]>> processes) { }
+        public void DefineProcesses(Expression<Func<LongRunningTask[]>> processes) { }
         public void DefinePaths(params Expression<Func<IWorkFlowPath>>[] paths) { }
     }
 }

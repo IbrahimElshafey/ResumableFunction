@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using WorkflowInCode.Abstraction.Engine;
@@ -16,67 +17,57 @@ namespace WorkflowInCode.Abstraction.Samples
          */
     public class ProjectApproval
     {
-        public ProjectSubmitter ProjectSubmitter;
-        public ManagerApprovalProcess ProjectOwner;
-        public ManagerApprovalProcess ProjectSponsor;
-        public ManagerApprovalProcess ProjectManager;
-        public ProjectApproval(ProjectSubmitter p, ManagerApprovalProcess po, ManagerApprovalProcess ps, ManagerApprovalProcess pm)
+        public ProjectRequest ProjectRequest;
+        public ManagerApproval OwnerApproval;
+        public ManagerApproval SponsorApproval;
+        public ManagerApproval ProjectManagerApproval;
+        public ProjectApproval(ProjectRequest p, ManagerApproval po, ManagerApproval ps, ManagerApproval pm)
         {
-            ProjectSubmitter = p;
-            ProjectOwner = po;
-            ProjectSponsor = ps;
-            ProjectManager = pm;
+            ProjectRequest = p;
+            OwnerApproval = po;
+            SponsorApproval = ps;
+            ProjectManagerApproval = pm;
             //
-            Path("Project Approval",
-                ProjectSubmitter.Created,
-                Path("",
-                    ProjectOwner.AskApproval(ProjectSubmitter.Project).Accepted,
-                    ProjectSponsor.AskApproval(ProjectSubmitter.Project)).Parallel(),
-                ProjectManager.AskApproval(ProjectSubmitter.Project).Accepted).Sequential();
+            var projectApprovalWorkFlow = new WorkflowDefinition();
+            projectApprovalWorkFlow.DefineProcesses(() => new LongRunningTask[]
+            {
+                ProjectRequest,
+                OwnerApproval,
+                SponsorApproval,
+                ProjectManagerApproval
+            });
 
-            Path("Project Rejected",
-                Path("Any Manager Send Reject", ProjectOwner.Rejected,
-                    ProjectSponsor.Rejected,
-                    ProjectManager.Rejected),
-                ProjectSubmitter.InformAllAboutRejection());
+            projectApprovalWorkFlow.DefinePaths(
+                () => Path("Project Approval",
+                ProjectRequest.Result.Created,
+                Path("",
+                    OwnerApproval.Initiate(ProjectRequest.Project).Result.Accepted,
+                    SponsorApproval.Initiate(ProjectRequest.Project)).Parallel(),
+                    ProjectManagerApproval.Initiate(ProjectRequest.Project).Result.Accepted).Sequential(),
+
+                () => Path("Project Rejected",
+                Path("Any Manager Send Reject",
+                    OwnerApproval.Result.Rejected,
+                    SponsorApproval.Result.Rejected,
+                    ProjectManagerApproval.Result.Rejected).FirstMatch(),
+                ProjectRequest.InformAllAboutRejection()));
+            
         }
     }
 
-    public interface ManagerApprovalProcess : IWorkFlowProcess
+    public class ManagerApproval : LongRunningTask<Project, ProjectApprovalResult>
     {
-       
-
-        ManagerApprovalProcess AskApproval(Project project);
-
-        
-        ManagerApprovalProcess SendApproval(Project project);
-
-        
-        bool Accepted { get; }
-
-        
-        bool Rejected { get; }
-
     }
-    public interface ProjectSubmitter : IWorkFlowProcess
+
+    public class ProjectRequest:LongRunningTask<Project, ProjectCreationResult>
     {
         [PersistData]
-        Project Project { get; }
-        ProjectSubmitter Create(Project project);
-
-        
-        bool Created { get; }
-
-        
-        bool InformAllAboutRejection();
+        public Project Project { get; }
+        public bool InformAllAboutRejection() => true;
     }
 
-    public class ProjectApprovalResult
-    {
-        public int ProjectId { get; set; }
-        public bool Accepted { get; set; }
-        public bool Rejected { get; set; }
-    }
+    public record ProjectCreationResult(bool Created,bool CreationFailed);
+    public record ProjectApprovalResult(int ProjectId, bool Accepted, bool Rejected);
 
     public class Project
     {
