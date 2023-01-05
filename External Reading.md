@@ -40,3 +40,6 @@ https://devblogs.microsoft.com/dotnet/migrating-realproxy-usage-to-dispatchproxy
 * Lazy Task
 * https://itnext.io/writing-lazy-task-using-new-features-of-c-7-7e9b3f2fda07
 * 
+
+# IL Rewrite 
+* https://github.com/Fody/Fody
