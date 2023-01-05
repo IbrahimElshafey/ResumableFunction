@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using WorkflowInCode.Abstraction.Engine;
-using static WorkflowInCode.Abstraction.Engine.Workflow;
 namespace WorkflowInCode.Abstraction.Samples
 {
     /*
@@ -24,27 +23,27 @@ namespace WorkflowInCode.Abstraction.Samples
             OwnerApproval = po;
             SponsorApproval = ps;
             ManagerApproval = pm;
-            var wf = new WorkflowDefinition();
-            wf.DefineProcesses(() => new LongRunningTask[]
-            {
-                ProjectRequest,
-                OwnerApproval,
-                SponsorApproval,
-                ManagerApproval
-            });
+            //var wf = new WorkflowDefinition();
+            //wf.DefineProcesses(() => new LongRunningTask[]
+            //{
+            //    ProjectRequest,
+            //    OwnerApproval,
+            //    SponsorApproval,
+            //    ManagerApproval
+            //});
 
-            wf.DefinePaths(
-            () => Path("Project Approval",
-                ProjectRequest.Result.Created,
-                OwnerApproval.Initiate(ProjectRequest.Project).Result.Accepted,
-                SponsorApproval.Initiate(ProjectRequest.Project).Result.Accepted,
-                ManagerApproval.Initiate(ProjectRequest.Project).Result.Accepted),
-            () => Path("Project Rejected",
-                Path("Any Manager Send Reject",
-                    OwnerApproval.Result.Rejected,
-                    SponsorApproval.Result.Rejected,
-                    ManagerApproval.Result.Rejected).FirstMatch(),
-                ProjectRequest.InformAllAboutRejection()));
+            //wf.DefinePaths(
+            //() => Path("Project Approval",
+            //    ProjectRequest.Created,
+            //    OwnerApproval.Initiate(ProjectRequest.Project).Result.Accepted,
+            //    SponsorApproval.Initiate(ProjectRequest.Project).Result.Accepted,
+            //    ManagerApproval.Initiate(ProjectRequest.Project).Result.Accepted),
+            //() => Path("Project Rejected",
+            //    Path("Any Manager Send Reject",
+            //        OwnerApproval.Result.Rejected,
+            //        SponsorApproval.Result.Rejected,
+            //        ManagerApproval.Result.Rejected).FirstMatch(),
+            //    ProjectRequest.InformAllAboutRejection()));
         }
     }
 }

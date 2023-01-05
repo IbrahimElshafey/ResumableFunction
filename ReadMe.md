@@ -11,7 +11,7 @@ I evaluated the existing solutions and found that there is no solution that fits
 * [Durable Task Framework](https://github.com/Azure/durabletask)
 * [D-Async](https://github.com/Dasync/Dasync)
 * [Workflow Core](https://github.com/danielgerlag/workflow-core)
-* [Infinitic](https://github.com/infiniticio/infinitic)
+* [Infinitic (Kotlin)](https://github.com/infiniticio/infinitic)
 
 All these solutions are intelligent and awesome but do not solve the problem well and easily.
 

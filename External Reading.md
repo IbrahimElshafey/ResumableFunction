@@ -28,3 +28,15 @@
 # Action Types
 * Call an API
 * Publish event to event broker
+
+Expression Trees
+https://learn.microsoft.com/en-us/dotnet/csharp/expression-trees-explained
+
+Proxy Creation
+https://stackoverflow.com/questions/15733900/dynamically-creating-a-proxy-class
+https://devblogs.microsoft.com/dotnet/migrating-realproxy-usage-to-dispatchproxy/
+
+# Async 
+* Lazy Task
+* https://itnext.io/writing-lazy-task-using-new-features-of-c-7-7e9b3f2fda07
+* 

@@ -10,6 +10,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{48E4BD08-08A5-435F-B55C-AAAD4CE6090C}"
 	ProjectSection(SolutionItems) = preProject
 		External Reading.md = External Reading.md
+		Plan.md = Plan.md
 		ReadMe.md = ReadMe.md
 		Related Thing to Use.md = Related Thing to Use.md
 		Tables.md = Tables.md
