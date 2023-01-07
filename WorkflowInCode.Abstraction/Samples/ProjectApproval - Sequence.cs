@@ -14,76 +14,102 @@ namespace WorkflowInCode.Abstraction.Samples
          * موافقة راعي المشروع ليست إجبارية, قد يرد أو لا يرد أبداً
          * 
          */
-    public class ProjectApproval : Workflow
+    public class ProjectApproval : WorkflowInstance<ProjectApprovalContextData>
     {
-        public ProjectRequest ProjectRequest;
-        public ManagerApproval OwnerApproval;
-        public ManagerApproval SponsorApproval;
-        public ManagerApproval ProjectManagerApproval;
-        public ProjectApproval(ProjectRequest p, ManagerApproval po, ManagerApproval ps, ManagerApproval pm)
+        public ProjectRequestedEvent ProjectRequested;
+        public ManagerApprovalEvent OwnerApproval;
+        public ManagerApprovalEvent SponsorApproval;
+        public ManagerApprovalEvent ManagerApproval;
+        public ProjectApproval(ProjectRequestedEvent p, ManagerApprovalEvent po, ManagerApprovalEvent ps, ManagerApprovalEvent pm)
         {
-            ProjectRequest = p;
+            ProjectRequested = p;
             OwnerApproval = po;
             SponsorApproval = ps;
-            ProjectManagerApproval = pm;
+            ManagerApproval = pm;
+            InstanceData = new ProjectApprovalContextData();
+        }
 
-            Wait(ProjectRequest);
-            if (ProjectRequest.Result != null)
+        public async Task Test()
+        {
+            Console.WriteLine("Test Started");
+            await Task.Delay(1000);
+            await foreach (var item in RunWorkflow())
             {
-                var ownerInitiation = OwnerApproval.Initiate(ProjectRequest.Result);
-                if (ownerInitiation is false) { LogError("Owner Approval task failed to initiate"); return; }
-                var approvalResult = Wait(OwnerApproval);
-                if (approvalResult.Accepted)
+                Console.WriteLine(item);
+            }
+            await Task.Delay(2000);
+            Console.WriteLine("Test Ending");
+            await Task.Delay(3000);
+            Console.WriteLine("Test Ended");
+        }
+
+        public override async IAsyncEnumerable<ISubscribedEvent> RunWorkflow()
+        {
+            yield return WaitStartEvent<Project>(
+                ProjectRequested,
+                nameof(InstanceData.Project));
+            if (InstanceData.Project is not null)
+            {
+                await AskOwnerToApprove(InstanceData.Project);
+                yield return Wait<ProjectApprovalResult>(
+                    OwnerApproval,
+                    result => result.ProjectId == InstanceData.Project.Id,
+                    nameof(InstanceData.OwnerApprovalResult));
+
+                if (InstanceData.OwnerApprovalResult.Accepted)
                 {
-                    var sponsorInitiatio = SponsorApproval.Initiate(ProjectRequest.Result);
-                    if (sponsorInitiatio is false) { LogError("Sponsor Approval task failed to initiate"); return; }
-                    approvalResult = Wait(SponsorApproval);
-                    if(approvalResult.Accepted)
+                    await AskSponsorToApprove(InstanceData.Project);
+                    yield return Wait<ProjectApprovalResult>(
+                     SponsorApproval,
+                     result => result.ProjectId == InstanceData.Project.Id,
+                     nameof(InstanceData.SponsorApprovalResult));
+                    if (InstanceData.SponsorApprovalResult.Accepted)
+                    {
+                        await AskManagerToApprove(InstanceData.Project);
+                        yield return Wait<ProjectApprovalResult>(
+                         ManagerApproval,
+                         result => result.ProjectId == InstanceData.Project.Id,
+                         nameof(InstanceData.ManagerApprovalResult));
+                        Console.WriteLine("Continue");
+                    }
 
                 }
-
             }
-            //
-            //var projectApprovalWorkFlow = new WorkflowDefinition();
-            //projectApprovalWorkFlow.DefineProcesses(() => new LongRunningTask[]
-            //{
-            //    ProjectRequest,
-            //    OwnerApproval,
-            //    SponsorApproval,
-            //    ProjectManagerApproval
-            //});
+        }
 
-            //projectApprovalWorkFlow.DefinePaths(
-            //    () => Path("Project Approval",
-            //    ProjectRequest.Created,
-            //    Path("",
-            //        OwnerApproval.Initiate(ProjectRequest.Project).Result.Accepted,
-            //        SponsorApproval.Initiate(ProjectRequest.Project)).Parallel(),
-            //        ProjectManagerApproval.Initiate(ProjectRequest.Project).Result.Accepted).Sequential(),
+        private async Task AskManagerToApprove(Project project)
+        {
+            await Task.Delay(1000);
+        }
 
-            //    () => Path("Project Rejected",
-            //    Path("Any Manager Send Reject",
-            //        OwnerApproval.Result.Rejected,
-            //        SponsorApproval.Result.Rejected,
-            //        ProjectManagerApproval.Result.Rejected).FirstMatch(),
-            //    ProjectRequest.InformAllAboutRejection()));
+        private async Task AskSponsorToApprove(Project project)
+        {
+            await Task.Delay(1000);
+        }
 
+        private async Task AskOwnerToApprove(Project project)
+        {
+            await Task.Delay(1000);
         }
     }
-
-
-    public class ManagerApproval : LongRunningTask<bool, ProjectApprovalResult>
+    public class ProjectApprovalContextData
     {
+        public Project Project { get; internal set; }
+        public ProjectApprovalResult OwnerApprovalResult { get; internal set; }
+        public ProjectApprovalResult SponsorApprovalResult { get; internal set; }
+        public ProjectApprovalResult ManagerApprovalResult { get; internal set; }
     }
 
-    public class ProjectRequest : ISubscribedEvent<Project>
+    public class ManagerApprovalEvent : ISubscribedEvent
     {
-        public bool InformAllAboutRejection() => true;
 
-        public Project Result => null;
     }
 
-    public record ProjectCreationResult(bool Created, bool CreationFailed);
+    public class ProjectRequestedEvent : ISubscribedEvent
+    {
+       
+    }
+
     public record ProjectApprovalResult(int ProjectId, bool Accepted, bool Rejected);
 
     public class Project

@@ -1,9 +1,9 @@
 ﻿public partial class Program2
 {
-    static void Main(string[] args)
-    {
-        HelloFrom("Generated Code");
-    }
+    //static void Main(string[] args)
+    //{
+    //    HelloFrom("Generated Code");
+    //}
 
     static partial void HelloFrom(string name);
     //static void Main()
