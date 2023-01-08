@@ -9,12 +9,15 @@ namespace WorkflowInCode.Abstraction.Engine
 {
     public abstract class WorkflowInstance<ContextData>
     {
-        protected ISubscribedEvent WhenAny<EventData>(
-            params (ISubscribedEvent eventToWait, Expression<Func<EventData, bool>> matchFunction)[] events) => null;
+        protected ISubscribedEvent WaitAny<EventData>(
+            params EventWaiting<EventData>[] events) => null;
 
 
-        protected ISubscribedEvent WhenAll<EventData>(
-            params (ISubscribedEvent eventToWait, Expression<Func<EventData, bool>> matchFunction)[] events) => null;
+        protected IWaitAllEvent WaitAll<EventData>(
+            params EventWaiting<EventData>[] events)
+        {
+            return null;
+        }
 
         protected ISubscribedEvent Wait<EventData>(
             ISubscribedEvent EventToWait,
@@ -22,13 +25,6 @@ namespace WorkflowInCode.Abstraction.Engine
             Expression<Func<EventData>> ContextProp)
         {
             EventToWait.MatchFunction = MatchFunction;
-            EventToWait.ContextProp = ContextProp;
-            return EventToWait;
-        }
-        protected ISubscribedEvent WaitStartEvent<EventData>(
-            ISubscribedEvent EventToWait,
-            Expression<Func<EventData>> ContextProp)
-        {
             EventToWait.ContextProp = ContextProp;
             return EventToWait;
         }
@@ -48,14 +44,12 @@ namespace WorkflowInCode.Abstraction.Engine
 
         public abstract IAsyncEnumerable<ISubscribedEvent> RunWorkflow();
 
-
     }
-    public record EventWaiting<EventData, ContextData>(
+    public record EventWaiting<EventData>(
             ISubscribedEvent EventToWait,
             Expression<Func<EventData, bool>> MatchFunction,
-            Expression<Action<EventData, ContextData>> SetData);
-    public record EventWaiting<ContextData>(
-           ISubscribedEvent EventToWait,
-           Expression<Func<object, bool>> MatchFunction,
-           Expression<Action<object, ContextData>> SetData);
+            Expression<Func<EventData>> ContextProp)
+    {
+        public bool IsOptional { get; set; }
+    }
 }

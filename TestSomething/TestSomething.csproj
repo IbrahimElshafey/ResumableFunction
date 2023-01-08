@@ -9,7 +9,6 @@
 	<Platforms>AnyCPU</Platforms>
   </PropertyGroup>
 	<ItemGroup>
-		<ProjectReference Include="..\CodeGenrator\CodeGenrator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
 		<ProjectReference Include="..\WorkflowInCode.Abstraction\WorkflowInCode.Abstraction.csproj" />
 	</ItemGroup>
 	<ItemGroup>

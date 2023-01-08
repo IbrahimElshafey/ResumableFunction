@@ -9,8 +9,6 @@ using WorkflowInCode.Abstraction.Samples;
 
 namespace WorkflowInCode.Abstraction.Engine
 {
-   
-
     public abstract class ISubscribedEvent
     {
         public object EventData { get; set; }
@@ -18,14 +16,8 @@ namespace WorkflowInCode.Abstraction.Engine
         public LambdaExpression ContextProp { get; set; }
     }
 
+    public abstract class IWaitAllEvent : ISubscribedEvent
+    {
 
-  
-    //public interface ISubscribedEvent<out EventData>: ISubscribedEvent
-    //{
-    //    new EventData Result { get;}
-    //}
-
-
-
-
+    }
 }

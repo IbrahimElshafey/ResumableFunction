@@ -52,7 +52,7 @@ namespace Test
 
                         var stateField = workflowRunnerType.GetField("<>1__state");
                         //set state field from last session that was saved to the database
-                        stateField?.SetValue(workflowRunner, -5);
+                        stateField?.SetValue(workflowRunner, -7);
 
                         try
                         {
@@ -60,14 +60,14 @@ namespace Test
                             {
                                 var incomingEvent = workflowRunner.Current;
                                 var value = stateField?.GetValue(workflowRunner);
-                                if (incomingEvent.MatchFunction != null)
-                                {
-                                    var matchingFunction = incomingEvent.MatchFunction.Compile() as Func<object, object, bool>;
-                                    if (matchingFunction != null && matchingFunction(incomingEvent.EventData, po.InstanceData))
-                                    {
+                                //if (incomingEvent.MatchFunction != null)
+                                //{
+                                //    var matchingFunction = incomingEvent.MatchFunction.Compile() as Func<object, object, bool>;
+                                //    if (matchingFunction != null && matchingFunction(incomingEvent.EventData, po.InstanceData))
+                                //    {
 
-                                    }
-                                }
+                                //    }
+                                //}
                                 SetContextData(po.InstanceData, incomingEvent.ContextProp, incomingEvent.EventData);
                             }
                             else
