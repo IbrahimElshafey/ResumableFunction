@@ -29,47 +29,33 @@ namespace WorkflowInCode.Abstraction.Samples
             InstanceData = new ProjectApprovalContextData();
         }
 
-        public async Task Test()
-        {
-            Console.WriteLine("Test Started");
-            await Task.Delay(1000);
-            await foreach (var item in RunWorkflow())
-            {
-                Console.WriteLine(item);
-            }
-            await Task.Delay(2000);
-            Console.WriteLine("Test Ending");
-            await Task.Delay(3000);
-            Console.WriteLine("Test Ended");
-        }
-
         public override async IAsyncEnumerable<ISubscribedEvent> RunWorkflow()
         {
-            yield return WaitStartEvent<Project>(
+            yield return WaitStartEvent(
                 ProjectRequested,
-                nameof(InstanceData.Project));
+                () => InstanceData.Project);
             if (InstanceData.Project is not null)
             {
                 await AskOwnerToApprove(InstanceData.Project);
-                yield return Wait<ProjectApprovalResult>(
+                yield return Wait(
                     OwnerApproval,
                     result => result.ProjectId == InstanceData.Project.Id,
-                    nameof(InstanceData.OwnerApprovalResult));
+                    () => InstanceData.OwnerApprovalResult);
 
                 if (InstanceData.OwnerApprovalResult.Accepted)
                 {
                     await AskSponsorToApprove(InstanceData.Project);
-                    yield return Wait<ProjectApprovalResult>(
+                    yield return Wait(
                      SponsorApproval,
                      result => result.ProjectId == InstanceData.Project.Id,
-                     nameof(InstanceData.SponsorApprovalResult));
+                     () => InstanceData.SponsorApprovalResult);
                     if (InstanceData.SponsorApprovalResult.Accepted)
                     {
                         await AskManagerToApprove(InstanceData.Project);
-                        yield return Wait<ProjectApprovalResult>(
+                        yield return Wait(
                          ManagerApproval,
                          result => result.ProjectId == InstanceData.Project.Id,
-                         nameof(InstanceData.ManagerApprovalResult));
+                         () => InstanceData.ManagerApprovalResult);
                         Console.WriteLine("Continue");
                     }
 
@@ -84,7 +70,7 @@ namespace WorkflowInCode.Abstraction.Samples
 
         private async Task AskSponsorToApprove(Project project)
         {
-            await Task.Delay(1000);
+            await Task.Delay(10000);
         }
 
         private async Task AskOwnerToApprove(Project project)
@@ -94,10 +80,10 @@ namespace WorkflowInCode.Abstraction.Samples
     }
     public class ProjectApprovalContextData
     {
-        public Project Project { get; internal set; }
-        public ProjectApprovalResult OwnerApprovalResult { get; internal set; }
-        public ProjectApprovalResult SponsorApprovalResult { get; internal set; }
-        public ProjectApprovalResult ManagerApprovalResult { get; internal set; }
+        public Project Project { get;  set; }
+        public ProjectApprovalResult OwnerApprovalResult { get;  set; }
+        public ProjectApprovalResult SponsorApprovalResult { get;  set; }
+        public ProjectApprovalResult ManagerApprovalResult { get;  set; }
     }
 
     public class ManagerApprovalEvent : ISubscribedEvent
@@ -107,7 +93,7 @@ namespace WorkflowInCode.Abstraction.Samples
 
     public class ProjectRequestedEvent : ISubscribedEvent
     {
-       
+
     }
 
     public record ProjectApprovalResult(int ProjectId, bool Accepted, bool Rejected);

@@ -43,3 +43,9 @@ https://devblogs.microsoft.com/dotnet/migrating-realproxy-usage-to-dispatchproxy
 
 # IL Rewrite 
 * https://github.com/Fody/Fody
+
+# Converting Expression Trees to Source Code
+* https://bagoum.medium.com/c-heresy-converting-expression-trees-to-source-code-1082ba8963a6
+
+# Get all method calls
+* https://stackoverflow.com/questions/57118269/get-all-method-calls

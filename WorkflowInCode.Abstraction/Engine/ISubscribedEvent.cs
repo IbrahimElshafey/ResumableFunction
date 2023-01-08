@@ -16,7 +16,7 @@ namespace WorkflowInCode.Abstraction.Engine
         public string EventName { get; protected set; }
         public object EventData { get; set; }
         public LambdaExpression MatchFunction { get; set; }
-        public string ContextProp { get; set; }
+        public LambdaExpression ContextProp { get; set; }
     }
 
 

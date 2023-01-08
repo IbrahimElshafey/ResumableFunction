@@ -19,7 +19,7 @@ namespace WorkflowInCode.Abstraction.Engine
         protected ISubscribedEvent Wait<EventData>(
             ISubscribedEvent EventToWait,
             Expression<Func<EventData, bool>> MatchFunction,
-            string ContextProp)
+            Expression<Func<EventData>> ContextProp)
         {
             EventToWait.MatchFunction = MatchFunction;
             EventToWait.ContextProp = ContextProp;
@@ -27,7 +27,7 @@ namespace WorkflowInCode.Abstraction.Engine
         }
         protected ISubscribedEvent WaitStartEvent<EventData>(
             ISubscribedEvent EventToWait,
-            string ContextProp)
+            Expression<Func<EventData>> ContextProp)
         {
             EventToWait.ContextProp = ContextProp;
             return EventToWait;
@@ -35,6 +35,7 @@ namespace WorkflowInCode.Abstraction.Engine
 
 
         public ContextData InstanceData { get; protected set; }
+        public async Task SaveInstanceData() { }
         public void test(ISubscribedEvent dynamicEvent, ISubscribedEvent intEvent, ISubscribedEvent stringEvent)
         {
             //var x = Wait<dynamic>(dynamicEvent, o => o != null, (d, c) => c = d); ;
