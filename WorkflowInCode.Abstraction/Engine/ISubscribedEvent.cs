@@ -13,7 +13,6 @@ namespace WorkflowInCode.Abstraction.Engine
 
     public abstract class ISubscribedEvent
     {
-        public string EventName { get; protected set; }
         public object EventData { get; set; }
         public LambdaExpression MatchFunction { get; set; }
         public LambdaExpression ContextProp { get; set; }

@@ -56,7 +56,7 @@ namespace Test
 
                         try
                         {
-                            while (await workflowRunner.MoveNextAsync())
+                            if (await workflowRunner.MoveNextAsync())
                             {
                                 var incomingEvent = workflowRunner.Current;
                                 var value = stateField?.GetValue(workflowRunner);
@@ -70,6 +70,11 @@ namespace Test
                                 }
                                 SetContextData(po.InstanceData, incomingEvent.ContextProp, incomingEvent.EventData);
                             }
+                            else
+                            {
+                                //workflow ended
+                            }
+                            
                         }
                         finally { if (workflowRunner != null) await workflowRunner.DisposeAsync(); }
                     }

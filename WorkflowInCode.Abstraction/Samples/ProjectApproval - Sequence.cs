@@ -31,8 +31,9 @@ namespace WorkflowInCode.Abstraction.Samples
 
         public override async IAsyncEnumerable<ISubscribedEvent> RunWorkflow()
         {
-            yield return WaitStartEvent(
+            yield return Wait(
                 ProjectRequested,
+                null,
                 () => InstanceData.Project);
             if (InstanceData.Project is not null)
             {
@@ -70,7 +71,7 @@ namespace WorkflowInCode.Abstraction.Samples
 
         private async Task AskSponsorToApprove(Project project)
         {
-            await Task.Delay(10000);
+            await Task.Delay(1000);
         }
 
         private async Task AskOwnerToApprove(Project project)
