@@ -41,7 +41,7 @@ namespace WorkflowInCode.Abstraction.Samples
                 yield return WaitAll(
                     new EventWaiting<ProjectApprovalResult>(OwnerApproval, result => result.ProjectId == InstanceData.Project.Id, () => InstanceData.OwnerApprovalResult),
                     new EventWaiting<ProjectApprovalResult>(SponsorApproval, result => result.ProjectId == InstanceData.Project.Id, () => InstanceData.SponsorApprovalResult),
-                    new EventWaiting<ProjectApprovalResult>(ManagerApproval, result => result.ProjectId == InstanceData.Project.Id, () => InstanceData.ManagerApprovalResult)
+                    new EventWaiting<ProjectApprovalResult>(ManagerApproval, result => result.ProjectId == InstanceData.Project.Id, () => InstanceData.ManagerApprovalResult) { IsOptional=true}
                     );
                 var allManagerResponse = InstanceData.ManagerApprovalResult.Accepted == InstanceData.OwnerApprovalResult.Accepted == InstanceData.SponsorApprovalResult.Accepted;
                 if (allManagerResponse is true)
