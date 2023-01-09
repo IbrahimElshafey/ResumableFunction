@@ -47,7 +47,7 @@ namespace Test
 
                         var stateField = workflowRunnerType.GetField("<>1__state");
                         //set state field from last session that was saved to the database
-                        stateField?.SetValue(workflowRunner, -7);
+                        stateField?.SetValue(workflowRunner, -10);
 
                         try
                         {

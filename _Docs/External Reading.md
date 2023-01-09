@@ -50,3 +50,6 @@ https://devblogs.microsoft.com/dotnet/migrating-realproxy-usage-to-dispatchproxy
 
 # Get all method calls
 * https://stackoverflow.com/questions/57118269/get-all-method-calls
+
+
+https://www.litedb.org/
