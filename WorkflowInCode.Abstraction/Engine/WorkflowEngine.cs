@@ -16,7 +16,7 @@ namespace WorkflowInCode.Abstraction.Engine
            //save state
         }
 
-        public void EventReceived(ISubscribedEvent subscribedEvent)
+        public void EventReceived(IEvent subscribedEvent)
         {
             //event comes to the engine
             //engine search workflow instances table to find if any workflow waits for this event type

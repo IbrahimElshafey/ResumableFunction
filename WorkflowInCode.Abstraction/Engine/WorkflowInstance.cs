@@ -19,8 +19,8 @@ namespace WorkflowInCode.Abstraction.Engine
             return null;
         }
 
-        protected ISubscribedEvent WaitEvent<EventData>(
-            ISubscribedEvent eventToWait,
+        protected IEvent WaitEvent<EventData>(
+            IEvent eventToWait,
             Expression<Func<EventData, bool>> matchFunction,
             Expression<Func<EventData>> contextProp)
         {
@@ -29,10 +29,12 @@ namespace WorkflowInCode.Abstraction.Engine
             return eventToWait;
         }
 
-
+        public string InstanceId { get; protected set; }
         public ContextData InstanceData { get; protected set; }
-        public async Task SaveInstanceData() { }
-        public void test(ISubscribedEvent dynamicEvent, ISubscribedEvent intEvent, ISubscribedEvent stringEvent)
+        public async Task SaveInstanceData()
+        {
+        }
+        public void test(IEvent dynamicEvent, IEvent intEvent, IEvent stringEvent)
         {
             //var x = Wait<dynamic>(dynamicEvent, o => o != null, (d, c) => c = d); ;
             //var y = Wait<int>(intEvent, x => x > 10);
@@ -42,11 +44,11 @@ namespace WorkflowInCode.Abstraction.Engine
             //var aa = WhenAny<object>((intEvent, x => x != null), (dynamicEvent, x => x != null), (stringEvent, x => x != null));
         }
 
-        public abstract IAsyncEnumerable<ISubscribedEvent> RunWorkflow();
+        public abstract IAsyncEnumerable<IEvent> RunWorkflow();
 
     }
     public record EventWaiting<EventData>(
-            ISubscribedEvent EventToWait,
+            IEvent EventToWait,
             Expression<Func<EventData, bool>> MatchFunction,
             Expression<Func<EventData>> ContextProp)
     {

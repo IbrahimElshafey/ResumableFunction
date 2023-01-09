@@ -29,7 +29,7 @@ namespace WorkflowInCode.Abstraction.Samples
             InstanceData = new ProjectApprovalContextData();
         }
 
-        public override async IAsyncEnumerable<ISubscribedEvent> RunWorkflow()
+        public override async IAsyncEnumerable<IEvent> RunWorkflow()
         {
             yield return WaitEvent(
                 ProjectRequested,
@@ -87,12 +87,12 @@ namespace WorkflowInCode.Abstraction.Samples
         public ProjectApprovalResult ManagerApprovalResult { get;  set; }
     }
 
-    public class ManagerApprovalEvent : ISubscribedEvent
+    public class ManagerApprovalEvent : IEvent
     {
 
     }
 
-    public class ProjectRequestedEvent : ISubscribedEvent
+    public class ProjectRequestedEvent : IEvent
     {
 
     }

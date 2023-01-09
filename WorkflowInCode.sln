@@ -5,8 +5,6 @@ VisualStudioVersion = 17.3.32519.111
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestSomething", "TestSomething\TestSomething.csproj", "{EEB7FD2D-83B0-4E2E-BBCC-528B6C9AAA52}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WorkflowInCode.Engine", "WorkflowInCode.Engine\WorkflowInCode.Engine.csproj", "{63A2C167-04D1-4FC0-8A08-73BC13DD05AF}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WorkflowInCode.Abstraction", "WorkflowInCode.Abstraction\WorkflowInCode.Abstraction.csproj", "{E3DF17D9-EF68-4EBA-8D67-8E61FC5C6EF2}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "_docs", "_Docs\_docs.csproj", "{EFEA495D-A208-4628-91A2-0B2B614C9BB2}"
@@ -27,14 +25,6 @@ Global
 		{EEB7FD2D-83B0-4E2E-BBCC-528B6C9AAA52}.Release|Any CPU.Build.0 = Release|Any CPU
 		{EEB7FD2D-83B0-4E2E-BBCC-528B6C9AAA52}.Release|x64.ActiveCfg = Release|x64
 		{EEB7FD2D-83B0-4E2E-BBCC-528B6C9AAA52}.Release|x64.Build.0 = Release|x64
-		{63A2C167-04D1-4FC0-8A08-73BC13DD05AF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{63A2C167-04D1-4FC0-8A08-73BC13DD05AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{63A2C167-04D1-4FC0-8A08-73BC13DD05AF}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{63A2C167-04D1-4FC0-8A08-73BC13DD05AF}.Debug|x64.Build.0 = Debug|Any CPU
-		{63A2C167-04D1-4FC0-8A08-73BC13DD05AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{63A2C167-04D1-4FC0-8A08-73BC13DD05AF}.Release|Any CPU.Build.0 = Release|Any CPU
-		{63A2C167-04D1-4FC0-8A08-73BC13DD05AF}.Release|x64.ActiveCfg = Release|Any CPU
-		{63A2C167-04D1-4FC0-8A08-73BC13DD05AF}.Release|x64.Build.0 = Release|Any CPU
 		{E3DF17D9-EF68-4EBA-8D67-8E61FC5C6EF2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{E3DF17D9-EF68-4EBA-8D67-8E61FC5C6EF2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E3DF17D9-EF68-4EBA-8D67-8E61FC5C6EF2}.Debug|x64.ActiveCfg = Debug|Any CPU

@@ -6,32 +6,32 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TestSomething
+namespace TestSomething.MayUse
 {
     public class PropertyManager : DynamicObject
     {
         private static Dictionary<Type, Dictionary<string, GetterAndSetter>> _compiledProperties = new Dictionary<Type, Dictionary<string, GetterAndSetter>>();
 
-        private static Object _compiledPropertiesLockObject = new object();
+        private static object _compiledPropertiesLockObject = new object();
 
         private class GetterAndSetter
         {
-            public Action<object, Object> Setter { get; set; }
+            public Action<object, object> Setter { get; set; }
 
-            public Func<Object, Object> Getter { get; set; }
+            public Func<object, object> Getter { get; set; }
         }
 
-        private Object _object;
+        private object _object;
 
         private Type _objectType;
 
-        private PropertyManager(Object o)
+        private PropertyManager(object o)
         {
             _object = o;
             _objectType = o.GetType();
         }
 
-        public static dynamic Wrap(Object o)
+        public static dynamic Wrap(object o)
         {
             if (o == null)
                 return null; // null reference will be thrown
@@ -67,7 +67,7 @@ namespace TestSomething
 
                                 var param = Expression.Parameter(typeof(object), "param");
 
-                                
+
                                 Expression propExpression = Expression.Convert(Expression.Property(Expression.Convert(param, type), property), typeof(object));
 
                                 var lambda = Expression.Lambda(propExpression, new[] { param });
@@ -78,8 +78,8 @@ namespace TestSomething
 
                             if (property.CanWrite)
                             {
-                                var thisParam = Expression.Parameter(typeof(Object), "this");
-                                var theValue = Expression.Parameter(typeof(Object), "value");
+                                var thisParam = Expression.Parameter(typeof(object), "this");
+                                var theValue = Expression.Parameter(typeof(object), "value");
 
                                 var isValueType = property.PropertyType.IsClass == false && property.PropertyType.IsInterface == false;
 
@@ -102,7 +102,7 @@ namespace TestSomething
 
                                 var lambda = Expression.Lambda(block, thisParam, theValue);
 
-                                getterAndSetter.Setter = lambda.Compile() as Action<Object, Object>;
+                                getterAndSetter.Setter = lambda.Compile() as Action<object, object>;
                             }
                         }
                     }

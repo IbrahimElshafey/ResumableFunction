@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Reflection.Metadata;
 using System.Reflection.Metadata.Ecma335;
 using System.Runtime.CompilerServices;
+using TestSomething.MayUse;
 using WorkflowInCode.Abstraction.Engine;
 using WorkflowInCode.Abstraction.Samples;
 
@@ -35,8 +36,8 @@ namespace Test
                     new Type[] { typeof(int) });
                 if (ctor != null)
                 {
-                    IAsyncEnumerator<ISubscribedEvent>? workflowRunner = 
-                        ctor.Invoke(new object[] { -2 }) as IAsyncEnumerator<ISubscribedEvent>;
+                    IAsyncEnumerator<IEvent>? workflowRunner = 
+                        ctor.Invoke(new object[] { -2 }) as IAsyncEnumerator<IEvent>;
 
                     if (workflowRunner != null)
                     {
@@ -78,7 +79,7 @@ namespace Test
             
         }
 
-        ///To use Expression trees <see cref="TestSomething.PropertyManager.EnsurePropertySettersAndGettersForType"/> line 79 ( if (property.CanWrite))
+        ///To use Expression trees <see cref="PropertyManager.EnsurePropertySettersAndGettersForType"/> line 79 ( if (property.CanWrite))
         private static void SetContextData(ProjectApprovalContextData instanceData, LambdaExpression contextProp, object eventData)
         {
             if (contextProp.Body is MemberExpression me)
