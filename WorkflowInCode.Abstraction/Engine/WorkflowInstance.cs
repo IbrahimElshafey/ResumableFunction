@@ -9,7 +9,7 @@ namespace WorkflowInCode.Abstraction.Engine
 {
     public abstract class WorkflowInstance<ContextData>
     {
-        protected ISubscribedEvent WaitAny<EventData>(
+        protected IWaitAnyEvent WaitAny<EventData>(
             params EventWaiting<EventData>[] events) => null;
 
 
@@ -20,13 +20,13 @@ namespace WorkflowInCode.Abstraction.Engine
         }
 
         protected ISubscribedEvent Wait<EventData>(
-            ISubscribedEvent EventToWait,
-            Expression<Func<EventData, bool>> MatchFunction,
-            Expression<Func<EventData>> ContextProp)
+            ISubscribedEvent eventToWait,
+            Expression<Func<EventData, bool>> matchFunction,
+            Expression<Func<EventData>> contextProp)
         {
-            EventToWait.MatchFunction = MatchFunction;
-            EventToWait.ContextProp = ContextProp;
-            return EventToWait;
+            eventToWait.MatchFunction = matchFunction;
+            eventToWait.ContextProp = contextProp;
+            return eventToWait;
         }
 
 

@@ -16,6 +16,10 @@ namespace WorkflowInCode.Abstraction.Engine
         public LambdaExpression ContextProp { get; set; }
     }
 
+    public abstract class IWaitAnyEvent : ISubscribedEvent
+    {
+
+    }
     public abstract class IWaitAllEvent : ISubscribedEvent
     {
 
