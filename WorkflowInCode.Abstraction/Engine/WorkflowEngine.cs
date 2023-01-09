@@ -10,8 +10,9 @@ namespace WorkflowInCode.Abstraction.Engine
     {
         public void RegisterWorkflow<T>(WorkflowInstance<T> workflowInstance)
         {
-           //load and wait for the first event
-           //create empty instance and set waiting list to the event expected
+           //initate instance and run workflow
+           //wait for the first event
+           //create empty instance and set waiting list to the event/s expected
            //save state
         }
 

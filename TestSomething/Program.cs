@@ -20,13 +20,7 @@ namespace Test
                 new ManagerApprovalEvent() { EventData = new ProjectApprovalResult(122, true, false) },
                 new ManagerApprovalEvent() { EventData = new ProjectApprovalResult(122, true, false) });
 
-            //event come to engine
-            //engine search subscribtion table to find if any workflow use this type
-            //engine load related query for matched workflows
-            //Translate matching function to database query
-            //If event is first then add workflow instance to the database
-            //if not first then search the database for instance/s that match query and load workflow data context
-
+           
             var workflowRunnerType = po.GetType()
                 .GetNestedTypes(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.SuppressChangeType)
                 .FirstOrDefault(x => x.Name.StartsWith("<RunWorkflow>"));
@@ -78,14 +72,6 @@ namespace Test
                         }
                         finally { if (workflowRunner != null) await workflowRunner.DisposeAsync(); }
                     }
-                   
-                    //var moveNextMethod = workflowRunnerType.GetMethod("MoveNext", BindingFlags.NonPublic | BindingFlags.Instance);
-                    //if (moveNextMethod != null)
-                    //{
-                    //    moveNextMethod.Invoke(workflowRunner, null);
-                    //    var currentField = workflowRunnerType.GetProperty("<>2__current", BindingFlags.NonPublic|BindingFlags.Instance);
-                    //     var currentEvent = currentField?.GetValue(workflowRunner);
-                    //}
                 }
 
             }
