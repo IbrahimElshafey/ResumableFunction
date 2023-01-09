@@ -9,17 +9,17 @@ namespace WorkflowInCode.Abstraction.Engine
 {
     public abstract class WorkflowInstance<ContextData>
     {
-        protected IWaitAnyEvent WaitAny<EventData>(
+        protected IWaitAnyEvent WaitFirstEvent<EventData>(
             params EventWaiting<EventData>[] events) => null;
 
 
-        protected IWaitAllEvent WaitAll<EventData>(
+        protected IWaitAllEvent WaitEvents<EventData>(
             params EventWaiting<EventData>[] events)
         {
             return null;
         }
 
-        protected ISubscribedEvent Wait<EventData>(
+        protected ISubscribedEvent WaitEvent<EventData>(
             ISubscribedEvent eventToWait,
             Expression<Func<EventData, bool>> matchFunction,
             Expression<Func<EventData>> contextProp)

@@ -31,14 +31,14 @@ namespace WorkflowInCode.Abstraction.Samples
 
         public override async IAsyncEnumerable<ISubscribedEvent> RunWorkflow()
         {
-            yield return Wait(
+            yield return WaitEvent(
                 ProjectRequested,
                 null,
                 () => InstanceData.Project);
             if (InstanceData.Project is not null)
             {
                 await AskOwnerToApprove(InstanceData.Project);
-                yield return Wait(
+                yield return WaitEvent(
                     OwnerApproval,
                     result => result.ProjectId == InstanceData.Project.Id,
                     () => InstanceData.OwnerApprovalResult);
@@ -46,14 +46,14 @@ namespace WorkflowInCode.Abstraction.Samples
                 if (InstanceData.OwnerApprovalResult.Accepted)
                 {
                     await AskSponsorToApprove(InstanceData.Project);
-                    yield return Wait(
+                    yield return WaitEvent(
                      SponsorApproval,
                      result => result.ProjectId == InstanceData.Project.Id,
                      () => InstanceData.SponsorApprovalResult);
                     if (InstanceData.SponsorApprovalResult.Accepted)
                     {
                         await AskManagerToApprove(InstanceData.Project);
-                        yield return Wait(
+                        yield return WaitEvent(
                          ManagerApproval,
                          result => result.ProjectId == InstanceData.Project.Id,
                          () => InstanceData.ManagerApprovalResult);
