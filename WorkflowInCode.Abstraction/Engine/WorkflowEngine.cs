@@ -8,6 +8,10 @@ namespace WorkflowInCode.Abstraction.Engine
 {
     public class WorkflowEngine
     {
+        public void RegisterWorkflow(string assemblyName)
+        {
+            
+        }
         public void RegisterWorkflow<T>(WorkflowInstance<T> workflowInstance)
         {
            //initate instance and run workflow
