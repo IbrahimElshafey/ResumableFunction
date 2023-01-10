@@ -53,3 +53,7 @@ https://devblogs.microsoft.com/dotnet/migrating-realproxy-usage-to-dispatchproxy
 
 
 https://www.litedb.org/
+
+
+Generic
+https://agirlamonggeeks.com/2019/06/04/cannot-implicitly-convert-type-abc-to-iabc-contravariance-vs-covariance-part-2/

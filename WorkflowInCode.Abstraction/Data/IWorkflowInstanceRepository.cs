@@ -9,6 +9,6 @@ namespace WorkflowInCode.Abstraction.Data
 {
     public interface IWorkflowInstanceRepository
     {
-         Task<CheckWorkflowRegistartionResult> IsWorkflowRegistred(CheckWorkflowRegistartionArgs args);
+         Task<CheckWorkflowResult> IsWorkflowRegistred(CheckWorkflowArgs args);
     }
 }

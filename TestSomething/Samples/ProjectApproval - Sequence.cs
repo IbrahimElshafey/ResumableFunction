@@ -5,6 +5,8 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using WorkflowInCode.Abstraction.Engine;
+using WorkflowInCode.Abstraction.Engine.InOuts;
+
 namespace WorkflowInCode.Abstraction.Samples
 {
     /*
@@ -29,7 +31,7 @@ namespace WorkflowInCode.Abstraction.Samples
             InstanceData = new ProjectApprovalContextData();
         }
 
-        public override async IAsyncEnumerable<IEvent> RunWorkflow()
+        public override async IAsyncEnumerable<WorkflowEvent> RunWorkflow()
         {
             yield return WaitEvent(
                 ProjectRequested,
@@ -87,14 +89,14 @@ namespace WorkflowInCode.Abstraction.Samples
         public ProjectApprovalResult ManagerApprovalResult { get;  set; }
     }
 
-    public class ManagerApprovalEvent : IEvent
+    public class ManagerApprovalEvent : Event
     {
-
+        public object EventData { get; set; }
     }
 
-    public class ProjectRequestedEvent : IEvent
+    public class ProjectRequestedEvent : Event
     {
-
+        public object EventData { get; set; }
     }
 
     public record ProjectApprovalResult(int ProjectId, bool Accepted, bool Rejected);

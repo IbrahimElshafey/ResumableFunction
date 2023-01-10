@@ -6,21 +6,13 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WorkflowInCode.Abstraction.Engine
+namespace WorkflowInCode.Abstraction.Engine.InOuts
 {
-    public abstract class IEvent
+
+    public class WorkflowEvent : Event
     {
-        public object EventData { get; set; }
         public LambdaExpression MatchFunction { get; set; }
         public LambdaExpression ContextProp { get; set; }
-    }
-
-    public abstract class IWaitAnyEvent : IEvent
-    {
-
-    }
-    public abstract class IWaitAllEvent : IEvent
-    {
-
+        public object EventData { get; set; }
     }
 }

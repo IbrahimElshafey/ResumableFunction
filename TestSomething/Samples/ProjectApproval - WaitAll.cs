@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using WorkflowInCode.Abstraction.Engine;
+using WorkflowInCode.Abstraction.Engine.InOuts;
+
 namespace WorkflowInCode.Abstraction.Samples
 {
     /*
@@ -26,7 +28,7 @@ namespace WorkflowInCode.Abstraction.Samples
             InstanceData = new ProjectApprovalContextData();
         }
 
-        public override async IAsyncEnumerable<IEvent> RunWorkflow()
+        public override async IAsyncEnumerable<WorkflowEvent> RunWorkflow()
         {
             yield return WaitEvent(
                 ProjectRequested,
@@ -39,16 +41,18 @@ namespace WorkflowInCode.Abstraction.Samples
                 await AskManagerToApprove(InstanceData.Project);
 
                 yield return WaitEvents(
+                    //new EventWaiting<Project>(ProjectRequested, result => result.Id == InstanceData.Project.Id, () => InstanceData.Project),
                     new EventWaiting<ProjectApprovalResult>(OwnerApproval, result => result.ProjectId == InstanceData.Project.Id, () => InstanceData.OwnerApprovalResult),
                     new EventWaiting<ProjectApprovalResult>(SponsorApproval, result => result.ProjectId == InstanceData.Project.Id, () => InstanceData.SponsorApprovalResult),
-                    new EventWaiting<ProjectApprovalResult>(ManagerApproval, result => result.ProjectId == InstanceData.Project.Id, () => InstanceData.ManagerApprovalResult) { IsOptional=true}
+                    new EventWaiting<ProjectApprovalResult>(ManagerApproval, result => result.ProjectId == InstanceData.Project.Id, () => InstanceData.ManagerApprovalResult) { IsOptional = true }
                     );
+
                 var allManagerResponse = InstanceData.ManagerApprovalResult.Accepted == InstanceData.OwnerApprovalResult.Accepted == InstanceData.SponsorApprovalResult.Accepted;
                 if (allManagerResponse is true)
                 {
                     Console.WriteLine("Final Acceptance");
                 }
-                else if(allManagerResponse is false)
+                else if (allManagerResponse is false)
                 {
                     Console.WriteLine("Final Rejection");
                 }

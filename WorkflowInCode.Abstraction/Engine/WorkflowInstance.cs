@@ -3,55 +3,73 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq.Expressions;
+using System.Reflection;
 using System.Reflection.Metadata.Ecma335;
+using WorkflowInCode.Abstraction.Engine.InOuts;
 
 namespace WorkflowInCode.Abstraction.Engine
 {
-    public abstract class WorkflowInstance<ContextData>
+    public abstract partial class WorkflowInstance<ContextData>
     {
-        protected IWaitAnyEvent WaitFirstEvent<EventData>(
+        protected WaitAnyEvent WaitFirstEvent<EventData>(
             params EventWaiting<EventData>[] events) => null;
 
 
-        protected IWaitAllEvent WaitEvents<EventData>(
+        protected WaitAllEvent WaitEvents<EventData>(
             params EventWaiting<EventData>[] events)
         {
             return null;
         }
 
-        protected IEvent WaitEvent<EventData>(
-            IEvent eventToWait,
+        protected WorkflowEvent WaitEvent<EventData>(
+            Event eventToWait,
             Expression<Func<EventData, bool>> matchFunction,
             Expression<Func<EventData>> contextProp)
         {
-            eventToWait.MatchFunction = matchFunction;
-            eventToWait.ContextProp = contextProp;
-            return eventToWait;
+            var result = new WorkflowEvent();
+            result.MatchFunction = matchFunction;
+            result.ContextProp = contextProp;
+            result.EventData = eventToWait.EventData;
+            return result;
         }
 
-        public string InstanceId { get; protected set; }
+        public WorkflowInstanceRuntimeData RuntimeData { get; private set; }
         public ContextData InstanceData { get; protected set; }
+        
         public async Task SaveInstanceData()
         {
         }
-        public void test(IEvent dynamicEvent, IEvent intEvent, IEvent stringEvent)
+
+        
+        public async Task<WorkflowEvent> Run()
         {
-            //var x = Wait<dynamic>(dynamicEvent, o => o != null, (d, c) => c = d); ;
-            //var y = Wait<int>(intEvent, x => x > 10);
-            //var z = WhenAll<int>((intEvent, x => x == 10), (intEvent, x => x == 10), (intEvent, x => x == 10));
-            //var zz = WhenAny<int>((intEvent, x => x == 10), (intEvent, x => x == 10), (intEvent, x => x == 10));
-            //var a = WhenAll<object>((intEvent, x => x != null), (dynamicEvent, x => x != null), (stringEvent, x => x != null));
-            //var aa = WhenAny<object>((intEvent, x => x != null), (dynamicEvent, x => x != null), (stringEvent, x => x != null));
+            //this method will run based on the activated workflow method
+            //may be the main workflow "in RunWorkflow method" or any method that return "IAsyncEnumerable<WorkflowEvent>"
+            var workflowRunner = GetActiveRunner();
+            if (workflowRunner is null) return null;
+            if (await workflowRunner.MoveNextAsync())
+            {
+                var incommingEvent = workflowRunner.Current;
+                SetContextData(InstanceData, incommingEvent.ContextProp, incommingEvent.EventData);
+                //todo:update runtime data active runner status and waiting list
+                await SaveInstanceData();
+                return incommingEvent;
+            }
+            else
+            {
+                //if current workflow runner name is "RunWorkflow"
+                await OnWorkflowEnd();
+                return null;
+            }
+        }
+        
+        protected abstract IAsyncEnumerable<WorkflowEvent> RunWorkflow();
+        protected virtual async Task OnWorkflowEnd()
+        {
+
         }
 
-        public abstract IAsyncEnumerable<IEvent> RunWorkflow();
+    }
 
-    }
-    public record EventWaiting<EventData>(
-            IEvent EventToWait,
-            Expression<Func<EventData, bool>> MatchFunction,
-            Expression<Func<EventData>> ContextProp)
-    {
-        public bool IsOptional { get; set; }
-    }
+   
 }
