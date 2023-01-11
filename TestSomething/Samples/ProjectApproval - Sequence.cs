@@ -34,37 +34,64 @@ namespace WorkflowInCode.Abstraction.Samples
 
         protected override async IAsyncEnumerable<WorkflowEvent> RunWorkflow()
         {
+            //any class that inherit WorkflowInstance<T> has the methods
+            //WaitEvent,WaitFirstEvent in a collection,WaitEvents and SaveInstanceData
+
+            //the engine will wait for ProjectRequested event
+            //no match function because it's the first one
+            //context prop is prop in InstanceData that we will set with event result data
             yield return WaitEvent(
-                eventToWait:ProjectRequested,
-                matchFunction:null,
-                contextProp: () => InstanceData.Project);
-            if (InstanceData.Project is not null)
+                    eventToWait: ProjectRequested,
+                    matchFunction: null,
+                    contextProp: () => InstanceData.Project);
+            //the compiler will save state after executing the previous return
+            //and wiating for the event
+            //it will continue from the line below when event cames
+
+
+            //InstanceData.Project is set by the previous event
+            //we will initiate a task for Owner and wait to the Owner response
+            //That matching function correlates the event to the right instance
+            //The matching function will be translated to query language "MongoDB query for example" by the engine to search the active instance.
+            await AskOwnerToApprove(InstanceData.Project);
+            yield return WaitEvent(
+                OwnerApproval,
+                result => result.ProjectId == InstanceData.Project.Id,
+                () => InstanceData.OwnerApprovalResult);
+            if (InstanceData.OwnerApprovalResult.Rejected)
             {
-                await AskOwnerToApprove(InstanceData.Project);
-                yield return WaitEvent(
-                    OwnerApproval,
-                    result => result.ProjectId == InstanceData.Project.Id,
-                    () => InstanceData.OwnerApprovalResult);
-
-                if (InstanceData.OwnerApprovalResult.Accepted)
-                {
-                    await AskSponsorToApprove(InstanceData.Project);
-                    yield return WaitEvent(
-                     SponsorApproval,
-                     result => result.ProjectId == InstanceData.Project.Id,
-                     () => InstanceData.SponsorApprovalResult);
-                    if (InstanceData.SponsorApprovalResult.Accepted)
-                    {
-                        await AskManagerToApprove(InstanceData.Project);
-                        yield return WaitEvent(
-                         ManagerApproval,
-                         result => result.ProjectId == InstanceData.Project.Id,
-                         () => InstanceData.ManagerApprovalResult);
-                        Console.WriteLine("Continue");
-                    }
-
-                }
+                await ProjectRejected(InstanceData.Project,"Owner");
+                yield break;
             }
+
+            await AskSponsorToApprove(InstanceData.Project);
+            yield return WaitEvent(
+             SponsorApproval,
+             result => result.ProjectId == InstanceData.Project.Id,
+             () => InstanceData.SponsorApprovalResult);
+            if (InstanceData.SponsorApprovalResult.Rejected)
+            {
+                await ProjectRejected(InstanceData.Project, "Sponsor");
+                yield break;
+            }
+
+            await AskManagerToApprove(InstanceData.Project);
+            yield return WaitEvent(
+             ManagerApproval,
+             result => result.ProjectId == InstanceData.Project.Id,
+             () => InstanceData.ManagerApprovalResult);
+            if (InstanceData.ManagerApprovalResult.Rejected)
+            {
+                await ProjectRejected(InstanceData.Project, "Manager");
+                yield break;
+            }
+
+            Console.WriteLine("All three aproved");
+        }
+
+        private async Task ProjectRejected(Project project, string v)
+        {
+            await Task.Delay(500);
         }
 
         private async Task AskManagerToApprove(Project project)
@@ -84,10 +111,10 @@ namespace WorkflowInCode.Abstraction.Samples
     }
     public class ProjectApprovalContextData
     {
-        public Project Project { get;  set; }
-        public ProjectApprovalResult OwnerApprovalResult { get;  set; }
-        public ProjectApprovalResult SponsorApprovalResult { get;  set; }
-        public ProjectApprovalResult ManagerApprovalResult { get;  set; }
+        public Project Project { get; set; }
+        public ProjectApprovalResult OwnerApprovalResult { get; set; }
+        public ProjectApprovalResult SponsorApprovalResult { get; set; }
+        public ProjectApprovalResult ManagerApprovalResult { get; set; }
     }
 
     public class ManagerApprovalEvent : Event

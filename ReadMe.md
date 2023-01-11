@@ -31,60 +31,65 @@ I evaluated the existing solutions and found that there is no solution that fits
 # Example
 Keep in mind that the work is in progress
 ```C#
-//ProjectApprovalContextData is the data that will bes saved to the database 
-//When the engine match an event it will load the related workflow class and set the 
-//InstanceData property by loading it from database
-//No other state saved just the InstanceData and workflow author must keep that in mind
-//We can't depend on automatic serialize for state becuse compiler may remove fields and variables we defined
-public class ProjectApproval : WorkflowInstance<ProjectApprovalContextData>
-{
+        //ProjectApprovalContextData is the data that will bes saved to the database 
+        //When the engine match an event it will load the related workflow class and set the 
+        //InstanceData property by loading it from database
+        //No other state saved just the InstanceData and workflow author must keep that in mind
+        //We can't depend on automatic serialize for state becuse compiler may remove fields and variables we defined
+        protected override async IAsyncEnumerable<WorkflowEvent> RunWorkflow()
+        {
+            //any class that inherit WorkflowInstance<T> has the methods
+            //WaitEvent,WaitFirstEvent in a collection,WaitEvents and SaveInstanceData
 
-	protected override async IAsyncEnumerable<WorkflowEvent> RunWorkflow()
-	{
-		//any class that inherit WorkflowInstance<T> has the methods
-		//WaitEvent,WaitFirstEvent in a collection,WaitEvents and SaveInstanceData
-		
-		//the engine will wait for ProjectRequested event
-		//no match function because it's the first one
-		//context prop is prop in InstanceData that we will set with event result data
-		yield return WaitEvent(
-                eventToWait: ProjectRequested,
-                matchFunction: null,
-                contextProp: () => InstanceData.Project);
-		//the compiler will save state after executing the previous return
-		//and wiating for the event
-		//it will continue from the line below when event cames
-		if (InstanceData.Project is not null)
-		{
-			//InstanceData.Project is set by the previous event
-			//we will initiate a task for Owner and wait to the Owner response
-			//That matching function correlates the event to the right instance
-			//The matching function will be translated to query language "MongoDB query for example" by the engine to search the active instance.
-			await AskOwnerToApprove(InstanceData.Project);
-			yield return WaitEvent(
-				OwnerApproval,
-				result => result.ProjectId == InstanceData.Project.Id,
-				() => InstanceData.OwnerApprovalResult);
+            //the engine will wait for ProjectRequested event
+            //no match function because it's the first one
+            //context prop is prop in InstanceData that we will set with event result data
+            yield return WaitEvent(
+                    eventToWait: ProjectRequested,
+                    matchFunction: null,
+                    contextProp: () => InstanceData.Project);
+            //the compiler will save state after executing the previous return
+            //and wiating for the event
+            //it will continue from the line below when event cames
 
-			if (InstanceData.OwnerApprovalResult.Accepted)
-			{
-				await AskSponsorToApprove(InstanceData.Project);
-				yield return WaitEvent(
-				 SponsorApproval,
-				 result => result.ProjectId == InstanceData.Project.Id,
-				 () => InstanceData.SponsorApprovalResult);
-				if (InstanceData.SponsorApprovalResult.Accepted)
-				{
-					await AskManagerToApprove(InstanceData.Project);
-					yield return WaitEvent(
-					 ManagerApproval,
-					 result => result.ProjectId == InstanceData.Project.Id,
-					 () => InstanceData.ManagerApprovalResult);
-					Console.WriteLine("Continue");
-				}
 
-			}
-		}
-	}
-}
+            //InstanceData.Project is set by the previous event
+            //we will initiate a task for Owner and wait to the Owner response
+            //That matching function correlates the event to the right instance
+            //The matching function will be translated to query language "MongoDB query for example" by the engine to search the active instance.
+            await AskOwnerToApprove(InstanceData.Project);
+            yield return WaitEvent(
+                OwnerApproval,
+                result => result.ProjectId == InstanceData.Project.Id,
+                () => InstanceData.OwnerApprovalResult);
+            if (InstanceData.OwnerApprovalResult.Rejected)
+            {
+                await ProjectRejected(InstanceData.Project,"Owner");
+                yield break;
+            }
+
+            await AskSponsorToApprove(InstanceData.Project);
+            yield return WaitEvent(
+             SponsorApproval,
+             result => result.ProjectId == InstanceData.Project.Id,
+             () => InstanceData.SponsorApprovalResult);
+            if (InstanceData.SponsorApprovalResult.Rejected)
+            {
+                await ProjectRejected(InstanceData.Project, "Sponsor");
+                yield break;
+            }
+
+            await AskManagerToApprove(InstanceData.Project);
+            yield return WaitEvent(
+             ManagerApproval,
+             result => result.ProjectId == InstanceData.Project.Id,
+             () => InstanceData.ManagerApprovalResult);
+            if (InstanceData.ManagerApprovalResult.Rejected)
+            {
+                await ProjectRejected(InstanceData.Project, "Manager");
+                yield break;
+            }
+
+            Console.WriteLine("All three aproved");
+        }
 ```
