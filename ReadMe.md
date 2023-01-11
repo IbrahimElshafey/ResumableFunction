@@ -32,7 +32,8 @@ I evaluated the existing solutions and found that there is no solution that fits
 Keep in mind that the work is in progress
 ```C#
 //ProjectApprovalContextData is the data that will bes saved to the database 
-//When the engine match an eevent it will load the related workflow class and set the InstanceData property by loading it from database
+//When the engine match an event it will load the related workflow class and set the 
+//InstanceData property by loading it from database
 //No other state saved just the InstanceData and workflow author must keep that in mind
 //We can't depend on automatic serialize for state becuse compiler may remove fields and variables we defined
 public class ProjectApproval : WorkflowInstance<ProjectApprovalContextData>
@@ -55,6 +56,10 @@ public class ProjectApproval : WorkflowInstance<ProjectApprovalContextData>
 		//it will continue from the line below when event cames
 		if (InstanceData.Project is not null)
 		{
+			//InstanceData.Project is set by the previous event
+			//we will initiate a task for Owner and wait to the Owner response
+			//That matching function correlates the event to the right instance
+			//The matching function will be translated to query language "MongoDB query for example" by the engine to search the active instance.
 			await AskOwnerToApprove(InstanceData.Project);
 			yield return WaitEvent(
 				OwnerApproval,
