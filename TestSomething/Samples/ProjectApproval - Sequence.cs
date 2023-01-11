@@ -16,7 +16,11 @@ namespace WorkflowInCode.Abstraction.Samples
          * موافقة راعي المشروع ليست إجبارية, قد يرد أو لا يرد أبداً
          * 
          */
-
+    //ProjectApprovalContextData is the data that will bes saved to the database 
+    //When the engine match an event it will load the related workflow class and set the 
+    //InstanceData property by loading it from database
+    //No other state saved just the InstanceData and workflow author must keep that in mind
+    //We can't depend on automatic serialize for state becuse compiler may remove fields and variables we defined
     public class ProjectApproval : WorkflowInstance<ProjectApprovalContextData>
     {
         public ProjectRequestedEvent ProjectRequested;
@@ -31,7 +35,7 @@ namespace WorkflowInCode.Abstraction.Samples
             ManagerApproval = pm;
             InstanceData = new ProjectApprovalContextData();
         }
-
+       
         protected override async IAsyncEnumerable<WorkflowEvent> RunWorkflow()
         {
             //any class that inherit WorkflowInstance<T> has the methods
