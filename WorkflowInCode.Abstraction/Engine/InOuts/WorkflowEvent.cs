@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace WorkflowInCode.Abstraction.Engine.InOuts
 {
 
-    public class WorkflowEvent : Event
+    public class WorkflowEvent : IEvent
     {
         public LambdaExpression MatchFunction { get; set; }
         public LambdaExpression ContextProp { get; set; }

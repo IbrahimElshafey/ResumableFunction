@@ -1,8 +1,7 @@
 ﻿namespace WorkflowInCode.Abstraction.Engine.InOuts
 {
-    public interface Event
+    public interface IEvent
     {
-        public object EventData { get; set; }
 
     }
 }

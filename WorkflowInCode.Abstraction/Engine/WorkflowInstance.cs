@@ -11,26 +11,40 @@ namespace WorkflowInCode.Abstraction.Engine
 {
     public abstract partial class WorkflowInstance<ContextData>
     {
-        protected WaitAnyEvent WaitFirstEvent<EventData>(
-            params EventWaiting<EventData>[] events) => null;
+        protected WaitAnyEvent WaitFirstEvent<IEvent>(
+            params EventWaiting<IEvent>[] events) => null;
 
 
-        protected WaitAllEvent WaitEvents<EventData>(
-            params EventWaiting<EventData>[] events)
+        protected WaitAllEvent WaitEvents<IEvent>(
+            params EventWaiting<IEvent>[] events)
         {
             return null;
         }
 
-        protected WorkflowEvent WaitEvent<EventData>(
-            Event eventToWait,
-            Expression<Func<EventData, bool>> matchFunction,
-            Expression<Func<EventData>> contextProp)
+        protected WorkflowEvent WaitEvent<IEvent>(
+            IEvent eventToWait,
+            Expression<Func<IEvent, bool>> matchFunction,
+            Expression<Func<IEvent>> contextProp)
         {
             var result = new WorkflowEvent();
             result.MatchFunction = matchFunction;
             result.ContextProp = contextProp;
-            result.EventData = eventToWait.EventData;
+            result.EventData = eventToWait;
             return result;
+        }
+
+
+        protected WorkflowEvent WaitFirstSubWorkflow(params Func<IAsyncEnumerable<WorkflowEvent>>[] subWorkflows)
+        {
+            return null;
+        }
+        protected WorkflowEvent WaitSubWorkflows(params Func<IAsyncEnumerable<WorkflowEvent>>[] subWorkflows)
+        {
+            return null;
+        }
+        protected WorkflowEvent WaitSubWorkflow(Func<IAsyncEnumerable<WorkflowEvent>> subWorkflow)
+        {
+            return null;
         }
 
         public WorkflowInstanceRuntimeData RuntimeData { get; private set; }

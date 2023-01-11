@@ -4,7 +4,7 @@ using WorkflowInCode.Abstraction.Engine.InOuts;
 namespace WorkflowInCode.Abstraction.Engine
 {
     public record EventWaiting<EventData>(
-            Event EventToWait,
+            IEvent EventToWait,
             Expression<Func<EventData, bool>> MatchFunction,
             Expression<Func<EventData>> ContextProp)
     {

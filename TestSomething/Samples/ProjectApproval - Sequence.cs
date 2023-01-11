@@ -93,47 +93,38 @@ namespace WorkflowInCode.Abstraction.Samples
             Console.WriteLine("All three approved");
         }
 
-        private async Task ProjectRejected(Project project, string v)
+        protected async Task ProjectRejected(ProjectRequestedEvent project, string v)
         {
             await Task.Delay(500);
         }
 
-        private async Task AskManagerToApprove(Project project)
+        protected async Task AskManagerToApprove(ProjectRequestedEvent project)
         {
             await Task.Delay(1000);
         }
 
-        private async Task AskSponsorToApprove(Project project)
+        protected async Task AskSponsorToApprove(ProjectRequestedEvent project)
         {
             await Task.Delay(1000);
         }
 
-        private async Task AskOwnerToApprove(Project project)
+        protected async Task AskOwnerToApprove(ProjectRequestedEvent project)
         {
             await Task.Delay(1000);
         }
     }
     public class ProjectApprovalContextData
     {
-        public Project Project { get; set; }
-        public ProjectApprovalResult OwnerApprovalResult { get; set; }
-        public ProjectApprovalResult SponsorApprovalResult { get; set; }
-        public ProjectApprovalResult ManagerApprovalResult { get; set; }
+        public ProjectRequestedEvent Project { get; set; }
+        public ManagerApprovalEvent OwnerApprovalResult { get; set; }
+        public ManagerApprovalEvent SponsorApprovalResult { get; set; }
+        public ManagerApprovalEvent ManagerApprovalResult { get; set; }
     }
 
-    public class ManagerApprovalEvent : Event
-    {
-        public object EventData { get; set; }
-    }
 
-    public class ProjectRequestedEvent : Event
-    {
-        public object EventData { get; set; }
-    }
+    public record ManagerApprovalEvent(int ProjectId, bool Accepted, bool Rejected):IEvent;
 
-    public record ProjectApprovalResult(int ProjectId, bool Accepted, bool Rejected);
-
-    public class Project
+    public class ProjectRequestedEvent : IEvent
     {
         public int Id { get; set; }
         public string Name { get; set; }
