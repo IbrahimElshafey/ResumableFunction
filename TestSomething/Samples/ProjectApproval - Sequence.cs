@@ -90,7 +90,7 @@ namespace WorkflowInCode.Abstraction.Samples
                 yield break;
             }
 
-            Console.WriteLine("All three aproved");
+            Console.WriteLine("All three approved");
         }
 
         private async Task ProjectRejected(Project project, string v)

@@ -18,18 +18,23 @@ namespace Test
         {
             var projectApprovalWorkflow = new ProjectApproval(
                 new ProjectRequestedEvent() { EventData = new Project { DueDate = DateTime.Now, Id = 122, Name = "Project1" } },
-                new ManagerApprovalEvent() { EventData = new ProjectApprovalResult(122, true, false) },
+                new ManagerApprovalEvent() { EventData = new ProjectApprovalResult(122, false, true) },
                 new ManagerApprovalEvent() { EventData = new ProjectApprovalResult(122, true, false) },
                 new ManagerApprovalEvent() { EventData = new ProjectApprovalResult(122, true, false) });
 
-            projectApprovalWorkflow.InstanceData.Project = new Project { DueDate = DateTime.Now, Id = 122, Name = "Project1" };
-            projectApprovalWorkflow.InstanceData.SponsorApprovalResult = new ProjectApprovalResult(122, true, false);
-            projectApprovalWorkflow.InstanceData.OwnerApprovalResult = new ProjectApprovalResult(122, true, false);
-            projectApprovalWorkflow.InstanceData.ManagerApprovalResult = new ProjectApprovalResult(122, true, false);
+            //projectApprovalWorkflow.InstanceData.Project = new Project { DueDate = DateTime.Now, Id = 122, Name = "Project1" };
+            //projectApprovalWorkflow.InstanceData.SponsorApprovalResult = new ProjectApprovalResult(122, true, false);
+            //projectApprovalWorkflow.InstanceData.OwnerApprovalResult = new ProjectApprovalResult(122, true, false);
+            //projectApprovalWorkflow.InstanceData.ManagerApprovalResult = new ProjectApprovalResult(122, true, false);
             var incomingEvent = await projectApprovalWorkflow.Run();
-            var status = projectApprovalWorkflow.GetActiveRunnerState();
-            projectApprovalWorkflow.SetActiveRunnerState(-5);
             incomingEvent = await projectApprovalWorkflow.Run();
+            incomingEvent = await projectApprovalWorkflow.Run();
+            incomingEvent = await projectApprovalWorkflow.Run();
+            incomingEvent = await projectApprovalWorkflow.Run();
+
+            //var status = projectApprovalWorkflow.GetActiveRunnerState();
+            //projectApprovalWorkflow.SetActiveRunnerState(-5);
+            //incomingEvent = await projectApprovalWorkflow.Run();
             return;
             
         }

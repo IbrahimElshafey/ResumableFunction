@@ -28,7 +28,7 @@ namespace WorkflowInCode.Abstraction.Samples
             InstanceData = new ProjectApprovalContextData();
         }
 
-        public override async IAsyncEnumerable<WorkflowEvent> RunWorkflow()
+        protected override async IAsyncEnumerable<WorkflowEvent> RunWorkflow()
         {
             yield return WaitEvent(
                 ProjectRequested,
