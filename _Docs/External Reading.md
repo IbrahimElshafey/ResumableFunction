@@ -26,9 +26,6 @@
 	* https://www.hangfire.io/
 * Any implementation for ISubscribeEvent<T> interface
 
-# Action Types
-* Call an API
-* Publish event to event broker
 
 Expression Trees
 https://learn.microsoft.com/en-us/dotnet/csharp/expression-trees-explained

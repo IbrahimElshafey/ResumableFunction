@@ -16,6 +16,7 @@ namespace WorkflowInCode.Abstraction.Samples
          * موافقة راعي المشروع ليست إجبارية, قد يرد أو لا يرد أبداً
          * 
          */
+
     public class ProjectApproval : WorkflowInstance<ProjectApprovalContextData>
     {
         public ProjectRequestedEvent ProjectRequested;
@@ -31,12 +32,12 @@ namespace WorkflowInCode.Abstraction.Samples
             InstanceData = new ProjectApprovalContextData();
         }
 
-        public override async IAsyncEnumerable<WorkflowEvent> RunWorkflow()
+        protected override async IAsyncEnumerable<WorkflowEvent> RunWorkflow()
         {
             yield return WaitEvent(
-                ProjectRequested,
-                null,
-                () => InstanceData.Project);
+                eventToWait:ProjectRequested,
+                matchFunction:null,
+                contextProp: () => InstanceData.Project);
             if (InstanceData.Project is not null)
             {
                 await AskOwnerToApprove(InstanceData.Project);
