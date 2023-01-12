@@ -78,9 +78,9 @@ namespace WorkflowInCode.Abstraction.Engine
         }
         
         protected abstract IAsyncEnumerable<WorkflowEvent> RunWorkflow();
-        protected virtual async Task OnWorkflowEnd()
+        protected virtual Task OnWorkflowEnd()
         {
-
+            return Task.CompletedTask;
         }
 
     }

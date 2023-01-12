@@ -5,7 +5,7 @@ namespace WorkflowInCode.Abstraction.Engine
 {
     public class EventWaiting
     {
-        public EventWaiting(IEvent eventToWait)
+        public EventWaiting(dynamic eventToWait)
         {
 
         }
@@ -15,13 +15,13 @@ namespace WorkflowInCode.Abstraction.Engine
         public LambdaExpression SetPropExpression { get; private set; }
 
 
-        public EventWaiting Match<T>(Expression<Func<T, bool>> func) where T : IEvent
+        public EventWaiting Match<T>(Expression<Func<T, bool>> func)
         {
             MatchExpression = func;
             return this;
         }
 
-        public EventWaiting SetProp<T>(Expression<Func<T>> instancePropFunc) where T : IEvent
+        public EventWaiting SetProp<T>(Expression<Func<T>> instancePropFunc)
         {
             SetPropExpression = instancePropFunc;
             return this;

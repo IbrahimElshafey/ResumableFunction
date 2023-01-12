@@ -35,7 +35,7 @@ namespace WorkflowInCode.Abstraction.Engine
 
         }
 
-        public void EventReceived(IEvent subscribedEvent)
+        public void EventReceived(dynamic subscribedEvent)
         {
             //event comes to the engine
             //engine search workflow instances table to find if any workflow waits for this event type

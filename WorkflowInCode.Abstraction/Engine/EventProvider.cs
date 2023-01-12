@@ -11,19 +11,24 @@ namespace WorkflowInCode.Abstraction.Engine
     /// <summary>
     /// Event provider will push events to the engine
     /// </summary>
-    public interface IEventProvider
+    public abstract class EventProvider
     {
-        string UniqueName { get; }
+        public abstract string UniqueName { get; }
         /// <summary>
         /// Start listening to the events
         /// </summary>
         /// <returns></returns>
-        Task Start();
+        public abstract Task Start();
         /// <summary>
         /// Stop listening to the events
         /// </summary>
         /// <returns></returns>
-        Task Stop();
+        public abstract Task Stop();
+
+        protected void PushEvent(dynamic @event)
+        {
+            //will use engine gRPC client to push an event
+        }
 
     }
 }

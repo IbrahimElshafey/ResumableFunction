@@ -116,9 +116,9 @@ namespace WorkflowInCode.Abstraction.Samples
     }
 
 
-    public record ManagerApprovalEvent(int ProjectId, bool Accepted, bool Rejected) : IEvent;
+    public record ManagerApprovalEvent(int ProjectId, bool Accepted, bool Rejected);
 
-    public class ProjectRequestedEvent : IEvent
+    public class ProjectRequestedEvent
     {
         public int Id { get; set; }
         public string Name { get; set; }
