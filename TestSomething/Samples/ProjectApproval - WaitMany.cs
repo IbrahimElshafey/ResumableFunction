@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using WorkflowInCode.Abstraction.Engine;
-using WorkflowInCode.Abstraction.Engine.InOuts;
+using WorkflowInCode.Abstraction.InOuts;
 
 namespace WorkflowInCode.Abstraction.Samples
 {
@@ -19,7 +18,7 @@ namespace WorkflowInCode.Abstraction.Samples
         {
         }
 
-        protected override async IAsyncEnumerable<WorkflowEvent> RunWorkflow()
+        protected override async IAsyncEnumerable<EventWaiting> RunWorkflow()
         {
             yield return WaitEvent(ProjectRequested).SetProp(() => InstanceData.Project);
             if (InstanceData.Project is not null)

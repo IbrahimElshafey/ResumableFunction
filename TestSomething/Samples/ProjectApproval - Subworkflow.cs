@@ -4,8 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
-using WorkflowInCode.Abstraction.Engine;
-using WorkflowInCode.Abstraction.Engine.InOuts;
+using WorkflowInCode.Abstraction.InOuts;
 
 namespace WorkflowInCode.Abstraction.Samples
 {
@@ -22,7 +21,7 @@ namespace WorkflowInCode.Abstraction.Samples
         {
         }
 
-        protected override async IAsyncEnumerable<WorkflowEvent> RunWorkflow()
+        protected override async IAsyncEnumerable<EventWaiting> RunWorkflow()
         {
 
             await Task.Delay(100);
@@ -35,7 +34,7 @@ namespace WorkflowInCode.Abstraction.Samples
             Console.WriteLine("All three approved");
         }
 
-        private async IAsyncEnumerable<WorkflowEvent> SubWorkFlow()
+        private async IAsyncEnumerable<EventWaiting> SubWorkFlow()
         {
             await AskOwnerToApprove(InstanceData.Project);
             yield return WaitEvent(OwnerApproval)

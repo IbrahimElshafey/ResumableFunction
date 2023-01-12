@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using WorkflowInCode.Abstraction.Data.InOuts;
+using WorkflowInCode.Engine.Data.InOuts;
 
-namespace WorkflowInCode.Abstraction.Data
+namespace WorkflowInCode.Engine.Data
 {
     public interface IWorkflowInstanceRepository
     {

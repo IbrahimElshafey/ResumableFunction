@@ -5,9 +5,9 @@ using System.Collections.ObjectModel;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Reflection.Metadata.Ecma335;
-using WorkflowInCode.Abstraction.Engine.InOuts;
+using WorkflowInCode.Abstraction.InOuts;
 
-namespace WorkflowInCode.Abstraction.Engine
+namespace WorkflowInCode.Abstraction
 {
     public abstract partial class WorkflowInstance<ContextData>
     {
@@ -24,25 +24,21 @@ namespace WorkflowInCode.Abstraction.Engine
             return null;
         }
 
-        protected WorkflowEvent WaitEvent<IEvent>(IEvent eventToWait)
+        protected EventWaiting WaitEvent(IEvent eventToWait)
         {
-            var result = new WorkflowEvent
-            {
-                EventData = eventToWait
-            };
-            return result;
+            return new EventWaiting(eventToWait);
         }
 
 
-        protected WorkflowEvent WaitFirstSubWorkflow(params Func<IAsyncEnumerable<WorkflowEvent>>[] subWorkflows)
+        protected EventWaiting WaitFirstSubWorkflow(params Func<IAsyncEnumerable<EventWaiting>>[] subWorkflows)
         {
             return null;
         }
-        protected WorkflowEvent WaitSubWorkflows(params Func<IAsyncEnumerable<WorkflowEvent>>[] subWorkflows)
+        protected EventWaiting WaitSubWorkflows(params Func<IAsyncEnumerable<EventWaiting>>[] subWorkflows)
         {
             return null;
         }
-        protected WorkflowEvent WaitSubWorkflow(Func<IAsyncEnumerable<WorkflowEvent>> subWorkflow)
+        protected EventWaiting WaitSubWorkflow(Func<IAsyncEnumerable<EventWaiting>> subWorkflow)
         {
             return null;
         }
@@ -55,7 +51,7 @@ namespace WorkflowInCode.Abstraction.Engine
         }
 
         
-        public async Task<WorkflowEvent> Run()
+        public async Task<EventWaiting> Run()
         {
             //this method will run based on the activated workflow method
             //may be the main workflow "in RunWorkflow method" or any method that return "IAsyncEnumerable<WorkflowEvent>"
@@ -77,7 +73,7 @@ namespace WorkflowInCode.Abstraction.Engine
             }
         }
         
-        protected abstract IAsyncEnumerable<WorkflowEvent> RunWorkflow();
+        protected abstract IAsyncEnumerable<EventWaiting> RunWorkflow();
         protected virtual Task OnWorkflowEnd()
         {
             return Task.CompletedTask;

@@ -4,8 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
-using WorkflowInCode.Abstraction.Engine;
-using WorkflowInCode.Abstraction.Engine.InOuts;
+using WorkflowInCode.Abstraction.InOuts;
 
 namespace WorkflowInCode.Abstraction.Samples
 {
@@ -36,7 +35,7 @@ namespace WorkflowInCode.Abstraction.Samples
             InstanceData = new ProjectApprovalContextData();
         }
 
-        protected override async IAsyncEnumerable<WorkflowEvent> RunWorkflow()
+        protected override async IAsyncEnumerable<EventWaiting> RunWorkflow()
         {
             //any class that inherit WorkflowInstance<T> has the methods
             //WaitEvent,WaitFirstEvent in a collection,WaitEvents and SaveInstanceData
@@ -116,12 +115,22 @@ namespace WorkflowInCode.Abstraction.Samples
     }
 
 
-    public record ManagerApprovalEvent(int ProjectId, bool Accepted, bool Rejected);
+    public record ManagerApprovalEvent(int ProjectId, bool Accepted, bool Rejected) : IEvent
+    {
+        public string EventProviderName => Const.CurrentEventProvider;
+    }
 
-    public class ProjectRequestedEvent
+    public class ProjectRequestedEvent:IEvent
     {
         public int Id { get; set; }
         public string Name { get; set; }
         public DateTime DueDate { get; set; }
+
+        public string EventProviderName => Const.CurrentEventProvider;
+    }
+
+    public class Const
+    {
+        public const string CurrentEventProvider = "WebHookProvider";
     }
 }

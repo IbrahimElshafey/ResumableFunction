@@ -1,4 +1,4 @@
-﻿namespace WorkflowInCode.Abstraction.Engine.InOuts
+﻿namespace WorkflowInCode.Abstraction.InOuts
 {
     public class WorkflowInstanceRuntimeData
     {
@@ -13,6 +13,6 @@
         public string Name { get; set; }
         public string Type { get; set; }
         public int Status { get; set; }
-        public WorkflowEvent WaitingEvent { get; set; }
+        public EventWaiting WaitingEvent { get; set; }
     }
 }

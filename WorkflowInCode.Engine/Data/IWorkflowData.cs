@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WorkflowInCode.Abstraction.Data
+namespace WorkflowInCode.Engine.Data
 {
     public interface IWorkflowData:IDisposable
     {

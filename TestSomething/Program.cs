@@ -6,8 +6,7 @@ using System.Reflection.Metadata;
 using System.Reflection.Metadata.Ecma335;
 using System.Runtime.CompilerServices;
 using TestSomething.MayUse;
-using WorkflowInCode.Abstraction.Engine;
-using WorkflowInCode.Abstraction.Engine.InOuts;
+using WorkflowInCode.Abstraction.InOuts;
 using WorkflowInCode.Abstraction.Samples;
 
 namespace Test
@@ -16,11 +15,6 @@ namespace Test
     {
         static async Task Main(string[] args)
         {
-            int x = 10;
-            double y = 10.5;
-            string s = "Hello";
-            MethodX<object>(x, y, s);
-            return;
             var projectApprovalWorkflow = new ProjectApproval(
                 new ProjectRequestedEvent() { DueDate = DateTime.Now, Id = 122, Name = "Project1" },
                 new ManagerApprovalEvent(122, true, false),

@@ -5,9 +5,9 @@ using System.Collections.ObjectModel;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Reflection.Metadata.Ecma335;
-using WorkflowInCode.Abstraction.Engine.InOuts;
+using WorkflowInCode.Abstraction.InOuts;
 
-namespace WorkflowInCode.Abstraction.Engine
+namespace WorkflowInCode.Abstraction
 {
     public abstract partial class WorkflowInstance<ContextData>
     {
@@ -38,7 +38,7 @@ namespace WorkflowInCode.Abstraction.Engine
             }
             return int.MinValue;
         }
-        private IAsyncEnumerator<WorkflowEvent>? GetActiveRunner()
+        private IAsyncEnumerator<EventWaiting>? GetActiveRunner()
         {
             if (_activeRunner == null)
             {
@@ -62,13 +62,14 @@ namespace WorkflowInCode.Abstraction.Engine
                 thisField?.SetValue(_activeRunner, this);
 
                 SetActiveRunnerState(int.MinValue);
-                return _activeRunner as IAsyncEnumerator<WorkflowEvent>;
+                return _activeRunner as IAsyncEnumerator<EventWaiting>;
             }
-            return _activeRunner as IAsyncEnumerator<WorkflowEvent>;
+            return _activeRunner as IAsyncEnumerator<EventWaiting>;
         }
 
         private void SetContextData(ContextData instanceData, LambdaExpression contextProp, object eventData)
         {
+            //todo:check type &&me.Type
             if (contextProp.Body is MemberExpression me)
             {
                 var property = (PropertyInfo)me.Member;

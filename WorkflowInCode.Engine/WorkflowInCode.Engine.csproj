@@ -7,9 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="WorkflowInstance\**" />
-    <EmbeddedResource Remove="WorkflowInstance\**" />
-    <None Remove="WorkflowInstance\**" />
+    <ProjectReference Include="..\WorkflowInCode.Abstraction\WorkflowInCode.Abstraction.csproj" />
   </ItemGroup>
 
 </Project>
