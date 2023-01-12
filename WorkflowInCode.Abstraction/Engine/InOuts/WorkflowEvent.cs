@@ -11,8 +11,21 @@ namespace WorkflowInCode.Abstraction.Engine.InOuts
 
     public class WorkflowEvent : IEvent
     {
-        public LambdaExpression MatchFunction { get; set; }
-        public LambdaExpression ContextProp { get; set; }
-        public object EventData { get; set; }
+        public dynamic EventData { get; set; }
+        public LambdaExpression MatchExpression { get; private set; }
+        public LambdaExpression SetPropExpression { get; private set; }
+
+
+        public WorkflowEvent Match<T>(Expression<Func<T, bool>> func) where T : IEvent
+        {
+            MatchExpression = func;
+            return this;
+        }
+
+        public WorkflowEvent SetProp<T>(Expression<Func<T>> instancePropFunc) where T : IEvent
+        {
+            SetPropExpression = instancePropFunc;
+            return this;
+        }
     }
 }

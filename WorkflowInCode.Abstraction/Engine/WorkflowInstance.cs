@@ -11,25 +11,25 @@ namespace WorkflowInCode.Abstraction.Engine
 {
     public abstract partial class WorkflowInstance<ContextData>
     {
-        protected WaitAnyEvent WaitFirstEvent<IEvent>(
-            params EventWaiting<IEvent>[] events) => null;
-
-
-        protected WaitAllEvent WaitEvents<IEvent>(
-            params EventWaiting<IEvent>[] events)
+        protected WaitAnyEvent WaitFirstEvent(
+            params EventWaiting[] events) 
         {
             return null;
         }
 
-        protected WorkflowEvent WaitEvent<IEvent>(
-            IEvent eventToWait,
-            Expression<Func<IEvent, bool>> matchFunction,
-            Expression<Func<IEvent>> contextProp)
+
+        protected WaitAllEvent WaitEvents(
+            params EventWaiting[] events)
         {
-            var result = new WorkflowEvent();
-            result.MatchFunction = matchFunction;
-            result.ContextProp = contextProp;
-            result.EventData = eventToWait;
+            return null;
+        }
+
+        protected WorkflowEvent WaitEvent<IEvent>(IEvent eventToWait)
+        {
+            var result = new WorkflowEvent
+            {
+                EventData = eventToWait
+            };
             return result;
         }
 
@@ -64,7 +64,7 @@ namespace WorkflowInCode.Abstraction.Engine
             if (await workflowRunner.MoveNextAsync())
             {
                 var incommingEvent = workflowRunner.Current;
-                SetContextData(InstanceData, incommingEvent.ContextProp, incommingEvent.EventData);
+                SetContextData(InstanceData, incommingEvent.SetPropExpression, incommingEvent.EventData);
                 //todo:update runtime data active runner status and waiting list
                 await SaveInstanceData();
                 return incommingEvent;

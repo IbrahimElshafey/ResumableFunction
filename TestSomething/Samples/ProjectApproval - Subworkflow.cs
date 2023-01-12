@@ -26,10 +26,7 @@ namespace WorkflowInCode.Abstraction.Samples
         {
 
             await Task.Delay(100);
-            yield return WaitEvent(
-                    eventToWait: ProjectRequested,
-                    matchFunction: null,
-                    contextProp: () => InstanceData.Project);
+            yield return WaitEvent(ProjectRequested).SetProp(() => InstanceData.Project);
 
             yield return WaitSubWorkflow(SubWorkFlow);
             yield return WaitSubWorkflows(SubWorkFlow,SubWorkFlow);
@@ -41,10 +38,9 @@ namespace WorkflowInCode.Abstraction.Samples
         private async IAsyncEnumerable<WorkflowEvent> SubWorkFlow()
         {
             await AskOwnerToApprove(InstanceData.Project);
-            yield return WaitEvent(
-                OwnerApproval,
-                result => result.ProjectId == InstanceData.Project.Id,
-                () => InstanceData.OwnerApprovalResult);
+            yield return WaitEvent(OwnerApproval)
+                .Match<ManagerApprovalEvent>(result => result.ProjectId == InstanceData.Project.Id)
+                .SetProp(() => InstanceData.OwnerApprovalResult);
             if (InstanceData.OwnerApprovalResult.Rejected)
             {
                 await ProjectRejected(InstanceData.Project, "Owner");
@@ -52,10 +48,9 @@ namespace WorkflowInCode.Abstraction.Samples
             }
 
             await AskSponsorToApprove(InstanceData.Project);
-            yield return WaitEvent(
-             SponsorApproval,
-             result => result.ProjectId == InstanceData.Project.Id,
-             () => InstanceData.SponsorApprovalResult);
+            yield return WaitEvent(SponsorApproval)
+                .Match<ManagerApprovalEvent>(result => result.ProjectId == InstanceData.Project.Id)
+                .SetProp(() => InstanceData.SponsorApprovalResult);
             if (InstanceData.SponsorApprovalResult.Rejected)
             {
                 await ProjectRejected(InstanceData.Project, "Sponsor");
@@ -63,15 +58,16 @@ namespace WorkflowInCode.Abstraction.Samples
             }
 
             await AskManagerToApprove(InstanceData.Project);
-            yield return WaitEvent(
-             ManagerApproval,
-             result => result.ProjectId == InstanceData.Project.Id,
-             () => InstanceData.ManagerApprovalResult);
+            yield return WaitEvent(ManagerApproval)
+                .Match<ManagerApprovalEvent>(result => result.ProjectId == InstanceData.Project.Id)
+                .SetProp(() => InstanceData.ManagerApprovalResult);
             if (InstanceData.ManagerApprovalResult.Rejected)
             {
                 await ProjectRejected(InstanceData.Project, "Manager");
                 yield break;
             }
+
+            Console.WriteLine("All three approved");
         }
     }
 }

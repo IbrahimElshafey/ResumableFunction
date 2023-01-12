@@ -35,7 +35,7 @@ namespace WorkflowInCode.Abstraction.Samples
             ManagerApproval = pm;
             InstanceData = new ProjectApprovalContextData();
         }
-       
+
         protected override async IAsyncEnumerable<WorkflowEvent> RunWorkflow()
         {
             //any class that inherit WorkflowInstance<T> has the methods
@@ -44,10 +44,7 @@ namespace WorkflowInCode.Abstraction.Samples
             //the engine will wait for ProjectRequested event
             //no match function because it's the first one
             //context prop is prop in InstanceData that we will set with event result data
-            yield return WaitEvent(
-                    eventToWait: ProjectRequested,
-                    matchFunction: null,
-                    contextProp: () => InstanceData.Project);
+            yield return WaitEvent(ProjectRequested).SetProp(() => InstanceData.Project);
             //the compiler will save state after executing the previous return
             //and wiating for the event
             //it will continue from the line below when event cames
@@ -58,21 +55,19 @@ namespace WorkflowInCode.Abstraction.Samples
             //That matching function correlates the event to the right instance
             //The matching function will be translated to query language "MongoDB query for example" by the engine to search the active instance.
             await AskOwnerToApprove(InstanceData.Project);
-            yield return WaitEvent(
-                OwnerApproval,
-                result => result.ProjectId == InstanceData.Project.Id,
-                () => InstanceData.OwnerApprovalResult);
+            yield return WaitEvent(OwnerApproval)
+                .Match<ManagerApprovalEvent>(result => result.ProjectId == InstanceData.Project.Id)
+                .SetProp(() => InstanceData.OwnerApprovalResult);
             if (InstanceData.OwnerApprovalResult.Rejected)
             {
-                await ProjectRejected(InstanceData.Project,"Owner");
+                await ProjectRejected(InstanceData.Project, "Owner");
                 yield break;
             }
 
             await AskSponsorToApprove(InstanceData.Project);
-            yield return WaitEvent(
-             SponsorApproval,
-             result => result.ProjectId == InstanceData.Project.Id,
-             () => InstanceData.SponsorApprovalResult);
+            yield return WaitEvent(SponsorApproval)
+                .Match<ManagerApprovalEvent>(result => result.ProjectId == InstanceData.Project.Id)
+                .SetProp(() => InstanceData.SponsorApprovalResult);
             if (InstanceData.SponsorApprovalResult.Rejected)
             {
                 await ProjectRejected(InstanceData.Project, "Sponsor");
@@ -80,10 +75,9 @@ namespace WorkflowInCode.Abstraction.Samples
             }
 
             await AskManagerToApprove(InstanceData.Project);
-            yield return WaitEvent(
-             ManagerApproval,
-             result => result.ProjectId == InstanceData.Project.Id,
-             () => InstanceData.ManagerApprovalResult);
+            yield return WaitEvent(ManagerApproval)
+                .Match<ManagerApprovalEvent>(result => result.ProjectId == InstanceData.Project.Id)
+                .SetProp(() => InstanceData.ManagerApprovalResult);
             if (InstanceData.ManagerApprovalResult.Rejected)
             {
                 await ProjectRejected(InstanceData.Project, "Manager");
@@ -122,7 +116,7 @@ namespace WorkflowInCode.Abstraction.Samples
     }
 
 
-    public record ManagerApprovalEvent(int ProjectId, bool Accepted, bool Rejected):IEvent;
+    public record ManagerApprovalEvent(int ProjectId, bool Accepted, bool Rejected) : IEvent;
 
     public class ProjectRequestedEvent : IEvent
     {

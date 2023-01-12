@@ -1,11 +1,8 @@
-﻿
-
+﻿# Event Provider
+* 
 # Workflow Instance Histroy Record
-* Id
-* Workflow Instance Id (FK)
-* Type (Event/Command/Query)
-* Name (Event Name/Command Name/Query Name)
-* Data (Event Data/Command Parameters/Query Parameters)
+* Name (Event Name)
+* Data (Event Data)
 * Timestamp
 
 # Event Repository

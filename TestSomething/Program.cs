@@ -16,6 +16,11 @@ namespace Test
     {
         static async Task Main(string[] args)
         {
+            int x = 10;
+            double y = 10.5;
+            string s = "Hello";
+            MethodX<object>(x, y, s);
+            return;
             var projectApprovalWorkflow = new ProjectApproval(
                 new ProjectRequestedEvent() { DueDate = DateTime.Now, Id = 122, Name = "Project1" },
                 new ManagerApprovalEvent(122, true, false),
@@ -38,11 +43,11 @@ namespace Test
             incomingEvent = await projectApprovalWorkflow.Run();
             Console.WriteLine(incomingEvent?.EventData);
 
-            //var status = projectApprovalWorkflow.GetActiveRunnerState();
-            //projectApprovalWorkflow.SetActiveRunnerState(-5);
-            //incomingEvent = await projectApprovalWorkflow.Run();
             Console.ReadLine();
 
+        }
+        private static void MethodX<T>(params T[] objects)
+        {
         }
 
         ///To use Expression trees <see cref="PropertyManager.EnsurePropertySettersAndGettersForType"/> line 79 ( if (property.CanWrite))
