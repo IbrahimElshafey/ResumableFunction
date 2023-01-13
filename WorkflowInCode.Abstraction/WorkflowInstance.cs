@@ -5,53 +5,61 @@ using System.Collections.ObjectModel;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Reflection.Metadata.Ecma335;
+using System.Runtime.CompilerServices;
 using WorkflowInCode.Abstraction.InOuts;
 
 namespace WorkflowInCode.Abstraction
 {
     public abstract partial class WorkflowInstance<ContextData>
     {
-        protected WaitAnyEvent WaitFirstEvent(
-            params EventWaiting[] events) 
+        public WorkflowInstance()
+        {
+            RuntimeData = new WorkflowInstanceRuntimeData() { InstanceDataType = GetType() };
+        }
+        protected AnyEventWaiting WaitFirstEvent(
+            params EventWaitingResult[] events)
         {
             return null;
         }
 
 
-        protected WaitAllEvent WaitEvents(
-            params EventWaiting[] events)
+        protected AllEventWaiting WaitEvents(
+            params EventWaitingResult[] events)
         {
             return null;
         }
 
-        protected EventWaiting WaitEvent(IEvent eventToWait)
+        protected SingleEventWaiting WaitEvent(IEventData eventToWait, [CallerMemberName] string callerName = "")
         {
-            return new EventWaiting(eventToWait);
+            var eventWaiting = new SingleEventWaiting(eventToWait);
+            eventWaiting.InitiatedByMethod = callerName;
+            eventWaiting.InitiatedByType = GetType();
+            return eventWaiting;
         }
 
 
-        protected EventWaiting WaitFirstSubWorkflow(params Func<IAsyncEnumerable<EventWaiting>>[] subWorkflows)
+        protected SingleEventWaiting WaitFirstSubWorkflow(params Func<IAsyncEnumerable<SingleEventWaiting>>[] subWorkflows)
         {
             return null;
         }
-        protected EventWaiting WaitSubWorkflows(params Func<IAsyncEnumerable<EventWaiting>>[] subWorkflows)
+        protected SingleEventWaiting WaitSubWorkflows(params Func<IAsyncEnumerable<SingleEventWaiting>>[] subWorkflows)
         {
             return null;
         }
-        protected EventWaiting WaitSubWorkflow(Func<IAsyncEnumerable<EventWaiting>> subWorkflow)
+        protected SingleEventWaiting WaitSubWorkflow(Func<IAsyncEnumerable<EventWaitingResult>> subWorkflow)
         {
             return null;
         }
 
         public WorkflowInstanceRuntimeData RuntimeData { get; private set; }
         public ContextData InstanceData { get; protected set; }
-        
+
         public async Task SaveInstanceData()
         {
         }
 
-        
-        public async Task<EventWaiting> Run()
+
+        public async Task<SingleEventWaiting> Run()
         {
             //this method will run based on the activated workflow method
             //may be the main workflow "in RunWorkflow method" or any method that return "IAsyncEnumerable<WorkflowEvent>"
@@ -72,8 +80,8 @@ namespace WorkflowInCode.Abstraction
                 return null;
             }
         }
-        
-        protected abstract IAsyncEnumerable<EventWaiting> RunWorkflow();
+
+        protected abstract IAsyncEnumerable<EventWaitingResult> RunWorkflow();
         protected virtual Task OnWorkflowEnd()
         {
             return Task.CompletedTask;
@@ -81,5 +89,5 @@ namespace WorkflowInCode.Abstraction
 
     }
 
-   
+
 }

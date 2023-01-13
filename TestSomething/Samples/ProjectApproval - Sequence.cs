@@ -35,7 +35,7 @@ namespace WorkflowInCode.Abstraction.Samples
             InstanceData = new ProjectApprovalContextData();
         }
 
-        protected override async IAsyncEnumerable<EventWaiting> RunWorkflow()
+        protected override async IAsyncEnumerable<EventWaitingResult> RunWorkflow()
         {
             //any class that inherit WorkflowInstance<T> has the methods
             //WaitEvent,WaitFirstEvent in a collection,WaitEvents and SaveInstanceData
@@ -115,12 +115,12 @@ namespace WorkflowInCode.Abstraction.Samples
     }
 
 
-    public record ManagerApprovalEvent(int ProjectId, bool Accepted, bool Rejected) : IEvent
+    public record ManagerApprovalEvent(int ProjectId, bool Accepted, bool Rejected) : IEventData
     {
         public string EventProviderName => Const.CurrentEventProvider;
     }
 
-    public class ProjectRequestedEvent:IEvent
+    public class ProjectRequestedEvent:IEventData
     {
         public int Id { get; set; }
         public string Name { get; set; }

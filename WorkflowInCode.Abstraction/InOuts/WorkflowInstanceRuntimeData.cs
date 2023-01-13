@@ -2,9 +2,9 @@
 {
     public class WorkflowInstanceRuntimeData
     {
-        public string InstanceId { get; set; }
-        public string Status { get; set; }//WaitingStartEvents, Active, Inactive, Finished,Error Occured
-
+        public Guid InstanceId { get; set; }
+        public Type InstanceDataType { get; set; }
+        public string Status { get; set; }//WaitingStartEvents, Active, Inactive, Finished,ErrorOccured
         public List<WorkflowRunner> ActiveRunners { get; set; }
     }
 
@@ -13,6 +13,6 @@
         public string Name { get; set; }
         public string Type { get; set; }
         public int Status { get; set; }
-        public EventWaiting WaitingEvent { get; set; }
+        public SingleEventWaiting WaitingEvent { get; set; }
     }
 }

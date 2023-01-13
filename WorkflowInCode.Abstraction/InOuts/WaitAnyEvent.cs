@@ -1,8 +1,8 @@
 ﻿namespace WorkflowInCode.Abstraction.InOuts
 {
-    public class WaitAnyEvent : EventWaiting
+    public class AnyEventWaiting : EventWaitingResult
     {
-        public EventWaiting[] Events { get; set; }
-        public EventWaiting MatchedEvent { get; set; }
+        public SingleEventWaiting[] Events { get; set; }
+        public SingleEventWaiting MatchedEvent { get; set; }
     }
 }

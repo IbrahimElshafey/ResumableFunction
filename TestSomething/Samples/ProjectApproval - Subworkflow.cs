@@ -21,7 +21,7 @@ namespace WorkflowInCode.Abstraction.Samples
         {
         }
 
-        protected override async IAsyncEnumerable<EventWaiting> RunWorkflow()
+        protected override async IAsyncEnumerable<EventWaitingResult> RunWorkflow()
         {
 
             await Task.Delay(100);
@@ -34,7 +34,7 @@ namespace WorkflowInCode.Abstraction.Samples
             Console.WriteLine("All three approved");
         }
 
-        private async IAsyncEnumerable<EventWaiting> SubWorkFlow()
+        private async IAsyncEnumerable<SingleEventWaiting> SubWorkFlow()
         {
             await AskOwnerToApprove(InstanceData.Project);
             yield return WaitEvent(OwnerApproval)

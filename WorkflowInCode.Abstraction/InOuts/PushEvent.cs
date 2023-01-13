@@ -1,10 +1,19 @@
 ﻿namespace WorkflowInCode.Abstraction.InOuts
 {
-    public class PushEvent
+    public class PushedEvent
     {
-        public string ProviderName { get; set; }
-        public string EventType { get; set; }
-        public object Payload { get; set; }
+        /// <summary>
+        /// Full type name of EventData as a string
+        /// </summary>
+        public string EventDataType { get; set; }
+        public IEventData EventData { get; set; }
+
+        /// <summary>
+        /// Used method to convert Paylaod to the target type
+        /// Will be used if the EventDataType not the same as EventData.GetType().FullName
+        /// The engine will load the converter an convert
+        /// </summary>
+        public string ConvertMethod { get; set; }
     }
 
 

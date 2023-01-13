@@ -38,7 +38,7 @@ namespace WorkflowInCode.Abstraction
             }
             return int.MinValue;
         }
-        private IAsyncEnumerator<EventWaiting>? GetActiveRunner()
+        private IAsyncEnumerator<SingleEventWaiting>? GetActiveRunner()
         {
             if (_activeRunner == null)
             {
@@ -62,9 +62,9 @@ namespace WorkflowInCode.Abstraction
                 thisField?.SetValue(_activeRunner, this);
 
                 SetActiveRunnerState(int.MinValue);
-                return _activeRunner as IAsyncEnumerator<EventWaiting>;
+                return _activeRunner as IAsyncEnumerator<SingleEventWaiting>;
             }
-            return _activeRunner as IAsyncEnumerator<EventWaiting>;
+            return _activeRunner as IAsyncEnumerator<SingleEventWaiting>;
         }
 
         private void SetContextData(ContextData instanceData, LambdaExpression contextProp, object eventData)

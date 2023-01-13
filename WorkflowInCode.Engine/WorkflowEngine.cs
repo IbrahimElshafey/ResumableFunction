@@ -20,12 +20,18 @@ namespace WorkflowInCode.Engine
         }
         public void RegisterWorkflow(string assemblyName)
         {
-            //find classes that inherit from WorkflowInstance
-            //for each class check if active definition is alerady exist or not
-            //create database table or collection for InstanceData type
-            //
-            //Load and run
-            //subscribe to the EventWaiting 
+            /*
+             *  ## Load Event Providers
+             */
+            /*
+             * ## LoadWorkflows
+            * find classes that inherit from WorkflowInstance
+            * for each class check if active definition is alerady exist or not
+            * create database table or collection for InstanceData type
+            * 
+            * Load and run
+            * subscribe to the EventWaiting 
+            */
         }
         public async Task RegisterWorkflow<T>(WorkflowInstance<T> workflowInstance)
         {
@@ -45,24 +51,44 @@ namespace WorkflowInCode.Engine
         /// Will execueted when a workflow instance run and return new EventWaiting result
         /// </summary>
         /// <param name="eventWaiting"></param>
-        public void SunscribeToEvent(EventWaiting eventWaiting)
+        public void WaitEvent(SingleEventWaiting eventWaiting,WorkflowInstanceRuntimeData runtimeData)
         {
             //find event provider or load it
             //start event provider if not started
             //call SubscribeToEvent with current paylaod type (eventWaiting.EventData)
+            void test(EventProvider eventProvider)
+            {
+                eventProvider.SubscribeToEvent(eventWaiting.EventData);
+                //save eventWaiting to active event list
+                var x = new object[]
+                {
+                    eventWaiting.Id,
+                    eventWaiting.EventProviderName,
+                    eventWaiting.EventType,
+                    eventWaiting.InitiatedByMethod,
+                    eventWaiting.InitiatedByType,
+                    eventWaiting.IsOptional,
+                    eventWaiting.MatchExpression,
+                    eventWaiting.SetPropExpression,
+                    runtimeData.InstanceDataType,
+                    runtimeData.InstanceId//with this you cal load instance data and runtime data
+                };
+                //todo:important ?? must we send some of these data to event provider??
+            }
+
         }
 
         /// <summary>
         /// Remote Call
         /// </summary>
         /// <param name="pushedEvent"></param>
-        public void EventReceived(PushEvent pushedEvent)
+        public void EventReceived(PushedEvent pushedEvent)
         {
             //event comes to the engine from event provider
-            //engine contains properties (ProviderName,EventType,payload)
-            //engine search workflow instances table to find if any workflow waits for this event type
+            //pushed event contains properties (ProviderName,EventType,Payload)
+            //engine search active event list with (ProviderName,EventType)
             //engine now know related instances list
-            //query for matched workflows instances and find matching function database query
+            //query for matched workflows instances with event matching function
             //search with query and find active instances
             //load context data and start/resume active instance workflow
         }

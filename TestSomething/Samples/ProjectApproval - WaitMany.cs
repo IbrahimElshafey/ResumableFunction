@@ -18,7 +18,7 @@ namespace WorkflowInCode.Abstraction.Samples
         {
         }
 
-        protected override async IAsyncEnumerable<EventWaiting> RunWorkflow()
+        protected override async IAsyncEnumerable<EventWaitingResult> RunWorkflow()
         {
             yield return WaitEvent(ProjectRequested).SetProp(() => InstanceData.Project);
             if (InstanceData.Project is not null)
@@ -29,49 +29,49 @@ namespace WorkflowInCode.Abstraction.Samples
 
                 //different event types and use optional
                 yield return WaitEvents(
-                   new EventWaiting(ProjectRequested)
+                   new SingleEventWaiting(ProjectRequested)
                        .Match<ProjectRequestedEvent>(result => result.Id == InstanceData.Project.Id)
                        .SetProp(() => InstanceData.Project)
                        .SetOptional(),
-                   new EventWaiting(OwnerApproval)
+                   new SingleEventWaiting(OwnerApproval)
                        .Match<ManagerApprovalEvent>(result => result.ProjectId == InstanceData.Project.Id)
                        .SetProp(() => InstanceData.OwnerApprovalResult));
 
                 //same type
                 yield return WaitEvents(
-                     new EventWaiting(OwnerApproval)
+                     new SingleEventWaiting(OwnerApproval)
                          .Match<ManagerApprovalEvent>(result => result.ProjectId == InstanceData.Project.Id)
                          .SetProp(() => InstanceData.OwnerApprovalResult),
-                     new EventWaiting(SponsorApproval)
+                     new SingleEventWaiting(SponsorApproval)
                          .Match<ManagerApprovalEvent>(result => result.ProjectId == InstanceData.Project.Id)
                          .SetProp(() => InstanceData.SponsorApprovalResult),
-                     new EventWaiting(ManagerApproval)
+                     new SingleEventWaiting(ManagerApproval)
                          .Match<ManagerApprovalEvent>(result => result.ProjectId == InstanceData.Project.Id)
                          .SetProp(() => InstanceData.ManagerApprovalResult)
                      );
 
                 //wait first matched event in group
                 yield return WaitFirstEvent(
-                   new EventWaiting(OwnerApproval)
+                   new SingleEventWaiting(OwnerApproval)
                        .Match<ManagerApprovalEvent>(result => result.ProjectId == InstanceData.Project.Id)
                        .SetProp(() => InstanceData.OwnerApprovalResult),
-                   new EventWaiting(SponsorApproval)
+                   new SingleEventWaiting(SponsorApproval)
                        .Match<ManagerApprovalEvent>(result => result.ProjectId == InstanceData.Project.Id)
                        .SetProp(() => InstanceData.SponsorApprovalResult),
-                   new EventWaiting(ManagerApproval)
+                   new SingleEventWaiting(ManagerApproval)
                        .Match<ManagerApprovalEvent>(result => result.ProjectId == InstanceData.Project.Id)
                        .SetProp(() => InstanceData.ManagerApprovalResult)
                    );
 
                 //wait all but if two of them matched then return
                 yield return WaitEvents(
-                  new EventWaiting(OwnerApproval)
+                  new SingleEventWaiting(OwnerApproval)
                       .Match<ManagerApprovalEvent>(result => result.ProjectId == InstanceData.Project.Id)
                       .SetProp(() => InstanceData.OwnerApprovalResult),
-                  new EventWaiting(SponsorApproval)
+                  new SingleEventWaiting(SponsorApproval)
                       .Match<ManagerApprovalEvent>(result => result.ProjectId == InstanceData.Project.Id)
                       .SetProp(() => InstanceData.SponsorApprovalResult),
-                  new EventWaiting(ManagerApproval)
+                  new SingleEventWaiting(ManagerApproval)
                       .Match<ManagerApprovalEvent>(result => result.ProjectId == InstanceData.Project.Id)
                       .SetProp(() => InstanceData.ManagerApprovalResult)
                   ).WhenCount(count => count == 2);

@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace WorkflowInCode.Abstraction.InOuts
 {
-    public interface IEvent
+    public interface IEventData
     {
-        string EventProviderName { get; }
+        string EventProviderName { get; internal set; }
     }
 }
