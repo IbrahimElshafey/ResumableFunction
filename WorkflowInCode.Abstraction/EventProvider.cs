@@ -26,6 +26,7 @@ namespace WorkflowInCode.Abstraction
         public abstract Task Stop();
 
         public abstract bool SubscribeToEvent(IEventData eventToSubscribe);
+        public abstract bool UnSubscribeEvent(IEventData eventToSubscribe);
 
         protected void PushEvent(PushedEvent pushEvent)
         {
@@ -34,7 +35,7 @@ namespace WorkflowInCode.Abstraction
             if (type == null) return;
             //pushEvent.Type = $"{type.FullName}#{type.AssemblyQualifiedName}";
             pushEvent.EventDataType = type.FullName;
-            pushEvent.EventData.EventProviderName = UniqueName;
+            pushEvent.EventProviderName = UniqueName;
             //will use engine gRPC client to push an event
         }
 

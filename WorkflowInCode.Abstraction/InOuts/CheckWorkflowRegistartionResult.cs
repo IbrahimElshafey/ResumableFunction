@@ -1,4 +1,4 @@
-﻿namespace WorkflowInCode.Engine.Data.InOuts
+﻿namespace WorkflowInCode.Abstraction.InOuts
 {
     public record CheckWorkflowResult
     {

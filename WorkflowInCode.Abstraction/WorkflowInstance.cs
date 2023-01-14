@@ -14,29 +14,39 @@ namespace WorkflowInCode.Abstraction
     {
         public WorkflowInstance()
         {
-            RuntimeData = new WorkflowInstanceRuntimeData() { InstanceDataType = GetType() };
+            RuntimeData = new WorkflowRuntimeData() { InstanceId = Guid.NewGuid() };
         }
         protected AnyEventWaiting WaitFirstEvent(
-            params EventWaitingResult[] events)
+            params SingleEventWaiting[] events)
         {
-            return null;
+            Array.ForEach(events, SetCommonProps);
+            return new AnyEventWaiting { Events = events };
         }
 
 
         protected AllEventWaiting WaitEvents(
-            params EventWaitingResult[] events)
+            params SingleEventWaiting[] events)
         {
-            return null;
+            if (events.Count(x => x.IsOptional) == events.Count())
+                throw new Exception("When use WaitEvents at least one event must be mandatory.");
+            Array.ForEach(events, SetCommonProps);
+            return new AllEventWaiting { WaitingEvents = events };
         }
 
         protected SingleEventWaiting WaitEvent(IEventData eventToWait, [CallerMemberName] string callerName = "")
         {
-            var eventWaiting = new SingleEventWaiting(eventToWait);
-            eventWaiting.InitiatedByMethod = callerName;
-            eventWaiting.InitiatedByType = GetType();
+            var eventWaiting = new SingleEventWaiting(eventToWait) { InitiatedByMethod = callerName };
+            SetCommonProps(eventWaiting);
             return eventWaiting;
         }
 
+        private void SetCommonProps(SingleEventWaiting eventWaiting)
+        {
+            eventWaiting.InitiatedByType = GetType();
+            eventWaiting.WorkflowInstanceId = RuntimeData.InstanceId;
+            eventWaiting.WorkflowInstanceDataType = InstanceData.GetType();
+            eventWaiting.Id = Guid.NewGuid();
+        }
 
         protected SingleEventWaiting WaitFirstSubWorkflow(params Func<IAsyncEnumerable<SingleEventWaiting>>[] subWorkflows)
         {
@@ -51,7 +61,7 @@ namespace WorkflowInCode.Abstraction
             return null;
         }
 
-        public WorkflowInstanceRuntimeData RuntimeData { get; private set; }
+        public WorkflowRuntimeData RuntimeData { get; private set; }
         public ContextData InstanceData { get; protected set; }
 
         public async Task SaveInstanceData()
@@ -59,7 +69,7 @@ namespace WorkflowInCode.Abstraction
         }
 
 
-        public async Task<SingleEventWaiting> Run()
+        public async Task<EventWaitingResult> Run()
         {
             //this method will run based on the activated workflow method
             //may be the main workflow "in RunWorkflow method" or any method that return "IAsyncEnumerable<WorkflowEvent>"
@@ -68,7 +78,7 @@ namespace WorkflowInCode.Abstraction
             if (await workflowRunner.MoveNextAsync())
             {
                 var incommingEvent = workflowRunner.Current;
-                SetContextData(InstanceData, incommingEvent.SetPropExpression, incommingEvent.EventData);
+                //SetContextData(InstanceData, incommingEvent.SetPropExpression, incommingEvent.EventData);
                 //todo:update runtime data active runner status and waiting list
                 await SaveInstanceData();
                 return incommingEvent;

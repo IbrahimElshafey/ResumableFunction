@@ -6,8 +6,7 @@ using System.Threading.Tasks;
 
 namespace WorkflowInCode.Abstraction.InOuts
 {
-    public interface IEventData
+    public class EventWaitingRecord
     {
-        string EventProviderName { get;}
     }
 }

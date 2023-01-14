@@ -5,19 +5,12 @@ using System.Text;
 using System.Threading.Tasks;
 using WorkflowInCode.Abstraction;
 using WorkflowInCode.Abstraction.InOuts;
-using WorkflowInCode.Engine.Data;
-using WorkflowInCode.Engine.Data.InOuts;
 
 namespace WorkflowInCode.Engine
 {
     public class WorkflowEngine
     {
-        private readonly IWorkflowData _workflowData;
 
-        public WorkflowEngine(IWorkflowData workflowData)
-        {
-            _workflowData = workflowData;
-        }
         public void RegisterWorkflow(string assemblyName)
         {
             /*
@@ -29,29 +22,17 @@ namespace WorkflowInCode.Engine
             * for each class check if active definition is alerady exist or not
             * create database table or collection for InstanceData type
             * 
-            * Load and run
-            * subscribe to the EventWaiting 
+            * Load Instance data and run workflow
+            * subscribe to the first EventWaiting 
             */
         }
-        public async Task RegisterWorkflow<T>(WorkflowInstance<T> workflowInstance)
-        {
-            //find only one subclass that start with "RunWorkflow" and implement 
-            using (_workflowData)
-            {
-                await _workflowData.WorkflowInstanceRepository.IsWorkflowRegistred(new CheckWorkflowArgs());
-                //initate instance and run workflow
-                //wait for the first event
-                //create empty instance and set waiting list to the event/s expected
-                //save state
-            }
-
-        }
+        
 
         /// <summary>
         /// Will execueted when a workflow instance run and return new EventWaiting result
         /// </summary>
         /// <param name="eventWaiting"></param>
-        public void WaitEvent(SingleEventWaiting eventWaiting,WorkflowInstanceRuntimeData runtimeData)
+        public Task Wait(SingleEventWaiting eventWaiting)//todo: add methods for all and any
         {
             //find event provider or load it
             //start event provider if not started
@@ -60,37 +41,25 @@ namespace WorkflowInCode.Engine
             {
                 eventProvider.SubscribeToEvent(eventWaiting.EventData);
                 //save eventWaiting to active event list
-                var x = new object[]
-                {
-                    eventWaiting.Id,
-                    eventWaiting.EventProviderName,
-                    eventWaiting.EventType,
-                    eventWaiting.InitiatedByMethod,
-                    eventWaiting.InitiatedByType,
-                    eventWaiting.IsOptional,
-                    eventWaiting.MatchExpression,
-                    eventWaiting.SetPropExpression,
-                    runtimeData.InstanceDataType,
-                    runtimeData.InstanceId//with this you cal load instance data and runtime data
-                };
-                //todo:important ?? must we send some of these data to event provider??
-            }
 
+                //todo:important ?? must we send some of SingleEventWaiting props to event provider?? this will make filtering more accurate
+            }
+            return Task.CompletedTask;
         }
 
         /// <summary>
         /// Remote Call
         /// </summary>
         /// <param name="pushedEvent"></param>
-        public void EventReceived(PushedEvent pushedEvent)
+        public Task EventReceived(PushedEvent pushedEvent)
         {
-            //event comes to the engine from event provider
+            //pushed event comes to the engine from event provider
             //pushed event contains properties (ProviderName,EventType,Payload)
-            //engine search active event list with (ProviderName,EventType)
+            //engine search active event list with (ProviderName,EventType) and pass payload to match expression
             //engine now know related instances list
-            //query for matched workflows instances with event matching function
-            //search with query and find active instances
             //load context data and start/resume active instance workflow
+            //call EventProvider.UnSubscribeEvent(pushedEvent.EventData) if no other intances waits this type for the same provider
+            return Task.CompletedTask;
         }
     }
 }

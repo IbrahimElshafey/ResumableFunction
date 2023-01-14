@@ -2,9 +2,5 @@
 {
     public abstract class EventWaitingResult
     {
-
     }
-
-
-
 }

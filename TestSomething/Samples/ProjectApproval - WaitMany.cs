@@ -12,9 +12,9 @@ namespace WorkflowInCode.Abstraction.Samples
          * ننتظر موافقة مالك المشروع ثم موافقة راعي المشروع ثم موافقة مدير المشروع بشكل متتابع
          * إذا رفض أحدهم يتم إلغاء المشروع وإعلام الآخرين
          */
-    public class ProjectApproval2 : ProjectApproval
+    public class ProjectApprovalWaitMany : ProjectApproval
     {
-        public ProjectApproval2(ProjectRequestedEvent p, ManagerApprovalEvent po, ManagerApprovalEvent ps, ManagerApprovalEvent pm) : base(p, po, ps, pm)
+        public ProjectApprovalWaitMany(ProjectRequestedEvent p, ManagerApprovalEvent po, ManagerApprovalEvent ps, ManagerApprovalEvent pm) : base(p, po, ps, pm)
         {
         }
 

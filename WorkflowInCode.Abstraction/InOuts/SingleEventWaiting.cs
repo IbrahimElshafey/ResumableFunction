@@ -1,4 +1,5 @@
 ﻿using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 
 namespace WorkflowInCode.Abstraction.InOuts
 {
@@ -12,12 +13,13 @@ namespace WorkflowInCode.Abstraction.InOuts
         {
 
         }
-        public SingleEventWaiting(IEventData eventToWait)
+        public SingleEventWaiting(IEventData eventToWait, [CallerMemberName] string callerName = "")
         {
             if (eventToWait == null) throw new NullReferenceException("eventToWait param in EventWaiting..ctor");
             EventData = eventToWait;
             EventProviderName = eventToWait.EventProviderName;
-            EventType = eventToWait.GetType().FullName;
+            EventType = eventToWait.GetType();
+            InitiatedByMethod = callerName;
         }
         public Guid Id { get; set; }
         public bool IsOptional { get; private set; } = false;
@@ -28,7 +30,9 @@ namespace WorkflowInCode.Abstraction.InOuts
 
         public IEventData EventData { get; set; }
         public string EventProviderName { get; set; }
-        public string EventType { get; set; }
+        public Type EventType { get; set; }
+        public Type WorkflowInstanceDataType { get; set; }
+        public Guid WorkflowInstanceId { get; set; }
 
         public SingleEventWaiting Match<T>(Expression<Func<T, bool>> func) where T : IEventData
         {

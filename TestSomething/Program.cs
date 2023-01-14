@@ -27,15 +27,15 @@ namespace Test
             //projectApprovalWorkflow.InstanceData.OwnerApprovalResult = new ProjectApprovalResult(122, true, false);
             //projectApprovalWorkflow.InstanceData.ManagerApprovalResult = new ProjectApprovalResult(122, true, false);
             var incomingEvent = await projectApprovalWorkflow.Run();
-            Console.WriteLine(incomingEvent?.EventData);
+            Console.WriteLine(incomingEvent);
             incomingEvent = await projectApprovalWorkflow.Run();
-            Console.WriteLine(incomingEvent?.EventData);
+            Console.WriteLine(incomingEvent);
             incomingEvent = await projectApprovalWorkflow.Run();
-            Console.WriteLine(incomingEvent?.EventData);
+            Console.WriteLine(incomingEvent);
             incomingEvent = await projectApprovalWorkflow.Run();
-            Console.WriteLine(incomingEvent?.EventData);
+            Console.WriteLine(incomingEvent);
             incomingEvent = await projectApprovalWorkflow.Run();
-            Console.WriteLine(incomingEvent?.EventData);
+            Console.WriteLine(incomingEvent);
 
             Console.ReadLine();
 

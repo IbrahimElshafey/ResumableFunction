@@ -1,5 +1,4 @@
 # ToDo
-* Event UnSubscribe
 * Best queue service
 * Add event puiblishing mechanism
 	* EventProvider will provide events to the engine
