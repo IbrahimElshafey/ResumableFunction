@@ -1,8 +1,7 @@
 # ToDo
-* get type of nullable object
-* Best queue service
+* 
+* Find queue service
 	* Use https://github.com/Cysharp/MessagePipe to send events to the engine
-	* https://learn.microsoft.com/en-us/aspnet/core/fundamentals/host/generic-host?view=aspnetcore-7.0
 	* https://stackoverflow.com/questions/58549763/how-should-ipc-be-handled-in-net-core
 * Listen to local in outs http and tcp calls
 	* https://www.meziantou.net/observing-all-http-requests-in-a-dotnet-application.htm
@@ -20,3 +19,6 @@
 * Save expression trees to database
 	* https://stackoverflow.com/questions/23253399/serialize-expression-tree
 	* https://github.com/esskar/Serialize.Linq
+
+* Generic host
+* https://learn.microsoft.com/en-us/aspnet/core/fundamentals/host/generic-host?view=aspnetcore-7.0

@@ -9,9 +9,10 @@ namespace WorkflowInCode.Abstraction
 {
 
     /// <summary>
-    /// Event provider will listen to events and push events to the engine
+    /// Event provider will listen to events and push events to the engine.<br\>
+    /// This may be a client for remote event provider or local implementation.
     /// </summary>
-    public interface IEventProvider
+    public interface IEventProvider : IDisposable
     {
         /// <summary>
         /// Uniqe name to resolve this provider at runtime
@@ -25,7 +26,7 @@ namespace WorkflowInCode.Abstraction
         Task Start();
 
         /// <summary>
-        /// Stop listening to the events,the engine will call this when no active event exist that handled by this provider
+        /// Stop listening to the all event types,the engine will call this when no active event exist that handled by this provider
         /// </summary>
         /// <returns></returns>
         Task Stop();
@@ -44,19 +45,19 @@ namespace WorkflowInCode.Abstraction
         /// <returns></returns>
         Task<bool> UnSubscribeEvent(IEventData eventToSubscribe);
 
-        /// <summary>
-        /// Remote Call <br/>
-        /// Push and event to the engine
-        /// </summary>
-        Task PushEvent(PushedEvent pushEvent);
-        //{
-        //    var type = pushEvent.EventData?.GetType();
-        //    if (type == null) return;
-        //    //pushEvent.Type = $"{type.FullName}#{type.AssemblyQualifiedName}";
-        //    pushEvent.EventDataType = type.FullName;
-        //    pushEvent.EventDataConverterName = UniqueName;
-        //    //will use engine gRPC client to push an event
-        //}
+        ///// <summary>
+        ///// Remote Call <br/>
+        ///// Push and event to the engine
+        ///// </summary>
+        //Task PushEvent(PushedEvent pushEvent);
+        ////{
+        ////    var type = pushEvent.EventData?.GetType();
+        ////    if (type == null) return;
+        ////    //pushEvent.Type = $"{type.FullName}#{type.AssemblyQualifiedName}";
+        ////    pushEvent.EventDataType = type.FullName;
+        ////    pushEvent.EventDataConverterName = UniqueName;
+        ////    //will use engine gRPC client to push an event
+        ////}
 
     }
 }
