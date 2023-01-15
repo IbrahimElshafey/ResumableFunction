@@ -12,9 +12,10 @@ namespace WorkflowInCode.Abstraction
 {
     public abstract partial class WorkflowInstance<ContextData>
     {
-        public WorkflowInstance()
+        public WorkflowInstance(ContextData data)
         {
             RuntimeData = new WorkflowRuntimeData() { InstanceId = Guid.NewGuid() };
+            InstanceData = data;
         }
         protected AnyEventWaiting WaitFirstEvent(
             params SingleEventWaiting[] events)
@@ -33,9 +34,9 @@ namespace WorkflowInCode.Abstraction
             return new AllEventWaiting { WaitingEvents = events };
         }
 
-        protected SingleEventWaiting WaitEvent(IEventData eventToWait, [CallerMemberName] string callerName = "")
+        protected SingleEventWaiting WaitEvent(Type eventType, string eventName, [CallerMemberName] string callerName = "")
         {
-            var eventWaiting = new SingleEventWaiting(eventToWait) { InitiatedByMethod = callerName };
+            var eventWaiting = new SingleEventWaiting(eventType, eventName) { InitiatedByMethod = callerName };
             SetCommonProps(eventWaiting);
             return eventWaiting;
         }

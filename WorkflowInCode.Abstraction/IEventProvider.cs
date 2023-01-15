@@ -45,10 +45,9 @@ namespace WorkflowInCode.Abstraction
         Task<bool> UnSubscribeEvent(IEventData eventToSubscribe);
 
         /// <summary>
+        /// Remote Call <br/>
         /// Push and event to the engine
         /// </summary>
-        /// <param name="pushEvent"></param>
-        /// <exception cref="NullReferenceException"></exception>
         Task PushEvent(PushedEvent pushEvent);
         //{
         //    var type = pushEvent.EventData?.GetType();

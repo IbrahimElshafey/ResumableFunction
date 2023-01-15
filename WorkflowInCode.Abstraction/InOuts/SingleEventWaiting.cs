@@ -7,21 +7,28 @@ namespace WorkflowInCode.Abstraction.InOuts
     /// <summary>
     /// This type saved to databse after waiting for and event
     /// </summary>
-    public class SingleEventWaiting: EventWaitingResult
+    public class SingleEventWaiting : EventWaitingResult
     {
         public SingleEventWaiting()
         {
 
         }
-        public SingleEventWaiting(IEventData eventToWait, [CallerMemberName] string callerName = "")
+        public SingleEventWaiting(Type eventType, string eventName, [CallerMemberName] string callerName = "")
         {
-            if (eventToWait == null) throw new NullReferenceException("eventToWait param in EventWaiting..ctor");
-            EventData = eventToWait;
-            EventProviderName = eventToWait.EventProviderName;
-            EventType = eventToWait.GetType();
+            if (eventType == null) throw new NullReferenceException("eventToWait param in EventWaiting..ctor");
+            var instance = (IEventData)Activator.CreateInstance(eventType);
+            if (instance is null)
+            {
+                throw new NullReferenceException($"Can't initiate instance of {eventType.FullName} with constructor less parameters.");
+            }
+            EventName = eventName;
+            EventData = instance;
+            EventProviderName = instance.EventProviderName;
+            EventType = eventType;
             InitiatedByMethod = callerName;
         }
         public Guid Id { get; set; }
+        public string EventName { get; set; }
         public bool IsOptional { get; private set; } = false;
         public LambdaExpression MatchExpression { get; private set; }
         public LambdaExpression SetPropExpression { get; private set; }

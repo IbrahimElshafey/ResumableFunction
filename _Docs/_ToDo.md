@@ -1,10 +1,15 @@
 # ToDo
+* get type of nullable object
 * Best queue service
-* Add event puiblishing mechanism
-	* EventProvider will provide events to the engine
 	* Use https://github.com/Cysharp/MessagePipe to send events to the engine
-* Implement WaitEvents and WaitFirstEvent methods
+	* https://learn.microsoft.com/en-us/aspnet/core/fundamentals/host/generic-host?view=aspnetcore-7.0
+	* https://stackoverflow.com/questions/58549763/how-should-ipc-be-handled-in-net-core
+* Listen to local in outs http and tcp calls
+	* https://www.meziantou.net/observing-all-http-requests-in-a-dotnet-application.htm
+	* https://github.com/justcoding121/titanium-web-proxy
+* Write Implementation for Engine,FakeEventProvider,Database Presist,...
 * Implement WaitSubWorkflow,WaitSubWorkflows,and WaitFirstSubWorkflow
+* Rename project to "resumable function"
 
 
 
@@ -15,7 +20,3 @@
 * Save expression trees to database
 	* https://stackoverflow.com/questions/23253399/serialize-expression-tree
 	* https://github.com/esskar/Serialize.Linq
-
-* Use interprocess communication to send events to 
-https://learn.microsoft.com/en-us/aspnet/core/fundamentals/host/generic-host?view=aspnetcore-7.0
-https://stackoverflow.com/questions/58549763/how-should-ipc-be-handled-in-net-core

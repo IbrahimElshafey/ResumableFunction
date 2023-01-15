@@ -15,9 +15,9 @@ namespace WorkflowInCode.Abstraction.Samples
          * موافقة راعي المشروع ليست إجبارية, قد يرد أو لا يرد أبداً
          * 
          */
-    public class ProjectApproval3 : ProjectApproval
+    public class ProjectApprovalSubWorkflow : ProjectApproval
     {
-        public ProjectApproval3(ProjectRequestedEvent p, ManagerApprovalEvent po, ManagerApprovalEvent ps, ManagerApprovalEvent pm) : base(p, po, ps, pm)
+        public ProjectApprovalSubWorkflow(ProjectApprovalContextData data) : base(data)
         {
         }
 
@@ -25,7 +25,7 @@ namespace WorkflowInCode.Abstraction.Samples
         {
 
             await Task.Delay(100);
-            yield return WaitEvent(ProjectRequested).SetProp(() => InstanceData.Project);
+            yield return WaitEvent(typeof(ProjectRequestedEvent), "ProjectRequested").SetProp(() => InstanceData.Project);
 
             yield return WaitSubWorkflow(SubWorkFlow);
             yield return WaitSubWorkflows(SubWorkFlow,SubWorkFlow);
@@ -37,7 +37,7 @@ namespace WorkflowInCode.Abstraction.Samples
         private async IAsyncEnumerable<SingleEventWaiting> SubWorkFlow()
         {
             await AskOwnerToApprove(InstanceData.Project);
-            yield return WaitEvent(OwnerApproval)
+            yield return WaitEvent(typeof(ManagerApprovalEvent), "OwnerApproval")
                 .Match<ManagerApprovalEvent>(result => result.ProjectId == InstanceData.Project.Id)
                 .SetProp(() => InstanceData.OwnerApprovalResult);
             if (InstanceData.OwnerApprovalResult.Rejected)
@@ -47,7 +47,7 @@ namespace WorkflowInCode.Abstraction.Samples
             }
 
             await AskSponsorToApprove(InstanceData.Project);
-            yield return WaitEvent(SponsorApproval)
+            yield return WaitEvent(typeof(ManagerApprovalEvent), "SponsorApproval")
                 .Match<ManagerApprovalEvent>(result => result.ProjectId == InstanceData.Project.Id)
                 .SetProp(() => InstanceData.SponsorApprovalResult);
             if (InstanceData.SponsorApprovalResult.Rejected)
@@ -57,7 +57,7 @@ namespace WorkflowInCode.Abstraction.Samples
             }
 
             await AskManagerToApprove(InstanceData.Project);
-            yield return WaitEvent(ManagerApproval)
+            yield return WaitEvent(typeof(ManagerApprovalEvent), "ManagerApproval")
                 .Match<ManagerApprovalEvent>(result => result.ProjectId == InstanceData.Project.Id)
                 .SetProp(() => InstanceData.ManagerApprovalResult);
             if (InstanceData.ManagerApprovalResult.Rejected)

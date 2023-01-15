@@ -1,20 +1,17 @@
-* https://www.ariscommunity.com/users/sstein/2010-07-20-bpmn-2-workflow-patterns
+
 # Workflow Patterns
 * http://www.workflowpatterns.com/patterns/control/
 * http://www.workflowpatterns.com/patterns/
-# Graph as Text
-[.,<,>,<>] direction operators
-[(,)] Order Operator
+* https://www.ariscommunity.com/users/sstein/2010-07-20-bpmn-2-workflow-patterns
 
 
-# Listen to HTTP requests local
-* https://www.meziantou.net/observing-all-http-requests-in-a-dotnet-application.htm
-* https://github.com/justcoding121/titanium-web-proxy
+
+
 
 # Generate API controller for class
 * https://github.com/Testura/Testura.Code
 # Generate swagger definition for created API
-# Parse Paths and generate code
+
 
 
 # Event Types
@@ -24,11 +21,9 @@
 * File/Folder Events [Watcher]
 * Time Event [Timer Service Event]
 	* https://www.hangfire.io/
-* Any implementation for ISubscribeEvent<T> interface
+* Any implementation for IEventProvider interface
 
 
-Expression Trees
-https://learn.microsoft.com/en-us/dotnet/csharp/expression-trees-explained
 
 Proxy Creation
 https://stackoverflow.com/questions/15733900/dynamically-creating-a-proxy-class
@@ -41,6 +36,7 @@ https://devblogs.microsoft.com/dotnet/migrating-realproxy-usage-to-dispatchproxy
 
 # IL Rewrite 
 * https://github.com/Fody/Fody
+* MonoCeceil
 
 # Converting Expression Trees to Source Code
 * https://bagoum.medium.com/c-heresy-converting-expression-trees-to-source-code-1082ba8963a6
@@ -48,9 +44,9 @@ https://devblogs.microsoft.com/dotnet/migrating-realproxy-usage-to-dispatchproxy
 # Get all method calls
 * https://stackoverflow.com/questions/57118269/get-all-method-calls
 
-
+# Database to save ContextData
 https://www.litedb.org/
 
 
-Generic
+# Generic Varince
 https://agirlamonggeeks.com/2019/06/04/cannot-implicitly-convert-type-abc-to-iabc-contravariance-vs-covariance-part-2/

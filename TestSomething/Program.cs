@@ -15,13 +15,13 @@ namespace Test
     {
         static async Task Main(string[] args)
         {
-            var projectApprovalWorkflow = new ProjectApproval(
-                new ProjectRequestedEvent() { DueDate = DateTime.Now, Id = 122, Name = "Project1" },
-                new ManagerApprovalEvent(122, true, false),
-                new ManagerApprovalEvent(122, true, false),
-                new ManagerApprovalEvent(122, true, false)
-                );
-
+            //var projectApprovalWorkflow = new ProjectApproval(
+            //    new ProjectRequestedEvent() { DueDate = DateTime.Now, Id = 122, Name = "Project1" },
+            //    new ManagerApprovalEvent(122, true, false),
+            //    new ManagerApprovalEvent(122, true, false),
+            //    new ManagerApprovalEvent(122, true, false)
+            //    );
+            var projectApprovalWorkflow = new ProjectApproval(new ProjectApprovalContextData());
             //projectApprovalWorkflow.InstanceData.Project = new Project { DueDate = DateTime.Now, Id = 122, Name = "Project1" };
             //projectApprovalWorkflow.InstanceData.SponsorApprovalResult = new ProjectApprovalResult(122, true, false);
             //projectApprovalWorkflow.InstanceData.OwnerApprovalResult = new ProjectApprovalResult(122, true, false);

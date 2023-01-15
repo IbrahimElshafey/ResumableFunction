@@ -22,18 +22,18 @@ namespace WorkflowInCode.Abstraction.Samples
     //We can't depend on automatic serialize for state becuse compiler may remove fields and variables we defined
     public class ProjectApproval : WorkflowInstance<ProjectApprovalContextData>
     {
-        public ProjectRequestedEvent ProjectRequested;
-        public ManagerApprovalEvent OwnerApproval;
-        public ManagerApprovalEvent SponsorApproval;
-        public ManagerApprovalEvent ManagerApproval;
-        public ProjectApproval(ProjectRequestedEvent p, ManagerApprovalEvent po, ManagerApprovalEvent ps, ManagerApprovalEvent pm)
+        public ProjectApproval(ProjectApprovalContextData data) : base(data)
         {
-            ProjectRequested = p;
-            OwnerApproval = po;
-            SponsorApproval = ps;
-            ManagerApproval = pm;
-            InstanceData = new ProjectApprovalContextData();
         }
+
+        //public ProjectApproval(ProjectRequestedEvent p, ManagerApprovalEvent po, ManagerApprovalEvent ps, ManagerApprovalEvent pm)
+        //{
+        //    ProjectRequested = p;
+        //    OwnerApproval = po;
+        //    SponsorApproval = ps;
+        //    ManagerApproval = pm;
+        //    InstanceData = new ProjectApprovalContextData();
+        //}
 
         protected override async IAsyncEnumerable<EventWaitingResult> RunWorkflow()
         {
@@ -43,7 +43,7 @@ namespace WorkflowInCode.Abstraction.Samples
             //the engine will wait for ProjectRequested event
             //no match function because it's the first one
             //context prop is prop in InstanceData that we will set with event result data
-            yield return WaitEvent(ProjectRequested).SetProp(() => InstanceData.Project);
+            yield return WaitEvent(typeof(ProjectRequestedEvent),"ProjectCreated").SetProp(() => InstanceData.Project);
             //the compiler will save state after executing the previous return
             //and wiating for the event
             //it will continue from the line below when event cames
@@ -54,7 +54,7 @@ namespace WorkflowInCode.Abstraction.Samples
             //That matching function correlates the event to the right instance
             //The matching function will be translated to query language "MongoDB query for example" by the engine to search the active instance.
             await AskOwnerToApprove(InstanceData.Project);
-            yield return WaitEvent(OwnerApproval)
+            yield return WaitEvent(typeof(ManagerApprovalEvent), "OwnerApproval")
                 .Match<ManagerApprovalEvent>(result => result.ProjectId == InstanceData.Project.Id)
                 .SetProp(() => InstanceData.OwnerApprovalResult);
             if (InstanceData.OwnerApprovalResult.Rejected)
@@ -64,7 +64,7 @@ namespace WorkflowInCode.Abstraction.Samples
             }
 
             await AskSponsorToApprove(InstanceData.Project);
-            yield return WaitEvent(SponsorApproval)
+            yield return WaitEvent(typeof(ManagerApprovalEvent), "SponsorApproval")
                 .Match<ManagerApprovalEvent>(result => result.ProjectId == InstanceData.Project.Id)
                 .SetProp(() => InstanceData.SponsorApprovalResult);
             if (InstanceData.SponsorApprovalResult.Rejected)
@@ -74,7 +74,7 @@ namespace WorkflowInCode.Abstraction.Samples
             }
 
             await AskManagerToApprove(InstanceData.Project);
-            yield return WaitEvent(ManagerApproval)
+            yield return WaitEvent(typeof(ManagerApprovalEvent), "ManagerApproval")
                 .Match<ManagerApprovalEvent>(result => result.ProjectId == InstanceData.Project.Id)
                 .SetProp(() => InstanceData.ManagerApprovalResult);
             if (InstanceData.ManagerApprovalResult.Rejected)
@@ -115,8 +115,11 @@ namespace WorkflowInCode.Abstraction.Samples
     }
 
 
-    public record ManagerApprovalEvent(int ProjectId, bool Accepted, bool Rejected) : IEventData
+    public class ManagerApprovalEvent: IEventData
     {
+       public int ProjectId{get;set;}
+       public bool Accepted{get;set;}
+       public bool Rejected{get;set;}
         public string EventProviderName => Const.CurrentEventProvider;
     }
 

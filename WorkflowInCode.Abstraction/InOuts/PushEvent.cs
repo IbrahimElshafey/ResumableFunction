@@ -8,7 +8,7 @@
         public string EventDataType { get; set; }
 
         /// <summary>
-        /// Will inherit <see cref="IEventData"/> or object that convert to IEventData data using the <see cref="EventDataConverterName"/>
+        /// Will inherit <see cref="InOuts.IEventData"/> or object that convert to IEventData data using the <see cref="EventDataConverterName"/>
         /// </summary>
         public object EventData { get; set; }
 
