@@ -6,6 +6,10 @@
         /// Full type name of EventData as a string
         /// </summary>
         public string EventDataType { get; set; }
+
+        /// <summary>
+        /// Will inherit <see cref="IEventData"/> or object that convert to IEventData data using the <see cref="EventDataConverterName"/>
+        /// </summary>
         public object EventData { get; set; }
 
         /// <summary>
@@ -13,8 +17,8 @@
         /// Will be used if the EventDataType not the same as EventData.GetType().FullName
         /// The engine will load the converter an convert
         /// </summary>
-        public string ConvertMethod { get; set; }
-        public string EventProviderName { get; internal set; }
+        public string ConvertEventProvider { get; set; }
+        public string EventDataConverterName { get; internal set; }
     }
 
 
