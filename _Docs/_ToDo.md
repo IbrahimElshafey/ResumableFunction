@@ -1,8 +1,5 @@
 # ToDo
-* 
-* Find queue service
-	* Use https://github.com/Cysharp/MessagePipe to send events to the engine
-	* https://stackoverflow.com/questions/58549763/how-should-ipc-be-handled-in-net-core
+* Using SlimMessageBus as Queuing service (https://github.com/zarusz/SlimMessageBus)
 * Listen to local in outs http and tcp calls
 	* https://www.meziantou.net/observing-all-http-requests-in-a-dotnet-application.htm
 	* https://github.com/justcoding121/titanium-web-proxy
