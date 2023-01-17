@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WorkflowInCode.Abstraction.InOuts
+namespace ResumableFunction.Abstraction.InOuts
 {
     public interface IEventData
     {

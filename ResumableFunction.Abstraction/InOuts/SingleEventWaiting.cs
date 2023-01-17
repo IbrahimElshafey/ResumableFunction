@@ -1,7 +1,7 @@
 ﻿using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 
-namespace WorkflowInCode.Abstraction.InOuts
+namespace ResumableFunction.Abstraction.InOuts
 {
 
     /// <summary>
@@ -25,21 +25,21 @@ namespace WorkflowInCode.Abstraction.InOuts
             EventData = instance;
             EventProviderName = instance.EventProviderName;
             EventType = eventType;
-            InitiatedByMethod = callerName;
+            InitiatedByFunction = callerName;
         }
         public Guid Id { get; set; }
         public string EventName { get; set; }
         public bool IsOptional { get; private set; } = false;
         public LambdaExpression MatchExpression { get; private set; }
         public LambdaExpression SetPropExpression { get; private set; }
-        public string InitiatedByMethod { get; set; }
+        public string InitiatedByFunction { get; set; }
         public Type InitiatedByType { get; set; }
 
         public IEventData EventData { get; set; }
         public string EventProviderName { get; set; }
         public Type EventType { get; set; }
-        public Type WorkflowInstanceDataType { get; set; }
-        public Guid WorkflowInstanceId { get; set; }
+        public Type FunctionDataType { get; set; }
+        public Guid FunctionInstanceId { get; set; }
 
         public SingleEventWaiting Match<T>(Expression<Func<T, bool>> func) where T : IEventData
         {

@@ -5,11 +5,11 @@ using System.Collections.ObjectModel;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Reflection.Metadata.Ecma335;
-using WorkflowInCode.Abstraction.InOuts;
+using ResumableFunction.Abstraction.InOuts;
 
-namespace WorkflowInCode.Abstraction
+namespace ResumableFunction.Abstraction
 {
-    public abstract partial class WorkflowInstance<ContextData>
+    public abstract partial class ResumableFunction<ContextData>
     {
         private object? _activeRunner;
         //todo:set private 
@@ -42,12 +42,12 @@ namespace WorkflowInCode.Abstraction
         {
             if (_activeRunner == null)
             {
-                var workflowRunnerType = GetType()
+                var FunctionRunnerType = GetType()
                    .GetNestedTypes(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.SuppressChangeType)
-                   .FirstOrDefault(x => x.Name.StartsWith("<RunWorkflow>"));
+                   .FirstOrDefault(x => x.Name.StartsWith("<RunFunction>"));
 
-                if (workflowRunnerType == null) return null;
-                ConstructorInfo? ctor = workflowRunnerType.GetConstructor(
+                if (FunctionRunnerType == null) return null;
+                ConstructorInfo? ctor = FunctionRunnerType.GetConstructor(
                    BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.CreateInstance,
                    new Type[] { typeof(int) });
 
@@ -57,8 +57,8 @@ namespace WorkflowInCode.Abstraction
 
                 if (_activeRunner == null) return null;
                 //set parent class who call
-                var thisField = workflowRunnerType.GetFields().FirstOrDefault(x => x.Name.EndsWith("__this"));
-                //var thisField = workflowRunnerType.GetField("<>4__this");
+                var thisField = FunctionRunnerType.GetFields().FirstOrDefault(x => x.Name.EndsWith("__this"));
+                //var thisField = FunctionRunnerType.GetField("<>4__this");
                 thisField?.SetValue(_activeRunner, this);
 
                 SetActiveRunnerState(int.MinValue);
@@ -67,14 +67,14 @@ namespace WorkflowInCode.Abstraction
             return _activeRunner as IAsyncEnumerator<EventWaitingResult>;
         }
 
-        private void SetContextData(ContextData instanceData, LambdaExpression contextProp, object eventData)
+        private void SetContextData(ContextData FunctionData, LambdaExpression contextProp, object eventData)
         {
             //todo:check type &&me.Type
             if (contextProp.Body is MemberExpression me)
             {
                 var property = (PropertyInfo)me.Member;
 
-                var instanceDataParam = Expression.Parameter(typeof(object), "instanceData");
+                var FunctionDataParam = Expression.Parameter(typeof(object), "FunctionData");
                 var eventDataParam = Expression.Parameter(typeof(object), "eventData");
 
                 var isValueType = property.PropertyType.IsClass == false && property.PropertyType.IsInterface == false;
@@ -85,7 +85,7 @@ namespace WorkflowInCode.Abstraction
                 else
                     valueExpression = Expression.Convert(eventDataParam, property.PropertyType);
 
-                var thisExpression = Expression.Property(Expression.Convert(instanceDataParam, instanceData.GetType()), property);
+                var thisExpression = Expression.Property(Expression.Convert(FunctionDataParam, FunctionData.GetType()), property);
 
 
                 Expression body = Expression.Assign(thisExpression, valueExpression);
@@ -96,11 +96,11 @@ namespace WorkflowInCode.Abstraction
                                     Expression.Empty ()
                                 });
 
-                var lambda = Expression.Lambda(block, instanceDataParam, eventDataParam);
+                var lambda = Expression.Lambda(block, FunctionDataParam, eventDataParam);
 
                 var set = lambda.Compile() as Action<object, object>;
                 if (set != null)
-                    set(instanceData, eventData);
+                    set(FunctionData, eventData);
             }
 
         }

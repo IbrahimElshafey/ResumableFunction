@@ -1,6 +1,6 @@
-﻿namespace WorkflowInCode.Abstraction.InOuts
+﻿namespace ResumableFunction.Abstraction.InOuts
 {
-    public class WorkflowRunner
+    public class FunctionRunner
     {
         public string Name { get; set; }
         public string Type { get; set; }

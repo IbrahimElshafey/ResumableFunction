@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using WorkflowInCode.Abstraction.InOuts;
+using ResumableFunction.Abstraction.InOuts;
 
-namespace WorkflowInCode.Abstraction.Samples
+namespace ResumableFunction.Abstraction.Samples
 {
     /*
          * بعد إضافة مشروع يتم ارسال دعوة لمالك المشروع
@@ -18,65 +18,65 @@ namespace WorkflowInCode.Abstraction.Samples
         {
         }
 
-        protected override async IAsyncEnumerable<EventWaitingResult> RunWorkflow()
+        protected override async IAsyncEnumerable<EventWaitingResult> RunFunction()
         {
-            yield return WaitEvent(typeof(ProjectRequestedEvent), "ProjectRequested").SetProp(() => InstanceData.Project);
-            if (InstanceData.Project is not null)
+            yield return WaitEvent(typeof(ProjectRequestedEvent), "ProjectRequested").SetProp(() => FunctionData.Project);
+            if (FunctionData.Project is not null)
             {
-                await AskOwnerToApprove(InstanceData.Project);
-                await AskSponsorToApprove(InstanceData.Project);
-                await AskManagerToApprove(InstanceData.Project);
+                await AskOwnerToApprove(FunctionData.Project);
+                await AskSponsorToApprove(FunctionData.Project);
+                await AskManagerToApprove(FunctionData.Project);
 
                 //different event types and use optional
                 yield return WaitEvents(
                    new SingleEventWaiting(typeof(ManagerApprovalEvent), "ProjectRequested")
-                       .Match<ProjectRequestedEvent>(result => result.Id == InstanceData.Project.Id)
-                       .SetProp(() => InstanceData.Project)
+                       .Match<ProjectRequestedEvent>(result => result.Id == FunctionData.Project.Id)
+                       .SetProp(() => FunctionData.Project)
                        .SetOptional(),
                    new SingleEventWaiting(typeof(ManagerApprovalEvent), "OwnerApproval")
-                       .Match<ManagerApprovalEvent>(result => result.ProjectId == InstanceData.Project.Id)
-                       .SetProp(() => InstanceData.OwnerApprovalResult));
+                       .Match<ManagerApprovalEvent>(result => result.ProjectId == FunctionData.Project.Id)
+                       .SetProp(() => FunctionData.OwnerApprovalResult));
 
                 //same type
                 yield return WaitEvents(
                      new SingleEventWaiting(typeof(ManagerApprovalEvent), "OwnerApproval")
-                         .Match<ManagerApprovalEvent>(result => result.ProjectId == InstanceData.Project.Id)
-                         .SetProp(() => InstanceData.OwnerApprovalResult),
+                         .Match<ManagerApprovalEvent>(result => result.ProjectId == FunctionData.Project.Id)
+                         .SetProp(() => FunctionData.OwnerApprovalResult),
                      new SingleEventWaiting(typeof(ManagerApprovalEvent), "SponsorApproval")
-                         .Match<ManagerApprovalEvent>(result => result.ProjectId == InstanceData.Project.Id)
-                         .SetProp(() => InstanceData.SponsorApprovalResult),
+                         .Match<ManagerApprovalEvent>(result => result.ProjectId == FunctionData.Project.Id)
+                         .SetProp(() => FunctionData.SponsorApprovalResult),
                      new SingleEventWaiting(typeof(ManagerApprovalEvent), "ManagerApproval")
-                         .Match<ManagerApprovalEvent>(result => result.ProjectId == InstanceData.Project.Id)
-                         .SetProp(() => InstanceData.ManagerApprovalResult)
+                         .Match<ManagerApprovalEvent>(result => result.ProjectId == FunctionData.Project.Id)
+                         .SetProp(() => FunctionData.ManagerApprovalResult)
                      );
 
                 //wait first matched event in group
                 yield return WaitFirstEvent(
                    new SingleEventWaiting(typeof(ManagerApprovalEvent), "OwnerApproval")
-                       .Match<ManagerApprovalEvent>(result => result.ProjectId == InstanceData.Project.Id)
-                       .SetProp(() => InstanceData.OwnerApprovalResult),
+                       .Match<ManagerApprovalEvent>(result => result.ProjectId == FunctionData.Project.Id)
+                       .SetProp(() => FunctionData.OwnerApprovalResult),
                    new SingleEventWaiting(typeof(ManagerApprovalEvent), "SponsorApproval")
-                       .Match<ManagerApprovalEvent>(result => result.ProjectId == InstanceData.Project.Id)
-                       .SetProp(() => InstanceData.SponsorApprovalResult),
+                       .Match<ManagerApprovalEvent>(result => result.ProjectId == FunctionData.Project.Id)
+                       .SetProp(() => FunctionData.SponsorApprovalResult),
                    new SingleEventWaiting(typeof(ManagerApprovalEvent), "ManagerApproval")
-                       .Match<ManagerApprovalEvent>(result => result.ProjectId == InstanceData.Project.Id)
-                       .SetProp(() => InstanceData.ManagerApprovalResult)
+                       .Match<ManagerApprovalEvent>(result => result.ProjectId == FunctionData.Project.Id)
+                       .SetProp(() => FunctionData.ManagerApprovalResult)
                    );
 
                 //wait all but if two of them matched then return
                 yield return WaitEvents(
                   new SingleEventWaiting(typeof(ManagerApprovalEvent), "OwnerApproval")
-                      .Match<ManagerApprovalEvent>(result => result.ProjectId == InstanceData.Project.Id)
-                      .SetProp(() => InstanceData.OwnerApprovalResult),
+                      .Match<ManagerApprovalEvent>(result => result.ProjectId == FunctionData.Project.Id)
+                      .SetProp(() => FunctionData.OwnerApprovalResult),
                   new SingleEventWaiting(typeof(ManagerApprovalEvent), "SponsorApproval")
-                      .Match<ManagerApprovalEvent>(result => result.ProjectId == InstanceData.Project.Id)
-                      .SetProp(() => InstanceData.SponsorApprovalResult),
+                      .Match<ManagerApprovalEvent>(result => result.ProjectId == FunctionData.Project.Id)
+                      .SetProp(() => FunctionData.SponsorApprovalResult),
                   new SingleEventWaiting(typeof(ManagerApprovalEvent), "ManagerApproval")
-                      .Match<ManagerApprovalEvent>(result => result.ProjectId == InstanceData.Project.Id)
-                      .SetProp(() => InstanceData.ManagerApprovalResult)
+                      .Match<ManagerApprovalEvent>(result => result.ProjectId == FunctionData.Project.Id)
+                      .SetProp(() => FunctionData.ManagerApprovalResult)
                   ).WhenCount(count => count == 2);
 
-                var allManagerResponse = InstanceData.ManagerApprovalResult.Accepted == InstanceData.OwnerApprovalResult.Accepted == InstanceData.SponsorApprovalResult.Accepted;
+                var allManagerResponse = FunctionData.ManagerApprovalResult.Accepted == FunctionData.OwnerApprovalResult.Accepted == FunctionData.SponsorApprovalResult.Accepted;
                 if (allManagerResponse is true)
                 {
                     Console.WriteLine("Final Acceptance");

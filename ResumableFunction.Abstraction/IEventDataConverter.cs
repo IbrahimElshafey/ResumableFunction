@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using WorkflowInCode.Abstraction.InOuts;
+using ResumableFunction.Abstraction.InOuts;
 
-namespace WorkflowInCode.Abstraction
+namespace ResumableFunction.Abstraction
 {
     public interface IEventDataConverter
     {

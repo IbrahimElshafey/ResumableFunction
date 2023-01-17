@@ -4,7 +4,7 @@
 	* https://www.meziantou.net/observing-all-http-requests-in-a-dotnet-application.htm
 	* https://github.com/justcoding121/titanium-web-proxy
 * Write Implementation for Engine,FakeEventProvider,Database Presist,...
-* Implement WaitSubWorkflow,WaitSubWorkflows,and WaitFirstSubWorkflow
+* Implement WaitSubFunction,WaitSubFunctions,and WaitFirstSubFunction
 * Rename project to "resumable function"
 
 

@@ -4,9 +4,9 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
-using WorkflowInCode.Abstraction.InOuts;
+using ResumableFunction.Abstraction.InOuts;
 
-namespace WorkflowInCode.Abstraction.Samples
+namespace ResumableFunction.Abstraction.Samples
 {
     /*
          * بعد إضافة مشروع يتم ارسال دعوة لمالك المشروع
@@ -16,11 +16,11 @@ namespace WorkflowInCode.Abstraction.Samples
          * 
          */
     //ProjectApprovalContextData is the data that will bes saved to the database 
-    //When the engine match an event it will load the related workflow class and set the 
-    //InstanceData property by loading it from database
-    //No other state saved just the InstanceData and workflow author must keep that in mind
+    //When the engine match an event it will load the related Function class and set the 
+    //FunctionData property by loading it from database
+    //No other state saved just the FunctionData and Function author must keep that in mind
     //We can't depend on automatic serialize for state becuse compiler may remove fields and variables we defined
-    public class ProjectApproval : WorkflowInstance<ProjectApprovalContextData>
+    public class ProjectApproval : ResumableFunction<ProjectApprovalContextData>
     {
         public ProjectApproval(ProjectApprovalContextData data) : base(data)
         {
@@ -32,54 +32,55 @@ namespace WorkflowInCode.Abstraction.Samples
         //    OwnerApproval = po;
         //    SponsorApproval = ps;
         //    ManagerApproval = pm;
-        //    InstanceData = new ProjectApprovalContextData();
+        //    FunctionData = new ProjectApprovalContextData();
         //}
 
-        protected override async IAsyncEnumerable<EventWaitingResult> RunWorkflow()
+        //any inherited ResumableFunction must implement 'RunFunction'
+        protected override async IAsyncEnumerable<EventWaitingResult> RunFunction()
         {
-            //any class that inherit WorkflowInstance<T> has the methods
-            //WaitEvent,WaitFirstEvent in a collection,WaitEvents and SaveInstanceData
+            //any class that inherit FunctionInstance<T> has the methods
+            //WaitEvent,WaitFirstEvent in a collection,WaitEvents and SaveFunctionData
 
             //the engine will wait for ProjectRequested event
             //no match function because it's the first one
-            //context prop is prop in InstanceData that we will set with event result data
-            yield return WaitEvent(typeof(ProjectRequestedEvent),"ProjectCreated").SetProp(() => InstanceData.Project);
+            //context prop is prop in FunctionData that we will set with event result data
+            yield return WaitEvent(typeof(ProjectRequestedEvent),"ProjectCreated").SetProp(() => FunctionData.Project);
             //the compiler will save state after executing the previous return
             //and wiating for the event
             //it will continue from the line below when event cames
 
 
-            //InstanceData.Project is set by the previous event
+            //FunctionData.Project is set by the previous event
             //we will initiate a task for Owner and wait to the Owner response
             //That matching function correlates the event to the right instance
             //The matching function will be translated to query language "MongoDB query for example" by the engine to search the active instance.
-            await AskOwnerToApprove(InstanceData.Project);
+            await AskOwnerToApprove(FunctionData.Project);
             yield return WaitEvent(typeof(ManagerApprovalEvent), "OwnerApproval")
-                .Match<ManagerApprovalEvent>(result => result.ProjectId == InstanceData.Project.Id)
-                .SetProp(() => InstanceData.OwnerApprovalResult);
-            if (InstanceData.OwnerApprovalResult.Rejected)
+                .Match<ManagerApprovalEvent>(result => result.ProjectId == FunctionData.Project.Id)
+                .SetProp(() => FunctionData.OwnerApprovalResult);
+            if (FunctionData.OwnerApprovalResult.Rejected)
             {
-                await ProjectRejected(InstanceData.Project, "Owner");
+                await ProjectRejected(FunctionData.Project, "Owner");
                 yield break;
             }
 
-            await AskSponsorToApprove(InstanceData.Project);
+            await AskSponsorToApprove(FunctionData.Project);
             yield return WaitEvent(typeof(ManagerApprovalEvent), "SponsorApproval")
-                .Match<ManagerApprovalEvent>(result => result.ProjectId == InstanceData.Project.Id)
-                .SetProp(() => InstanceData.SponsorApprovalResult);
-            if (InstanceData.SponsorApprovalResult.Rejected)
+                .Match<ManagerApprovalEvent>(result => result.ProjectId == FunctionData.Project.Id)
+                .SetProp(() => FunctionData.SponsorApprovalResult);
+            if (FunctionData.SponsorApprovalResult.Rejected)
             {
-                await ProjectRejected(InstanceData.Project, "Sponsor");
+                await ProjectRejected(FunctionData.Project, "Sponsor");
                 yield break;
             }
 
-            await AskManagerToApprove(InstanceData.Project);
+            await AskManagerToApprove(FunctionData.Project);
             yield return WaitEvent(typeof(ManagerApprovalEvent), "ManagerApproval")
-                .Match<ManagerApprovalEvent>(result => result.ProjectId == InstanceData.Project.Id)
-                .SetProp(() => InstanceData.ManagerApprovalResult);
-            if (InstanceData.ManagerApprovalResult.Rejected)
+                .Match<ManagerApprovalEvent>(result => result.ProjectId == FunctionData.Project.Id)
+                .SetProp(() => FunctionData.ManagerApprovalResult);
+            if (FunctionData.ManagerApprovalResult.Rejected)
             {
-                await ProjectRejected(InstanceData.Project, "Manager");
+                await ProjectRejected(FunctionData.Project, "Manager");
                 yield break;
             }
 

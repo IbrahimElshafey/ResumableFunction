@@ -1,8 +1,8 @@
 
-# Workflow Patterns
-* http://www.workflowpatterns.com/patterns/control/
-* http://www.workflowpatterns.com/patterns/
-* https://www.ariscommunity.com/users/sstein/2010-07-20-bpmn-2-workflow-patterns
+# Function Patterns
+* http://www.Functionpatterns.com/patterns/control/
+* http://www.Functionpatterns.com/patterns/
+* https://www.ariscommunity.com/users/sstein/2010-07-20-bpmn-2-Function-patterns
 
 
 
@@ -53,9 +53,10 @@ https://agirlamonggeeks.com/2019/06/04/cannot-implicitly-convert-type-abc-to-iab
 
 
 # Find a service bus
-	*Zebus https://github.com/Abc-Arbitrage/Zebus
+	*Zebus https://github.com/Abc-Arbitrage/Zebus (no broker)
 
 	* Silverback https://silverback-messaging.net/ A simple but feature-rich message bus "Broker" for .NET core (Apache Kafka, MQTT and RabbitMQ)
+	
 	* SlimMessageBus https://github.com/zarusz/SlimMessageBus (Apache Kafka, Azure EventHub, MQTT/Mosquitto, Redis Pub/Sub),and provides request-response implementation over message queues.
 		* wit Mosquitto http://www.steves-internet-guide.com/install-mosquitto-broker/#manual
 		* http://www.steves-internet-guide.com/mosquitto_pub-sub-clients/

@@ -1,6 +1,6 @@
-﻿using WorkflowInCode.Abstraction.InOuts;
+﻿using ResumableFunction.Abstraction.InOuts;
 
-namespace WorkflowInCode.Abstraction
+namespace ResumableFunction.Abstraction
 {
     public interface IActiveEventsRepository
     {

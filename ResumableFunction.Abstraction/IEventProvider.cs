@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using WorkflowInCode.Abstraction.InOuts;
+using ResumableFunction.Abstraction.InOuts;
 
-namespace WorkflowInCode.Abstraction
+namespace ResumableFunction.Abstraction
 {
 
     /// <summary>
@@ -32,7 +32,7 @@ namespace WorkflowInCode.Abstraction
         Task Stop();
 
         /// <summary>
-        /// The engine call this when workflow run and ask to wait an event
+        /// The engine call this when Function run and ask to wait an event
         /// </summary>
         /// <param name="eventToSubscribe"></param>
         /// <returns></returns>

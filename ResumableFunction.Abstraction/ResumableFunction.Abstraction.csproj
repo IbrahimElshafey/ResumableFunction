@@ -7,11 +7,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="NetMQ" Version="4.0.1.10" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\WorkflowInCode.Abstraction\WorkflowInCode.Abstraction.csproj" />
+    <Compile Remove="FunctionInstance\**" />
+    <EmbeddedResource Remove="FunctionInstance\**" />
+    <None Remove="FunctionInstance\**" />
   </ItemGroup>
 
 </Project>

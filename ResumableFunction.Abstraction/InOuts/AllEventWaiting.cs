@@ -1,6 +1,6 @@
 ﻿using System.Linq.Expressions;
 
-namespace WorkflowInCode.Abstraction.InOuts
+namespace ResumableFunction.Abstraction.InOuts
 {
     public class AllEventWaiting : EventWaitingResult
     {

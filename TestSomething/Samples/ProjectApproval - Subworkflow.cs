@@ -4,9 +4,9 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
-using WorkflowInCode.Abstraction.InOuts;
+using ResumableFunction.Abstraction.InOuts;
 
-namespace WorkflowInCode.Abstraction.Samples
+namespace ResumableFunction.Abstraction.Samples
 {
     /*
          * بعد إضافة مشروع يتم ارسال دعوة لمالك المشروع
@@ -15,54 +15,54 @@ namespace WorkflowInCode.Abstraction.Samples
          * موافقة راعي المشروع ليست إجبارية, قد يرد أو لا يرد أبداً
          * 
          */
-    public class ProjectApprovalSubWorkflow : ProjectApproval
+    public class ProjectApprovalSubFunction : ProjectApproval
     {
-        public ProjectApprovalSubWorkflow(ProjectApprovalContextData data) : base(data)
+        public ProjectApprovalSubFunction(ProjectApprovalContextData data) : base(data)
         {
         }
 
-        protected override async IAsyncEnumerable<EventWaitingResult> RunWorkflow()
+        protected override async IAsyncEnumerable<EventWaitingResult> RunFunction()
         {
 
             await Task.Delay(100);
-            yield return WaitEvent(typeof(ProjectRequestedEvent), "ProjectRequested").SetProp(() => InstanceData.Project);
+            yield return WaitEvent(typeof(ProjectRequestedEvent), "ProjectRequested").SetProp(() => FunctionData.Project);
 
-            yield return WaitSubWorkflow(SubWorkFlow);
-            yield return WaitSubWorkflows(SubWorkFlow,SubWorkFlow);
-            yield return WaitFirstSubWorkflow(SubWorkFlow,SubWorkFlow);
+            yield return WaitSubFunction(SubFunction);
+            yield return WaitSubFunctions(SubFunction,SubFunction);
+            yield return WaitFirstSubFunction(SubFunction,SubFunction);
 
             Console.WriteLine("All three approved");
         }
 
-        private async IAsyncEnumerable<SingleEventWaiting> SubWorkFlow()
+        private async IAsyncEnumerable<SingleEventWaiting> SubFunction()
         {
-            await AskOwnerToApprove(InstanceData.Project);
+            await AskOwnerToApprove(FunctionData.Project);
             yield return WaitEvent(typeof(ManagerApprovalEvent), "OwnerApproval")
-                .Match<ManagerApprovalEvent>(result => result.ProjectId == InstanceData.Project.Id)
-                .SetProp(() => InstanceData.OwnerApprovalResult);
-            if (InstanceData.OwnerApprovalResult.Rejected)
+                .Match<ManagerApprovalEvent>(result => result.ProjectId == FunctionData.Project.Id)
+                .SetProp(() => FunctionData.OwnerApprovalResult);
+            if (FunctionData.OwnerApprovalResult.Rejected)
             {
-                await ProjectRejected(InstanceData.Project, "Owner");
+                await ProjectRejected(FunctionData.Project, "Owner");
                 yield break;
             }
 
-            await AskSponsorToApprove(InstanceData.Project);
+            await AskSponsorToApprove(FunctionData.Project);
             yield return WaitEvent(typeof(ManagerApprovalEvent), "SponsorApproval")
-                .Match<ManagerApprovalEvent>(result => result.ProjectId == InstanceData.Project.Id)
-                .SetProp(() => InstanceData.SponsorApprovalResult);
-            if (InstanceData.SponsorApprovalResult.Rejected)
+                .Match<ManagerApprovalEvent>(result => result.ProjectId == FunctionData.Project.Id)
+                .SetProp(() => FunctionData.SponsorApprovalResult);
+            if (FunctionData.SponsorApprovalResult.Rejected)
             {
-                await ProjectRejected(InstanceData.Project, "Sponsor");
+                await ProjectRejected(FunctionData.Project, "Sponsor");
                 yield break;
             }
 
-            await AskManagerToApprove(InstanceData.Project);
+            await AskManagerToApprove(FunctionData.Project);
             yield return WaitEvent(typeof(ManagerApprovalEvent), "ManagerApproval")
-                .Match<ManagerApprovalEvent>(result => result.ProjectId == InstanceData.Project.Id)
-                .SetProp(() => InstanceData.ManagerApprovalResult);
-            if (InstanceData.ManagerApprovalResult.Rejected)
+                .Match<ManagerApprovalEvent>(result => result.ProjectId == FunctionData.Project.Id)
+                .SetProp(() => FunctionData.ManagerApprovalResult);
+            if (FunctionData.ManagerApprovalResult.Rejected)
             {
-                await ProjectRejected(InstanceData.Project, "Manager");
+                await ProjectRejected(FunctionData.Project, "Manager");
                 yield break;
             }
 

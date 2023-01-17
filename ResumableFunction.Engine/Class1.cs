@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WorkflowInCode.Abstraction.InOuts
+namespace ResumableFunction.Engine
 {
-    public class EventWaitingRecord
+    internal class Class1
     {
     }
 }
