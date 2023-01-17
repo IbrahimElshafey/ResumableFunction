@@ -10,6 +10,8 @@ namespace ResumableFunction.Abstraction
     public interface IEventDataConverter
     {
         string UniqeName { get; }
+        string FromType { get; }
+        string ToType { get; }
         IEventData Convert(object objectToConvert); 
     }
 }

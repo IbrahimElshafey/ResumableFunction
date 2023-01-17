@@ -12,16 +12,20 @@ namespace ResumableFunction.Abstraction
 {
     public abstract partial class ResumableFunction<ContextData>
     {
-        public ResumableFunction(ContextData data)
+        private readonly IFunctionEngine _engine;
+        public ResumableFunction(ContextData data, IFunctionEngine engine)
         {
             RuntimeData = new FunctionRuntimeData() { InstanceId = Guid.NewGuid() };
             FunctionData = data;
+            _engine = engine;
         }
         protected AnyEventWaiting WaitFirstEvent(
             params SingleEventWaiting[] events)
         {
             Array.ForEach(events, SetCommonProps);
-            return new AnyEventWaiting { Events = events };
+            var result = new AnyEventWaiting { Events = events };
+            _engine.RequestEventWait(result);
+            return result;
         }
 
 
@@ -30,15 +34,20 @@ namespace ResumableFunction.Abstraction
         {
             if (events.Count(x => x.IsOptional) == events.Count())
                 throw new Exception("When use WaitEvents at least one event must be mandatory.");
-            Array.ForEach(events, SetCommonProps);
-            return new AllEventWaiting { WaitingEvents = events };
+
+            var result = new AllEventWaiting { WaitingEvents = events };
+            Array.ForEach(result.WaitingEvents, SetCommonProps);
+            Array.ForEach(result.WaitingEvents, x => x.ParentGroupId = result.Id);
+            _engine.RequestEventWait(result);
+            return result;
         }
 
         protected SingleEventWaiting WaitEvent(Type eventType, string eventName, [CallerMemberName] string callerName = "")
         {
-            var eventWaiting = new SingleEventWaiting(eventType, eventName) { InitiatedByFunction = callerName };
-            SetCommonProps(eventWaiting);
-            return eventWaiting;
+            var result = new SingleEventWaiting(eventType, eventName) { InitiatedByFunction = callerName };
+            SetCommonProps(result);
+            _engine.RequestEventWait(result);
+            return result;
         }
 
         private void SetCommonProps(SingleEventWaiting eventWaiting)
@@ -46,24 +55,25 @@ namespace ResumableFunction.Abstraction
             eventWaiting.InitiatedByType = GetType();
             eventWaiting.FunctionInstanceId = RuntimeData.InstanceId;
             eventWaiting.FunctionDataType = FunctionData.GetType();
-            eventWaiting.Id = Guid.NewGuid();
         }
 
-        protected SingleEventWaiting WaitFirstSubFunction(params Func<IAsyncEnumerable<SingleEventWaiting>>[] subFunctions)
+        protected SingleEventWaiting WaitFirstFunction(params Func<IAsyncEnumerable<SingleEventWaiting>>[] subFunctions)
         {
             return null;
         }
-        protected SingleEventWaiting WaitSubFunctions(params Func<IAsyncEnumerable<SingleEventWaiting>>[] subFunctions)
+        protected SingleEventWaiting WaitFunctions(params Func<IAsyncEnumerable<SingleEventWaiting>>[] subFunctions)
         {
             return null;
         }
-        protected SingleEventWaiting WaitSubFunction(Func<IAsyncEnumerable<EventWaitingResult>> subFunction)
+        protected SingleEventWaiting WaitFunction(Func<IAsyncEnumerable<EventWaitingResult>> subFunction)
         {
             return null;
         }
 
         public FunctionRuntimeData RuntimeData { get; private set; }
         public ContextData FunctionData { get; protected set; }
+
+
 
         public async Task SaveFunctionData()
         {

@@ -1,4 +1,5 @@
 ﻿using ResumableFunction.Abstraction.InOuts;
+using System.Reflection;
 
 namespace ResumableFunction.Abstraction
 {
@@ -9,10 +10,10 @@ namespace ResumableFunction.Abstraction
         /// </summary>
         /// <param name="assemblyName"></param>
         /// <returns></returns>
-        Task RegisterAssembly(string assemblyName);
-        Task RegisterFunction<FunctionData>(ResumableFunction<FunctionData> FunctionInstance);
-        Task RegisterEventProvider(IEventProvider eventProvider);
-        Task RegisterEventEventDataConverter(IEventDataConverter eventDataConverter);
+        Task RegisterAssembly(Assembly assembly);
+        Task RegisterFunction(Type functionType);
+        Task RegisterEventProvider(Type eventProviderType);
+        Task RegisterEventDataConverter(Type converterType);
 
         /// <summary>
         ///pushed event  comes to the engine from event provider <br/>
@@ -36,8 +37,8 @@ namespace ResumableFunction.Abstraction
         /// but the provider will send this data back
         /// </summary>
         /// <param name="eventWaiting"></param>
-        Task FunctionRequestEvent(SingleEventWaiting eventWaiting);
-        Task FunctionRequestEvent(AllEventWaiting eventWaiting);
-        Task FunctionRequestEvent(AnyEventWaiting eventWaiting);
+        Task RequestEventWait(SingleEventWaiting eventWaiting);
+        Task RequestEventWait(AllEventWaiting eventWaiting);
+        Task RequestEventWait(AnyEventWaiting eventWaiting);
     }
 }

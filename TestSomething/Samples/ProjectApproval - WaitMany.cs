@@ -14,7 +14,7 @@ namespace ResumableFunction.Abstraction.Samples
          */
     public class ProjectApprovalWaitMany : ProjectApproval
     {
-        public ProjectApprovalWaitMany(ProjectApprovalContextData data) : base(data)
+        public ProjectApprovalWaitMany(ProjectApprovalContextData data, IFunctionEngine engine) : base(data, engine)
         {
         }
 

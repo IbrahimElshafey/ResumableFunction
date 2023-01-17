@@ -1,13 +1,14 @@
 # ToDo
+* Write Implementation for Engine,FakeEventProvider,Database Presist,... to test the engine.
+* Parameter check lib use
+* Use dependancy injection
+
+* Implement WaitSubFunction,WaitSubFunctions,and WaitFirstSubFunction
+
 * Using SlimMessageBus as Queuing service (https://github.com/zarusz/SlimMessageBus)
 * Listen to local in outs http and tcp calls
 	* https://www.meziantou.net/observing-all-http-requests-in-a-dotnet-application.htm
 	* https://github.com/justcoding121/titanium-web-proxy
-* Write Implementation for Engine,FakeEventProvider,Database Presist,...
-* Implement WaitSubFunction,WaitSubFunctions,and WaitFirstSubFunction
-* Rename project to "resumable function"
-
-
 
 
 * Evaluate expression tree as where clause

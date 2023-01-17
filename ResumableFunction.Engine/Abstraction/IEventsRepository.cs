@@ -1,8 +1,8 @@
 ﻿using ResumableFunction.Abstraction.InOuts;
 
-namespace ResumableFunction.Abstraction
+namespace ResumableFunction.Engine.Abstraction
 {
-    public interface IActiveEventsRepository
+    public interface IEventsRepository
     {
         Task<IQueryable<SingleEventWaiting>> GetActiveEvents(string providerName,string eventType,object eventData);
     }

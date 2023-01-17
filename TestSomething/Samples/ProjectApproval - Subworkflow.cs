@@ -17,7 +17,7 @@ namespace ResumableFunction.Abstraction.Samples
          */
     public class ProjectApprovalSubFunction : ProjectApproval
     {
-        public ProjectApprovalSubFunction(ProjectApprovalContextData data) : base(data)
+        public ProjectApprovalSubFunction(ProjectApprovalContextData data, IFunctionEngine engine) : base(data, engine)
         {
         }
 
@@ -27,9 +27,9 @@ namespace ResumableFunction.Abstraction.Samples
             await Task.Delay(100);
             yield return WaitEvent(typeof(ProjectRequestedEvent), "ProjectRequested").SetProp(() => FunctionData.Project);
 
-            yield return WaitSubFunction(SubFunction);
-            yield return WaitSubFunctions(SubFunction,SubFunction);
-            yield return WaitFirstSubFunction(SubFunction,SubFunction);
+            yield return WaitFunction(SubFunction);
+            yield return WaitFunctions(SubFunction,SubFunction);
+            yield return WaitFirstFunction(SubFunction,SubFunction);
 
             Console.WriteLine("All three approved");
         }

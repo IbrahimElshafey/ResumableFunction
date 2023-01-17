@@ -9,10 +9,6 @@ namespace ResumableFunction.Abstraction.InOuts
     /// </summary>
     public class SingleEventWaiting : EventWaitingResult
     {
-        public SingleEventWaiting()
-        {
-
-        }
         public SingleEventWaiting(Type eventType, string eventName, [CallerMemberName] string callerName = "")
         {
             if (eventType == null) throw new NullReferenceException("eventToWait param in EventWaiting..ctor");
@@ -27,7 +23,8 @@ namespace ResumableFunction.Abstraction.InOuts
             EventType = eventType;
             InitiatedByFunction = callerName;
         }
-        public Guid Id { get; set; }
+        
+        public Guid ParentGroupId { get; set; }
         public string EventName { get; set; }
         public bool IsOptional { get; private set; } = false;
         public LambdaExpression MatchExpression { get; private set; }

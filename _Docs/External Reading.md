@@ -64,3 +64,6 @@ https://agirlamonggeeks.com/2019/06/04/cannot-implicitly-convert-type-abc-to-iab
 	* https://github.com/zarusz/SlimMessageBus
 	* Use https://github.com/Cysharp/MessagePipe to send events to the engine
 	* https://stackoverflow.com/questions/58549763/how-should-ipc-be-handled-in-net-core
+
+# Resolve by name
+https://stackoverflow.com/questions/39072001/dependency-injection-resolving-by-name

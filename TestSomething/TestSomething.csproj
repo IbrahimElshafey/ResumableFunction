@@ -16,5 +16,6 @@
 	</ItemGroup>
 	<ItemGroup>
 	  <ProjectReference Include="..\ResumableFunction.Abstraction\ResumableFunction.Abstraction.csproj" />
+	  <ProjectReference Include="..\ResumableFunction.Engine\ResumableFunction.Engine.csproj" />
 	</ItemGroup>
 </Project>

@@ -22,9 +22,10 @@ namespace ResumableFunction.Abstraction.Samples
     //We can't depend on automatic serialize for state becuse compiler may remove fields and variables we defined
     public class ProjectApproval : ResumableFunction<ProjectApprovalContextData>
     {
-        public ProjectApproval(ProjectApprovalContextData data) : base(data)
+        public ProjectApproval(ProjectApprovalContextData data, IFunctionEngine engine) : base(data, engine)
         {
         }
+
 
         //public ProjectApproval(ProjectRequestedEvent p, ManagerApprovalEvent po, ManagerApprovalEvent ps, ManagerApprovalEvent pm)
         //{
