@@ -5,7 +5,7 @@ namespace Test
 {
     public class SimpleEventProvider : IEventProvider
     {
-        public string UniqueName => "SimpleEventProvider";
+        public string EventProviderName => "SimpleEventProvider";
 
         public void Dispose()
         {

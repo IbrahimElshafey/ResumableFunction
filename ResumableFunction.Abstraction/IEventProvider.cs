@@ -15,9 +15,9 @@ namespace ResumableFunction.Abstraction
     public interface IEventProvider : IDisposable
     {
         /// <summary>
-        /// Uniqe name to resolve this provider at runtime
+        /// Unique name for the provider.
         /// </summary>
-        string UniqueName { get; }
+        string EventProviderName { get; }
 
         /// <summary>
         /// Start listening to the events,the engine will call this when an event that expected to be handled by this provider
@@ -44,20 +44,6 @@ namespace ResumableFunction.Abstraction
         /// <param name="eventToSubscribe"></param>
         /// <returns></returns>
         Task<bool> UnSubscribeEvent(IEventData eventToSubscribe);
-
-        ///// <summary>
-        ///// Remote Call <br/>
-        ///// Push and event to the engine
-        ///// </summary>
-        //Task PushEvent(PushedEvent pushEvent);
-        ////{
-        ////    var type = pushEvent.EventData?.GetType();
-        ////    if (type == null) return;
-        ////    //pushEvent.Type = $"{type.FullName}#{type.AssemblyQualifiedName}";
-        ////    pushEvent.EventDataType = type.FullName;
-        ////    pushEvent.EventDataConverterName = UniqueName;
-        ////    //will use engine gRPC client to push an event
-        ////}
 
     }
 }

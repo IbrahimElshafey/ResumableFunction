@@ -67,3 +67,7 @@ https://agirlamonggeeks.com/2019/06/04/cannot-implicitly-convert-type-abc-to-iab
 
 # Resolve by name
 https://stackoverflow.com/questions/39072001/dependency-injection-resolving-by-name
+
+# RPC
+* CoreRPC https://github.com/kekekeks/CoreRPC
+* https://github.com/RandomEngy/PipeMethodCalls

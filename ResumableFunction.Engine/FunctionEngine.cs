@@ -14,11 +14,16 @@ namespace ResumableFunction.Engine
     {
         private readonly IEventsRepository _activeEvents;
         private readonly IFunctionRepository _functionRepository;
+        private readonly IEventProviderRepository _eventProviderRepository;
 
-        public FunctionEngine(IEventsRepository activeEventsRepository, IFunctionRepository simpleFunctionRepository)
+        public FunctionEngine(
+            IEventsRepository activeEventsRepository,
+            IFunctionRepository simpleFunctionRepository, 
+            IEventProviderRepository eventProviderRepository)
         {
             _activeEvents = activeEventsRepository;
             _functionRepository = simpleFunctionRepository;
+            _eventProviderRepository = eventProviderRepository;
         }
 
         public Task RequestEventWait(SingleEventWaiting eventWaiting)

@@ -1,4 +1,5 @@
-﻿using ResumableFunction.Engine.Abstraction;
+﻿using ResumableFunction.Abstraction;
+using ResumableFunction.Engine.Abstraction;
 
 namespace ResumableFunction.Engine
 {
@@ -10,6 +11,11 @@ namespace ResumableFunction.Engine
         }
 
         public Task<bool> IsFunctionRegistred(Type functionType)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<bool> RegisterFunction(Type functionType)
         {
             throw new NotImplementedException();
         }
