@@ -23,25 +23,25 @@ namespace Test
             //    new ManagerApprovalEvent(122, true, false)
             //    );
             var testDefaults = new TestDefaults();
-            await testDefaults.FunctionEngine.RegisterAssembly(Assembly.GetExecutingAssembly());
-            await testDefaults.FunctionEngine.RegisterEventProvider(typeof(SimpleEventProvider));
-            await testDefaults.FunctionEngine.RegisterFunction(typeof(ProjectApproval));
+            //await testDefaults.FunctionEngine.RegisterAssembly(Assembly.GetExecutingAssembly());
+            //await testDefaults.FunctionEngine.RegisterEventProvider(typeof(SimpleEventProvider));
+            //await testDefaults.FunctionEngine.RegisterFunction(typeof(ProjectApproval));
 
 
-            //var projectApprovalFunction = new ProjectApproval(new ProjectApprovalContextData(), defaults.FunctionEngine);
-            ////projectApprovalFunction.FunctionData.Project = new Project { DueDate = DateTime.Now, Id = 122, Name = "Project1" };
-            ////projectApprovalFunction.FunctionData.SponsorApprovalResult = new ProjectApprovalResult(122, true, false);
-            ////projectApprovalFunction.FunctionData.OwnerApprovalResult = new ProjectApprovalResult(122, true, false);
-            ////projectApprovalFunction.FunctionData.ManagerApprovalResult = new ProjectApprovalResult(122, true, false);
-            //var incomingEvent = await projectApprovalFunction.Run();
-            //Console.WriteLine(incomingEvent);
-            //incomingEvent = await projectApprovalFunction.Run();
-            //Console.WriteLine(incomingEvent);
-            //incomingEvent = await projectApprovalFunction.Run();
-            //Console.WriteLine(incomingEvent);
-            //incomingEvent = await projectApprovalFunction.Run();
-            //Console.WriteLine(incomingEvent);
-            //incomingEvent = await projectApprovalFunction.Run();
+            var projectApprovalFunction = new ProjectApproval(new ProjectApprovalContextData(), testDefaults.FunctionEngine);
+            //projectApprovalFunction.FunctionData.Project = new Project { DueDate = DateTime.Now, Id = 122, Name = "Project1" };
+            //projectApprovalFunction.FunctionData.SponsorApprovalResult = new ProjectApprovalResult(122, true, false);
+            //projectApprovalFunction.FunctionData.OwnerApprovalResult = new ProjectApprovalResult(122, true, false);
+            //projectApprovalFunction.FunctionData.ManagerApprovalResult = new ProjectApprovalResult(122, true, false);
+            var incomingEvent = await projectApprovalFunction.Run();
+            Console.WriteLine(incomingEvent);
+            incomingEvent = await projectApprovalFunction.Run();
+            Console.WriteLine(incomingEvent);
+            incomingEvent = await projectApprovalFunction.Run();
+            Console.WriteLine(incomingEvent);
+            incomingEvent = await projectApprovalFunction.Run();
+            Console.WriteLine(incomingEvent);
+            incomingEvent = await projectApprovalFunction.Run();
             //Console.WriteLine(incomingEvent);
 
             Console.ReadLine();

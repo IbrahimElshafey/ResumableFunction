@@ -15,11 +15,12 @@ namespace ResumableFunction.Abstraction
         private readonly IFunctionEngine _engine;
         public ResumableFunction(ContextData data, IFunctionEngine engine)
         {
-            RuntimeData = new FunctionRuntimeData() { InstanceId = Guid.NewGuid() };
+            InstanceId = Guid.NewGuid();
             FunctionData = data;
             _engine = engine;
+            CurrentEvents = new List<SingleEventWaiting>();
         }
-        protected AnyEventWaiting WaitFirstEvent(
+        protected AnyEventWaiting WaitAnyEvent(
             params SingleEventWaiting[] events)
         {
             Array.ForEach(events, SetCommonProps);
@@ -33,7 +34,7 @@ namespace ResumableFunction.Abstraction
             params SingleEventWaiting[] events)
         {
             if (events.Count(x => x.IsOptional) == events.Count())
-                throw new Exception("When use WaitEvents at least one event must be mandatory.");
+                throw new Exception($"When use {WaitEvents} at least one event must be mandatory.");
 
             var result = new AllEventWaiting { WaitingEvents = events };
             Array.ForEach(result.WaitingEvents, SetCommonProps);
@@ -52,28 +53,62 @@ namespace ResumableFunction.Abstraction
 
         private void SetCommonProps(SingleEventWaiting eventWaiting)
         {
-            eventWaiting.InitiatedByType = GetType();
-            eventWaiting.FunctionInstanceId = RuntimeData.InstanceId;
-            eventWaiting.FunctionDataType = FunctionData.GetType();
+            eventWaiting.InitiatedByClass = GetType();
+            eventWaiting.FunctionId = InstanceId;
+            eventWaiting.FunctionDataType = FunctionData?.GetType();
+            CurrentEvents.Add(eventWaiting);
         }
 
-        protected SingleEventWaiting WaitFirstFunction(params Func<IAsyncEnumerable<SingleEventWaiting>>[] subFunctions)
+        protected async Task<AnyFunctionWaiting> AnyFunction(params Expression<Func<IAsyncEnumerable<EventWaitingResult>>>[] subFunctions)
         {
-            return null;
-        }
-        protected SingleEventWaiting WaitFunctions(params Func<IAsyncEnumerable<SingleEventWaiting>>[] subFunctions)
-        {
-            return null;
-        }
-        protected SingleEventWaiting WaitFunction(Func<IAsyncEnumerable<EventWaitingResult>> subFunction)
-        {
-            return null;
+            var result = new AnyFunctionWaiting { Functions = new FunctionWaitingResult[subFunctions.Length] };
+            for (int i = 0; i < subFunctions.Length; i++)
+            {
+                var currentFunction = subFunctions[i];
+                var currentFuncResult = await Function(currentFunction);
+                result.Functions[i] = currentFuncResult;
+            }
+            return result;
         }
 
-        public FunctionRuntimeData RuntimeData { get; private set; }
+        protected async Task<AllFunctionWaiting> Functions(params Expression<Func<IAsyncEnumerable<EventWaitingResult>>>[] subFunctions)
+        {
+            var result = new AllFunctionWaiting { WaitingFunctions = new FunctionWaitingResult[subFunctions.Length] };
+            for (int i = 0; i < subFunctions.Length; i++)
+            {
+                var currentFunction = subFunctions[i];
+                var currentFuncResult = await Function(currentFunction);
+                result.WaitingFunctions[i] = currentFuncResult;
+            }
+            return result;
+        }
+
+        protected async Task<FunctionWaitingResult> Function(Expression<Func<IAsyncEnumerable<EventWaitingResult>>> subFunction)
+        {
+            var result = new FunctionWaitingResult();
+            var methodCall = subFunction.Body as MethodCallExpression;
+            if (methodCall != null)
+            {
+                result.FunctionName = methodCall.Method.Name;
+            }
+            var funcEvents = subFunction.Compile()();
+            if (funcEvents != null)
+            {
+                var asyncEnumerator = funcEvents.GetAsyncEnumerator();
+                await asyncEnumerator.MoveNextAsync();
+                var firstEvent = asyncEnumerator.Current;
+                result.CurrentEvent = firstEvent;
+            }
+            return result;
+        }
+
+        public Guid InstanceId { get; set; }
         public ContextData FunctionData { get; protected set; }
 
-
+        /// <summary>
+        /// To be used by engine to translate match function.
+        /// </summary>
+        public List<SingleEventWaiting> CurrentEvents { get; }
 
         public async Task SaveFunctionData()
         {

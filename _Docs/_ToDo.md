@@ -1,10 +1,12 @@
 # ToDo
+* use direct call to engine for test
+* Write Implementation for Engine,FakeEventProvider,Database Presist,... to test the engine.
+
 * Event provider may be:
 	* Local implementation
 	* Remote implementation (Will use gRPC to contact with)
 		* TCP, HTTP, or Named Pipes based on IEventProviderConfiguration
 	* 
-* Write Implementation for Engine,FakeEventProvider,Database Presist,... to test the engine.
 * Parameter check lib use
 * Use dependancy injection
 

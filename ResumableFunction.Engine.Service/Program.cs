@@ -1,8 +1,13 @@
+using ResumableFunction.Abstraction;
+using ResumableFunction.Engine;
+using ResumableFunction.Engine.Abstraction;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
 builder.Services.AddControllers();
+builder.Services.AddFunctionEngine();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

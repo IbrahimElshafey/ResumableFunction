@@ -12,33 +12,34 @@ namespace ResumableFunction.Engine
 {
     public class FunctionEngine : IFunctionEngine
     {
-        private readonly IEventsRepository _activeEvents;
+        private readonly IEventsRepository _eventsList;
         private readonly IFunctionRepository _functionRepository;
         private readonly IEventProviderRepository _eventProviderRepository;
 
         public FunctionEngine(
-            IEventsRepository activeEventsRepository,
-            IFunctionRepository simpleFunctionRepository, 
+            IEventsRepository eventsRepository,
+            IFunctionRepository functionRepository, 
             IEventProviderRepository eventProviderRepository)
         {
-            _activeEvents = activeEventsRepository;
-            _functionRepository = simpleFunctionRepository;
+            _eventsList = eventsRepository;
+            _functionRepository = functionRepository;
             _eventProviderRepository = eventProviderRepository;
         }
 
         public Task RequestEventWait(SingleEventWaiting eventWaiting)
         {
-            throw new NotImplementedException();
+            return Task.CompletedTask;
+            //throw new NotImplementedException();
         }
 
         public Task RequestEventWait(AllEventWaiting eventWaiting)
         {
-            throw new NotImplementedException();
+            return Task.CompletedTask;
         }
 
         public Task RequestEventWait(AnyEventWaiting eventWaiting)
         {
-            throw new NotImplementedException();
+            return Task.CompletedTask;
         }
 
         public Task RegisterAssembly(Assembly assembly)
@@ -61,9 +62,22 @@ namespace ResumableFunction.Engine
             throw new NotImplementedException();
         }
 
-        public Task WhenEventProviderPushEvent(PushedEvent pushedEvent)
+        public async Task WhenEventProviderPushEvent(PushedEvent pushedEvent)
         {
-            throw new NotImplementedException();
+            //pushed event  comes to the engine from event provider 
+            //pushed event contains properties (ProviderName,EventDataType,EventData,DataConverterName)
+            //* engine search event list with (ProviderName,EventType) and pass payload to match expression
+            //* engine now know related function instances list
+            //* load context data and start/resume active instance Function
+            //* call EventProvider.UnSubscribeEvent(pushedEvent.EventData) if no other intances waits this type for the same provider
+            var matchedEvents = await _eventsList.GetEvents(pushedEvent);
+            //pushedEvent.Data must be IEventData or can convert to IEventData
+            matchedEvents = matchedEvents.Where(x => x.IsMatch((IEventData)pushedEvent.Data)).ToList();
+            //foreach (var eventWaiting in matchedEvents)
+            //{
+            //    eventWaiting.FunctionDataType;
+            //}
+            //return Task.CompletedTask;
         }
     }
 }

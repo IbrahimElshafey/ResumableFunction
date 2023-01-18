@@ -8,6 +8,10 @@ namespace Test
     {
         public IEventsRepository ActiveEventsRepository => new SimpleActiveEventsRepository();
         public IFunctionRepository SimpleFunctionRepository => new SimpleFunctionRepository();
-        public IFunctionEngine FunctionEngine =>new FunctionEngine(ActiveEventsRepository,SimpleFunctionRepository);
+        public IEventProviderRepository EventProviderRepository => new EventProviderRepository();
+        public IFunctionEngine FunctionEngine =>new FunctionEngine(
+            ActiveEventsRepository,
+            SimpleFunctionRepository,
+            EventProviderRepository);
     }
 }

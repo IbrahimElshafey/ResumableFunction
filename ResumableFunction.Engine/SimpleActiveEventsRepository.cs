@@ -15,5 +15,10 @@ namespace ResumableFunction.Engine
         {
             throw new NotImplementedException();
         }
+
+        public Task<List<SingleEventWaiting>> GetEvents(PushedEvent pushedEvent)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

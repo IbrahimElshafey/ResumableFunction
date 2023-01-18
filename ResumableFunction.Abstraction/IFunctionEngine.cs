@@ -18,17 +18,17 @@ namespace ResumableFunction.Abstraction
         /// <summary>
         ///pushed event  comes to the engine from event provider <br/>
         ///pushed event contains properties (ProviderName,EventType,EventData)<br/>
-        ///engine search active event list with (ProviderName,EventType) and pass payload to match expression<br/>
-        ///engine now know related instances list<br/>
-        ///load context data and start/resume active instance Function<br/>
-        ///call EventProvider.UnSubscribeEvent(pushedEvent.EventData) if no other intances waits this type for the same provider
+        ///* engine search event list with (ProviderName,EventType) and pass payload to match expression<br/>
+        ///* engine now know related instances list<br/>
+        ///* load context data and start/resume active instance Function<br/>
+        ///* call EventProvider.UnSubscribeEvent(pushedEvent.EventData) if no other intances waits this type for the same provider
         /// </summary>
         /// <param name="pushedEvent"></param>
         /// <returns></returns>
         Task WhenEventProviderPushEvent(PushedEvent pushedEvent);
 
         /// <summary>
-        /// Will execueted when a Function instance run and return new EventWaiting result.<br/>
+        /// Will execueted when a Function instance run and return ask for EventWaiting result.<br/>
         /// * Find event provider or load it.<br/>
         /// * Start event provider if not started <br/>
         /// * Call SubscribeToEvent with current paylaod type (eventWaiting.EventData)

@@ -51,7 +51,7 @@ namespace ResumableFunction.Abstraction.Samples
                      );
 
                 //wait first matched event in group
-                yield return WaitFirstEvent(
+                yield return WaitAnyEvent(
                    new SingleEventWaiting(typeof(ManagerApprovalEvent), "OwnerApproval")
                        .Match<ManagerApprovalEvent>(result => result.ProjectId == FunctionData.Project.Id)
                        .SetProp(() => FunctionData.OwnerApprovalResult),

@@ -1,5 +1,4 @@
-﻿using ResumableFunction.Abstraction;
-using ResumableFunction.Engine.Abstraction;
+﻿using ResumableFunction.Engine.Abstraction;
 
 namespace ResumableFunction.Engine
 {

@@ -10,6 +10,6 @@ namespace ResumableFunction.Engine.Abstraction
     public interface IEventProviderRepository
     {
         Task<IEventProvider> GetByName(string name);
-        Task<bool> SaveEventProvider(IEventProvider eventProvider);
+        Task<bool> RegsiterEventProvider(IEventProvider eventProvider);
     }
 }

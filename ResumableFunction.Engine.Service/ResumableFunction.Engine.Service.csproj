@@ -11,4 +11,9 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\ResumableFunction.Abstraction\ResumableFunction.Abstraction.csproj" />
+    <ProjectReference Include="..\ResumableFunction.Engine\ResumableFunction.Engine.csproj" />
+  </ItemGroup>
+
 </Project>

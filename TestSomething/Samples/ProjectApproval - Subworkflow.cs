@@ -27,9 +27,15 @@ namespace ResumableFunction.Abstraction.Samples
             await Task.Delay(100);
             yield return WaitEvent(typeof(ProjectRequestedEvent), "ProjectRequested").SetProp(() => FunctionData.Project);
 
-            yield return WaitFunction(SubFunction);
-            yield return WaitFunctions(SubFunction,SubFunction);
-            yield return WaitFirstFunction(SubFunction,SubFunction);
+            yield return await Function(() => SubFunction());
+
+            yield return await Functions(
+                () => SubFunction(),
+                () => SubFunction());
+
+            yield return await AnyFunction(
+                () => SubFunction(), 
+                () => SubFunction());
 
             Console.WriteLine("All three approved");
         }

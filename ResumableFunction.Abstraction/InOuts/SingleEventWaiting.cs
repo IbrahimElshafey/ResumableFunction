@@ -18,7 +18,7 @@ namespace ResumableFunction.Abstraction.InOuts
                 throw new NullReferenceException($"Can't initiate instance of {eventType.FullName} with constructor less parameters.");
             }
             EventName = eventName;
-            EventData = instance;
+            //EventData = instance;
             EventProviderName = instance.EventProviderName;
             EventType = eventType;
             InitiatedByFunction = callerName;
@@ -26,20 +26,28 @@ namespace ResumableFunction.Abstraction.InOuts
         
         public Guid ParentGroupId { get; set; }
         public string EventName { get; set; }
-        public bool IsOptional { get; private set; } = false;
-        public LambdaExpression MatchExpression { get; private set; }
-        public LambdaExpression SetPropExpression { get; private set; }
-        public string InitiatedByFunction { get; set; }
-        public Type InitiatedByType { get; set; }
+        public bool IsOptional { get; set; } = false;
+        public LambdaExpression MatchExpression { get; set; }
+        public LambdaExpression SetPropExpression { get; set; }
 
-        public IEventData EventData { get; set; }
+        /// <summary>
+        /// Resumable function that request the event waiting.
+        /// </summary>
+        public string InitiatedByFunction { get; set; }
+
+        /// <summary>
+        /// The class that contians the resumable functions
+        /// </summary>
+        public Type InitiatedByClass { get; set; }
+
         public string EventProviderName { get; set; }
         public Type EventType { get; set; }
         public Type FunctionDataType { get; set; }
-        public Guid FunctionInstanceId { get; set; }
+        public Guid FunctionId { get; set; }
 
         public SingleEventWaiting Match<T>(Expression<Func<T, bool>> func) where T : IEventData
         {
+            //todo:rerwite expression and replace every FunctionData.Prop with constant value
             MatchExpression = func;
             return this;
         }
@@ -54,6 +62,14 @@ namespace ResumableFunction.Abstraction.InOuts
         {
             IsOptional = true;
             return this;
+        }
+
+        private static Func<IEventData, bool> _matchExpression;
+        public bool IsMatch(IEventData eventData)
+        {
+            if(_matchExpression == null)
+                _matchExpression = (Func<IEventData, bool>) MatchExpression.Compile();
+            return _matchExpression(eventData);
         }
     }
 
