@@ -70,7 +70,7 @@ namespace ResumableFunction.Engine
             //* engine now know related function instances list
             //* load context data and start/resume active instance Function
             //* call EventProvider.UnSubscribeEvent(pushedEvent.EventData) if no other intances waits this type for the same provider
-            var matchedEvents = await _eventsList.GetEvents(pushedEvent);
+            var matchedEvents = await _eventsList.GetEventWaits(pushedEvent);
             //pushedEvent.Data must be IEventData or can convert to IEventData
             matchedEvents = matchedEvents.Where(x => x.IsMatch((IEventData)pushedEvent.Data)).ToList();
             //foreach (var eventWaiting in matchedEvents)

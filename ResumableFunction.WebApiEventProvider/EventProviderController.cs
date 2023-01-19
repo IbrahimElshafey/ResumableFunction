@@ -7,7 +7,7 @@ namespace ResumableFunction.Abstraction.WebApiEventProvider
 {
     [ApiController]
     [Route("api/EventProvider")]
-
+    [ApiExplorerSettings(IgnoreApi = true)]
     public class EventProviderController : ControllerBase
     {
         private readonly IEventsData eventsData;

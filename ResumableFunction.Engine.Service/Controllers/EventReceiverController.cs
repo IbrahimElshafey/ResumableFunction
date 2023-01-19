@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using ResumableFunction.Abstraction;
 using ResumableFunction.Abstraction.InOuts;
+using System.Text.Json;
 
 namespace ResumableFunction.Engine.Service.Controllers
 {
@@ -18,6 +19,10 @@ namespace ResumableFunction.Engine.Service.Controllers
         [HttpPost]
         public async Task ReceiveEvent(PushedEvent pushEvent)
         {
+            if(pushEvent.Data is JsonElement jsonElement)
+            {
+               var x = jsonElement.ToObject<ApiInOutResult>();
+            }
           await _engine.WhenEventProviderPushEvent(pushEvent);
         }
     }
