@@ -1,8 +1,8 @@
 
-# Function Patterns
+# Workflow Patterns
 * http://www.Functionpatterns.com/patterns/control/
 * http://www.Functionpatterns.com/patterns/
-* https://www.ariscommunity.com/users/sstein/2010-07-20-bpmn-2-Function-patterns
+* https://www.ariscommunity.com/users/sstein/2010-07-20-bpmn-2-Workflow-patterns
 
 
 
@@ -71,3 +71,18 @@ https://stackoverflow.com/questions/39072001/dependency-injection-resolving-by-n
 # RPC
 * CoreRPC https://github.com/kekekeks/CoreRPC
 * https://github.com/RandomEngy/PipeMethodCalls
+
+* Listen to local in outs http and tcp calls
+	* https://www.meziantou.net/observing-all-http-requests-in-a-dotnet-application.htm
+	* https://github.com/justcoding121/titanium-web-proxy
+
+
+* Evaluate expression tree as where clause
+	* Translate expression tree to Mongo query
+	* https://stackoverflow.com/questions/7391450/simple-where-clause-in-expression-tree
+* Save expression trees to database
+	* https://stackoverflow.com/questions/23253399/serialize-expression-tree
+	* https://github.com/esskar/Serialize.Linq
+
+* Generic host
+* https://learn.microsoft.com/en-us/aspnet/core/fundamentals/host/generic-host?view=aspnetcore-7.0

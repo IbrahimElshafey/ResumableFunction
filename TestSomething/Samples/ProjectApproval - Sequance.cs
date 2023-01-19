@@ -31,7 +31,7 @@ namespace ResumableFunction.Abstraction.Samples
         //}
 
         //any inherited ResumableFunction must implement 'RunFunction'
-        protected override async IAsyncEnumerable<EventWaitingResult> RunFunction()
+        protected override async IAsyncEnumerable<EventWaitingResult> Start()
         {
             //yield return await Function(() => SubFunction());
             yield return await Functions(

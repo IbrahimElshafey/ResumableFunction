@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
+using ResumableFunction.Abstraction.WebApiEventProvider.InOuts;
 
 namespace Example.Api.Controllers
 {
@@ -29,5 +31,22 @@ namespace Example.Api.Controllers
             })
             .ToArray();
         }
+
+        [HttpPost(Name = "PostTest")]
+        //public object PostTest(object input)
+        public object PostTest(TestClass input,string inUrl)
+        {
+            return new { Message = "Hello from post method.", Number = 156498 };
+        }
     }
+
+
+    public class TestClass
+    {
+        public string eventProviderName { get; set; }
+        public string projectId { get; set; }
+        public string accepted { get; set; }
+        public string rejected { get; set; }
+    }
+
 }

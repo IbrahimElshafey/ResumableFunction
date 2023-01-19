@@ -20,14 +20,14 @@
         /// <summary>
         /// Will inherit <see cref="InOuts.IEventData"/> or object that convert to IEventData data using the <see cref="DataConverterName"/>
         /// </summary>
-        public object Data { get; set; }
+        public dynamic Data { get; set; }
 
         /// <summary>
         /// Used method to convert Paylaod to the target type (EventDataType)
         /// Will be used if the EventDataType not the same as EventData.GetType().FullName
         /// The engine will load the converter an convert
         /// </summary>
-        public string DataConverterName { get; set; }
+        public string DataConverterName { get; set; } = "JsonToObject";
     }
 
 

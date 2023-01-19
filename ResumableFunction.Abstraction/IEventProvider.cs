@@ -7,7 +7,6 @@ using ResumableFunction.Abstraction.InOuts;
 
 namespace ResumableFunction.Abstraction
 {
-
     /// <summary>
     /// Event provider will listen to events and push events to the engine.<br\>
     /// This may be a client for remote event provider or local implementation.
@@ -36,14 +35,14 @@ namespace ResumableFunction.Abstraction
         /// </summary>
         /// <param name="eventToSubscribe"></param>
         /// <returns></returns>
-        Task<bool> SubscribeToEvent(IEventData eventToSubscribe);
+        Task<bool> SubscribeToEvent(Type eventType);
 
         /// <summary>
         /// The engine will call this if no instance waiting the event type after the event pushed to the engine
         /// </summary>
         /// <param name="eventToSubscribe"></param>
         /// <returns></returns>
-        Task<bool> UnSubscribeEvent(IEventData eventToSubscribe);
+        Task<bool> UnSubscribeEvent(Type eventType);
 
     }
 }

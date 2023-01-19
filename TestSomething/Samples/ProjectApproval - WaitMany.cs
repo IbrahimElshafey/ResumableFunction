@@ -18,7 +18,7 @@ namespace ResumableFunction.Abstraction.Samples
         {
         }
 
-        protected override async IAsyncEnumerable<EventWaitingResult> RunFunction()
+        protected override async IAsyncEnumerable<EventWaitingResult> Start()
         {
             yield return WaitEvent(typeof(ProjectRequestedEvent), "ProjectRequested").SetProp(() => FunctionData.Project);
             if (FunctionData.Project is not null)

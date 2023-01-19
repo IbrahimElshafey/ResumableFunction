@@ -125,7 +125,7 @@ namespace ResumableFunction.Abstraction
             {
                 var incommingEvent = FunctionRunner.Current;
                 //SetContextData(FunctionData, incommingEvent.SetPropExpression, incommingEvent.EventData);
-                //todo:update runtime data active runner status and waiting list
+                //update runtime data active runner status and waiting list
                 await SaveFunctionData();
                 return incommingEvent;
             }
@@ -137,7 +137,7 @@ namespace ResumableFunction.Abstraction
             }
         }
 
-        protected abstract IAsyncEnumerable<EventWaitingResult> RunFunction();
+        protected abstract IAsyncEnumerable<EventWaitingResult> Start();
         protected virtual Task OnFunctionEnd()
         {
             return Task.CompletedTask;

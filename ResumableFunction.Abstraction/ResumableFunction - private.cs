@@ -11,9 +11,9 @@ namespace ResumableFunction.Abstraction
 {
     public abstract partial class ResumableFunction<ContextData>
     {
+        private string _currentRunner = nameof(Start);
         private object? _activeRunner;
-        //todo:set private 
-        public void SetActiveRunnerState(int state)
+        private void SetActiveRunnerState(int state)
         {
             if (_activeRunner != null || GetActiveRunner() != null)
             {
@@ -25,8 +25,7 @@ namespace ResumableFunction.Abstraction
                 }
             }
         }
-        //todo:set private
-        public int GetActiveRunnerState()
+        private int GetActiveRunnerState()
         {
             if (_activeRunner != null || GetActiveRunner() != null)
             {
@@ -44,7 +43,7 @@ namespace ResumableFunction.Abstraction
             {
                 var FunctionRunnerType = GetType()
                    .GetNestedTypes(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.SuppressChangeType)
-                   .FirstOrDefault(x => x.Name.StartsWith("<RunFunction>"));
+                   .FirstOrDefault(x => x.Name.StartsWith($"<{_currentRunner}>"));
 
                 if (FunctionRunnerType == null) return null;
                 ConstructorInfo? ctor = FunctionRunnerType.GetConstructor(
@@ -69,7 +68,7 @@ namespace ResumableFunction.Abstraction
 
         private void SetContextData(ContextData FunctionData, LambdaExpression contextProp, object eventData)
         {
-            //todo:check type &&me.Type
+            //todo:check type && me.Type
             if (contextProp.Body is MemberExpression me)
             {
                 var property = (PropertyInfo)me.Member;

@@ -7,13 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="FunctionInstance\**" />
-    <EmbeddedResource Remove="FunctionInstance\**" />
-    <None Remove="FunctionInstance\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Refit" Version="6.3.2" />
+    <ProjectReference Include="..\ResumableFunction.Abstraction\ResumableFunction.Abstraction.csproj" />
   </ItemGroup>
 
 </Project>

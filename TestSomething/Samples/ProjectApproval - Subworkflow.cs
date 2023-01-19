@@ -21,7 +21,7 @@ namespace ResumableFunction.Abstraction.Samples
         {
         }
 
-        protected override async IAsyncEnumerable<EventWaitingResult> RunFunction()
+        protected override async IAsyncEnumerable<EventWaitingResult> Start()
         {
 
             await Task.Delay(100);

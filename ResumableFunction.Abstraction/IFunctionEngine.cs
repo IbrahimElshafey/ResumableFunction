@@ -33,7 +33,7 @@ namespace ResumableFunction.Abstraction
         /// * Start event provider if not started <br/>
         /// * Call SubscribeToEvent with current paylaod type (eventWaiting.EventData)
         /// * Save event to IActiveEventsRepository <br/>
-        /// ** todo:important ?? must we send some of SingleEventWaiting props to event provider?? this will make filtering more accurate
+        /// ** important ?? must we send some of SingleEventWaiting props to event provider?? this will make filtering more accurate
         /// but the provider will send this data back
         /// </summary>
         /// <param name="eventWaiting"></param>
