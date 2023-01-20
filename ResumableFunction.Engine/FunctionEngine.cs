@@ -72,7 +72,7 @@ namespace ResumableFunction.Engine
             //* call EventProvider.UnSubscribeEvent(pushedEvent.EventData) if no other intances waits this type for the same provider
             var matchedEvents = await _eventsList.GetEventWaits(pushedEvent);
             //pushedEvent.Data must be IEventData or can convert to IEventData
-            matchedEvents = matchedEvents.Where(x => x.IsMatch((IEventData)pushedEvent.Data)).ToList();
+            matchedEvents = matchedEvents.Where(x => x.IsMatch(pushedEvent)).ToList();
             //foreach (var eventWaiting in matchedEvents)
             //{
             //    eventWaiting.FunctionDataType;

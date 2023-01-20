@@ -13,5 +13,6 @@ namespace ResumableFunction.Abstraction.InOuts
     public interface IEventData
     {
         string EventProviderName { get;}
+        string EventIdentifier { get; }
     }
 }

@@ -9,11 +9,11 @@ namespace ResumableFunction.WebApiEventProvider
 {
     public interface IEventsData
     {
-        Dictionary<string, ApiInOutResult> ActiveCalls { get; }
+        Dictionary<string, ApiCallEvent> ActiveCalls { get; }
         Task<bool> AddActionPath(string actionPath);
         Task<bool> DeleteActionPath(string actionPath);
-        Task Start();
-        Task Stop();
+        Task SetStarted();
+        Task SetStopped();
 
         Task<bool> IsStarted();
     }

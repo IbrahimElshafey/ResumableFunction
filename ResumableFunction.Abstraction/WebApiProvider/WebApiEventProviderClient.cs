@@ -34,28 +34,15 @@ namespace ResumableFunction.Abstraction.WebApiProvider
             await _client.Stop();
         }
 
-        public async Task<bool> SubscribeToEvent(Type eventType)
+        public async Task<bool> SubscribeToEvent(IEventData eventData)
         {
             //revisit
-            if (eventType == typeof(ApiInOutResult))
-            {
-                var instance = (ApiInOutResult)Activator.CreateInstance(eventType);
-                if (instance != null)
-                    return await _client.SubscribeToApiAction(instance.Url);
-            }
-            return true;
+            return await _client.SubscribeToApiAction(eventData.EventIdentifier);
         }
 
-        public async Task<bool> UnSubscribeEvent(Type eventType)
+        public async Task<bool> UnSubscribeEvent(IEventData eventData)
         {
-            //revisit
-            if (eventType == typeof(ApiInOutResult))
-            {
-                var instance = (ApiInOutResult)Activator.CreateInstance(eventType);
-                if (instance != null)
-                    return await _client.UnsubscribeApiAction(instance.Url);
-            }
-            return true;
+            return await _client.UnsubscribeApiAction(eventData.EventIdentifier);
         }
     }
 }

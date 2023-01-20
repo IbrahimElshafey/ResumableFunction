@@ -29,27 +29,42 @@ namespace ResumableFunction.Abstraction.WebApiEventProvider
         public async void OnActionExecuting(ActionExecutingContext context)
         {
             if (await IsDisabled(context.ActionDescriptor)) return;
-            eventsData.ActiveCalls.Add(context.HttpContext.TraceIdentifier, 
-                new ApiInOutResult { Args = context.ActionArguments });
+            
+            eventsData.ActiveCalls.Add(
+                context.HttpContext.TraceIdentifier,
+                new ApiCallEvent().AddArgs(context.ActionArguments));
         }
 
         public async void OnActionExecuted(ActionExecutedContext context)
         {
             if (await IsDisabled(context.ActionDescriptor)) return;
             //todo:push event to function engine
-            if (eventsData.ActiveCalls.ContainsKey(context.HttpContext.TraceIdentifier))
+            string traceIdentifier = context.HttpContext.TraceIdentifier;
+            if (eventsData.ActiveCalls.ContainsKey(traceIdentifier))
             {
-                eventsData.ActiveCalls[context.HttpContext.TraceIdentifier].Result = (context.Result as ObjectResult)?.Value;
-                var pushedEvent = new PushedEvent
+                ApiCallEvent pushedEvent = eventsData.ActiveCalls[traceIdentifier];
+                pushedEvent.Add($"__Result", (context.Result as ObjectResult)?.Value);
+                pushedEvent.EventProviderName = Extensions.GetEventProviderName();
+                pushedEvent.EventIdentifier = $"{context.HttpContext.Request.Method}#{context.HttpContext.Request.Path}";
+
+                using (var client = new HttpClient())
                 {
-                    EventProvider = $"WebApiEventProvider-{Assembly.GetEntryAssembly().GetName().Name}",
-                    Data = eventsData.ActiveCalls[context.HttpContext.TraceIdentifier],
+                    try
+                    {
+                        //todo:put url in config
+                        await client.PostAsync(
+                        "https://localhost:7295/EventReceiver",
+                        new StringContent(JsonConvert.SerializeObject(pushedEvent), Encoding.UTF8, "application/json"));
+                    }
+                    catch (Exception)
+                    {
+
+                       //todo:log exception
+                    }
+                   
                 };
-                var client = new HttpClient();
-                await client.PostAsync(
-                    "https://localhost:7295/EventReceiver",
-                    new StringContent(JsonConvert.SerializeObject(pushedEvent), Encoding.UTF8, "application/json"));
-                eventsData.ActiveCalls.Remove(context.HttpContext.TraceIdentifier);
+                
+                eventsData.ActiveCalls.Remove(traceIdentifier);
             }
         }
 

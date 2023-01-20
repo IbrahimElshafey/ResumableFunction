@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using ResumableFunction.Abstraction;
 using ResumableFunction.Abstraction.InOuts;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace ResumableFunction.Engine.Service.Controllers
 {
@@ -19,11 +20,21 @@ namespace ResumableFunction.Engine.Service.Controllers
         [HttpPost]
         public async Task ReceiveEvent(PushedEvent pushEvent)
         {
-            if(pushEvent.Data is JsonElement jsonElement)
-            {
-               var x = jsonElement.ToObject<ApiInOutResult>();
-            }
-          await _engine.WhenEventProviderPushEvent(pushEvent);
+            var y = pushEvent.ToObject<TestResult>();
+            await _engine.WhenEventProviderPushEvent(pushEvent);
         }
+        public class TestResult : IEventData
+        {
+            [JsonPropertyName("__Result")]
+            public Result Result { get; set; }
+            public Input Input { get; set; }
+            public string InUrl { get; set; }
+
+            public string EventProviderName => "WebApiEventProvider-Example.Api";
+
+            public string EventIdentifier => "POST#/WeatherForecast";
+        }
+        public record Input(string ProjectId, string Accepted, string Rejected);
+        public record Result(string Message, int Number);
     }
 }

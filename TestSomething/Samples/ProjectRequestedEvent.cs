@@ -9,5 +9,7 @@ namespace ResumableFunction.Abstraction.Samples
         public DateTime DueDate { get; set; }
 
         public string EventProviderName => Const.CurrentEventProvider;
+
+        public string EventIdentifier => nameof(ProjectRequestedEvent);
     }
 }

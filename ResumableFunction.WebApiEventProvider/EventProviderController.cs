@@ -21,21 +21,21 @@ namespace ResumableFunction.Abstraction.WebApiEventProvider
         [HttpGet(nameof(GetProviderName))]
         public string GetProviderName()
         {
-            return $"WebApiEventProvider-{Assembly.GetEntryAssembly().GetName().Name}";
+            return Extensions.GetEventProviderName();
         }
 
         [DisableEventProvider]
         [HttpGet(nameof(Start))]
         public async Task Start()
         {
-            await eventsData.Start();
+            await eventsData.SetStarted();
         }
 
         [DisableEventProvider]
         [HttpGet(nameof(Stop))]
         public async Task Stop()
         {
-            await eventsData.Stop();
+            await eventsData.SetStopped();
         }
 
         [DisableEventProvider]

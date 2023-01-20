@@ -1,7 +1,7 @@
 # ToDo
-* finsh WebApiEventProviderClient
-* use direct call to engine for test
-* Write Implementation for Engine,FakeEventProvider,Database Presist,... to test the engine.
+* test WebApiEventProviderClient
+* Write Implementation for EventsDataJsonFile : IEventsData.
+* Write Implementation for Engine,Database Presist,... to test the engine.
 
 * Event provider may be:
 	* Local implementation

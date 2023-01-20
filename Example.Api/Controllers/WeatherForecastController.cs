@@ -43,10 +43,10 @@ namespace Example.Api.Controllers
 
     public class TestClass
     {
-        public string eventProviderName { get; set; }
-        public string projectId { get; set; }
-        public string accepted { get; set; }
-        public string rejected { get; set; }
+        public string EventProviderName { get; set; }
+        public string ProjectId { get; set; }
+        public string Accepted { get; set; }
+        public string Rejected { get; set; }
     }
 
 }

@@ -1,4 +1,6 @@
-﻿namespace ResumableFunction.Abstraction.InOuts
+﻿using System.Text.Json;
+
+namespace ResumableFunction.Abstraction.InOuts
 {
     /*
         {
@@ -8,22 +10,13 @@
           "dataConverterName": ""
         }
      */
-    public class PushedEvent
+    public class PushedEvent : Dictionary<string, object>, IEventData
     {
+        //revisit: to vlaidate
 
         public string EventProviderName => ((JsonElement)this[nameof(EventProviderName)]).GetString();
 
-        /// <summary>
-        /// Will inherit <see cref="InOuts.IEventData"/> or object that convert to IEventData data using the <see cref="DataConverterName"/>
-        /// </summary>
-        public dynamic Data { get; set; }
-
-        /// <summary>
-        /// Used method to convert Paylaod to the target type (EventDataType)
-        /// Will be used if the EventDataType not the same as EventData.GetType().FullName
-        /// The engine will load the converter an convert
-        /// </summary>
-        public string DataConverterName { get; set; } = "JsonToObject";
+        public string EventIdentifier => ((JsonElement)this[nameof(EventIdentifier)]).GetString();
     }
 
 

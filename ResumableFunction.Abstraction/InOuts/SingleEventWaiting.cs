@@ -9,7 +9,7 @@ namespace ResumableFunction.Abstraction.InOuts
     /// </summary>
     public class SingleEventWaiting : EventWaitingResult
     {
-        public SingleEventWaiting(Type eventType, string eventName, [CallerMemberName] string callerName = "")
+        public SingleEventWaiting(Type eventType, string eventIdentifier = "", [CallerMemberName] string callerName = "")
         {
             if (eventType == null) throw new NullReferenceException("eventToWait param in EventWaiting..ctor");
             var instance = (IEventData)Activator.CreateInstance(eventType);
@@ -17,15 +17,19 @@ namespace ResumableFunction.Abstraction.InOuts
             {
                 throw new NullReferenceException($"Can't initiate instance of {eventType.FullName} with constructor less parameters.");
             }
-            EventName = eventName;
+            EventIdentifier = eventIdentifier ?? instance.EventIdentifier;
+            if (EventIdentifier == null)
+                throw new NullReferenceException("EventIdentifier can't be null.");
             //EventData = instance;
             EventProviderName = instance.EventProviderName;
+            if (EventProviderName == null)
+                throw new NullReferenceException("EventProviderName can't be null.");
             EventType = eventType;
             InitiatedByFunction = callerName;
         }
-        
+
         public Guid ParentGroupId { get; set; }
-        public string EventName { get; set; }
+        public string EventIdentifier { get; set; }
         public bool IsOptional { get; set; } = false;
         public LambdaExpression MatchExpression { get; set; }
         public LambdaExpression SetPropExpression { get; set; }
@@ -41,6 +45,10 @@ namespace ResumableFunction.Abstraction.InOuts
         public Type InitiatedByClass { get; set; }
 
         public string EventProviderName { get; set; }
+
+        /// <summary>
+        /// Used by engine to desrialze response to this type
+        /// </summary>
         public Type EventType { get; set; }
         public Type FunctionDataType { get; set; }
         public Guid FunctionId { get; set; }
@@ -67,8 +75,8 @@ namespace ResumableFunction.Abstraction.InOuts
         private static Func<IEventData, bool> _matchExpression;
         public bool IsMatch(IEventData eventData)
         {
-            if(_matchExpression == null)
-                _matchExpression = (Func<IEventData, bool>) MatchExpression.Compile();
+            if (_matchExpression == null)
+                _matchExpression = (Func<IEventData, bool>)MatchExpression.Compile();
             return _matchExpression(eventData);
         }
     }

@@ -35,14 +35,14 @@ namespace ResumableFunction.Abstraction
         /// </summary>
         /// <param name="eventToSubscribe"></param>
         /// <returns></returns>
-        Task<bool> SubscribeToEvent(Type eventType);
+        Task<bool> SubscribeToEvent(IEventData eventData);
 
         /// <summary>
         /// The engine will call this if no instance waiting the event type after the event pushed to the engine
         /// </summary>
         /// <param name="eventToSubscribe"></param>
         /// <returns></returns>
-        Task<bool> UnSubscribeEvent(Type eventType);
+        Task<bool> UnSubscribeEvent(IEventData eventData);
 
     }
 }

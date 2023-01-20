@@ -4,6 +4,7 @@ using ResumableFunction.Abstraction.WebApiEventProvider;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -15,7 +16,9 @@ namespace ResumableFunction.WebApiEventProvider
         {
             mvcBuilder.AddApplicationPart(typeof(EventProviderController).Assembly).AddControllersAsServices();
             mvcBuilder.AddMvcOptions(x => x.Filters.Add(typeof(CatchInOutsActionFilter)));
-            mvcBuilder.Services.AddSingleton<IEventsData, EventsDataJosnFile>();
+            mvcBuilder.Services.AddSingleton<IEventsData, EventsDataJsonFile>();
         }
+
+        public static string GetEventProviderName() => $"WebApiEventProvider-{Assembly.GetEntryAssembly().GetName().Name}";
     }
 }

@@ -8,5 +8,7 @@ namespace ResumableFunction.Abstraction.Samples
        public bool Accepted{get;set;}
        public bool Rejected{get;set;}
         public string EventProviderName => Const.CurrentEventProvider;
+
+        public string EventIdentifier => nameof(ManagerApprovalEvent);
     }
 }

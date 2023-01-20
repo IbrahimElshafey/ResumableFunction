@@ -7,15 +7,15 @@ using System.Threading.Tasks;
 
 namespace ResumableFunction.WebApiEventProvider
 {
-    public class EventsDataJosnFile : IEventsData
+    public class EventsDataJsonFile : IEventsData
     {
-        private Dictionary<string, ApiInOutResult>? _activeCalls;
-        public Dictionary<string, ApiInOutResult> ActiveCalls
+        private Dictionary<string, ApiCallEvent>? _activeCalls;
+        public Dictionary<string, ApiCallEvent> ActiveCalls
         {
             get
             {
                 if (_activeCalls == null)
-                    _activeCalls = new Dictionary<string, ApiInOutResult>();
+                    _activeCalls = new Dictionary<string, ApiCallEvent>();
                 return _activeCalls;
             }
         }
@@ -35,11 +35,11 @@ namespace ResumableFunction.WebApiEventProvider
             return true;
         }
 
-        public async Task Start()
+        public async Task SetStarted()
         {
         }
 
-        public async Task Stop()
+        public async Task SetStopped()
         {
         }
     }
