@@ -11,11 +11,7 @@
     public class PushedEvent
     {
 
-        public string EventProvider { get; set; }
-        /// <summary>
-        /// Full type name of EventData as a string
-        /// </summary>
-        public string DataType { get; set; }
+        public string EventProviderName => ((JsonElement)this[nameof(EventProviderName)]).GetString();
 
         /// <summary>
         /// Will inherit <see cref="InOuts.IEventData"/> or object that convert to IEventData data using the <see cref="DataConverterName"/>
