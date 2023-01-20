@@ -1,4 +1,6 @@
-﻿using ResumableFunction.Abstraction.WebApiEventProvider.InOuts;
+﻿using Newtonsoft.Json;
+using ResumableFunction.Abstraction.WebApiEventProvider.InOuts;
+using ResumableFunction.WebApiEventProvider.InOuts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,9 +9,22 @@ using System.Threading.Tasks;
 
 namespace ResumableFunction.WebApiEventProvider
 {
-    public class EventsDataJsonFile : IEventsData
+    public class EventsDataJsonFile : IDisposable, IEventsData
     {
-        private Dictionary<string, ApiCallEvent>? _activeCalls;
+        private Dictionary<string, ApiCallEvent>? _activeCalls = new Dictionary<string, ApiCallEvent>();
+        private readonly ApiCallsData? _data;
+        private string _dataFile = $"{Path.GetTempPath()}{Extensions.GetEventProviderName()}-data.json";
+        private PeriodicTimer timer;
+        private DateTime _lastChangeDate = DateTime.Now;
+        private const int periodicSaveTime = 5;
+        public EventsDataJsonFile()
+        {
+            if (File.Exists(_dataFile))
+                _data = JsonConvert.DeserializeObject<ApiCallsData>(File.ReadAllText(_dataFile));
+            else
+                _data = new ApiCallsData();
+        }
+
         public Dictionary<string, ApiCallEvent> ActiveCalls
         {
             get
@@ -20,27 +35,71 @@ namespace ResumableFunction.WebApiEventProvider
             }
         }
 
-        public async Task<bool> AddActionPath(string actionPath)
+        public Task<bool> AddActionPath(string actionPath)
         {
-            return true;
+            var isAdded = _data.ActionPaths.Add(actionPath);
+            if (isAdded)
+                _data.Changed();
+            return Task.FromResult(isAdded);
         }
 
-        public async Task<bool> DeleteActionPath(string actionPath)
+        public Task<bool> DeleteActionPath(string actionPath)
         {
-            return true;
+            var isDeleted = _data.ActionPaths.Remove(actionPath);
+            if (isDeleted)
+                _data.Changed();
+            return Task.FromResult(isDeleted);
         }
 
-        public async Task<bool> IsStarted()
+
+        public Task<bool> IsStarted()
         {
-            return true;
+            return Task.FromResult(_data.IsStarted);
         }
 
         public async Task SetStarted()
         {
+            if (!_data.IsStarted)
+            {
+                _data.IsStarted = true;
+                _data.Changed();
+            }
+            timer = new PeriodicTimer(TimeSpan.FromSeconds(periodicSaveTime));
+            while (await timer.WaitForNextTickAsync() && _data.IsStarted)
+            {
+                if (_data.LastChangeDate > _lastChangeDate)
+                    await SaveDataToJsonFile();
+            }
+            //return Task.CompletedTask;
+        }
+
+        private async Task SaveDataToJsonFile()
+        {
+            await File.WriteAllTextAsync(_dataFile, JsonConvert.SerializeObject(_data));
+            _lastChangeDate = DateTime.Now;
         }
 
         public async Task SetStopped()
         {
+            if (_data.IsStarted)
+            {
+                _data.IsStarted = false;
+                _data.Changed();
+            }
+            await SaveDataToJsonFile();
+            timer?.Dispose();
         }
+
+        public Task<bool> IsSubscribedToAction(string eventIdentifier)
+        {
+            return Task.FromResult(_data.ActionPaths.Contains(eventIdentifier));
+        }
+
+        public void Dispose()
+        {
+            timer?.Dispose();
+        }
+
+
     }
 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using ResumableFunction.Abstraction.WebApiEventProvider;
 using System;
@@ -20,5 +21,7 @@ namespace ResumableFunction.WebApiEventProvider
         }
 
         public static string GetEventProviderName() => $"WebApiEventProvider-{Assembly.GetEntryAssembly().GetName().Name}";
+        public static string GetEventIdentifier(this HttpContext context)
+            => $"{context.Request.Method}#{context.Request.Path}";
     }
 }

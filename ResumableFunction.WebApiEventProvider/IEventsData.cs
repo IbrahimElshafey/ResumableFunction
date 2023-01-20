@@ -16,5 +16,6 @@ namespace ResumableFunction.WebApiEventProvider
         Task SetStopped();
 
         Task<bool> IsStarted();
+        Task<bool> IsSubscribedToAction(string eventIdentifier);
     }
 }

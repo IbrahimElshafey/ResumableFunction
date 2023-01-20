@@ -29,43 +29,44 @@ namespace ResumableFunction.Abstraction.WebApiEventProvider
         public async void OnActionExecuting(ActionExecutingContext context)
         {
             if (await IsDisabled(context.ActionDescriptor)) return;
-            
-            eventsData.ActiveCalls.Add(
-                context.HttpContext.TraceIdentifier,
-                new ApiCallEvent().AddArgs(context.ActionArguments));
+            if (await eventsData.IsSubscribedToAction(context.HttpContext.GetEventIdentifier()))
+                eventsData.ActiveCalls.Add(
+                    context.HttpContext.TraceIdentifier,
+                    new ApiCallEvent().AddArgs(context.ActionArguments));
         }
 
         public async void OnActionExecuted(ActionExecutedContext context)
         {
-            if (await IsDisabled(context.ActionDescriptor)) return;
-            //todo:push event to function engine
+            //if (await IsDisabled(context.ActionDescriptor)) return;
+            //if (!await eventsData.IsSubscribedToAction(context.HttpContext.GetEventIdentifier())) return;
+          
             string traceIdentifier = context.HttpContext.TraceIdentifier;
-            if (eventsData.ActiveCalls.ContainsKey(traceIdentifier))
+            if (!eventsData.ActiveCalls.ContainsKey(traceIdentifier)) return;
+
+            ApiCallEvent pushedEvent = eventsData.ActiveCalls[traceIdentifier];
+            pushedEvent.Add($"__Result", (context.Result as ObjectResult)?.Value);
+            pushedEvent.EventProviderName = Extensions.GetEventProviderName();
+            pushedEvent.EventIdentifier = $"{context.HttpContext.Request.Method}#{context.HttpContext.Request.Path}";
+            pushedEvent.EventIdentifier = context.HttpContext.GetEventIdentifier();
+
+            using (var client = new HttpClient())
             {
-                ApiCallEvent pushedEvent = eventsData.ActiveCalls[traceIdentifier];
-                pushedEvent.Add($"__Result", (context.Result as ObjectResult)?.Value);
-                pushedEvent.EventProviderName = Extensions.GetEventProviderName();
-                pushedEvent.EventIdentifier = $"{context.HttpContext.Request.Method}#{context.HttpContext.Request.Path}";
-
-                using (var client = new HttpClient())
+                try
                 {
-                    try
-                    {
-                        //todo:put url in config
-                        await client.PostAsync(
-                        "https://localhost:7295/EventReceiver",
-                        new StringContent(JsonConvert.SerializeObject(pushedEvent), Encoding.UTF8, "application/json"));
-                    }
-                    catch (Exception)
-                    {
+                    //todo:put url in config
+                    await client.PostAsync(
+                    "https://localhost:7295/EventReceiver",
+                    new StringContent(JsonConvert.SerializeObject(pushedEvent), Encoding.UTF8, "application/json"));
+                }
+                catch (Exception)
+                {
 
-                       //todo:log exception
-                    }
-                   
-                };
-                
-                eventsData.ActiveCalls.Remove(traceIdentifier);
-            }
+                    //todo:log exception
+                }
+
+            };
+
+            eventsData.ActiveCalls.Remove(traceIdentifier);
         }
 
         private async Task<bool> IsDisabled(ActionDescriptor actionDescriptor)
