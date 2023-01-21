@@ -20,21 +20,21 @@ namespace ResumableFunction.Engine.Service.Controllers
         [HttpPost]
         public async Task ReceiveEvent(PushedEvent pushEvent)
         {
-            var y = pushEvent.ToObject<TestResult>();
-            await _engine.WhenEventProviderPushEvent(pushEvent);
+            //var y = pushEvent.ToObject<TestResult>();
+            await _engine.WhenProviderPushEvent(pushEvent);
         }
-        public class TestResult : IEventData
-        {
-            [JsonPropertyName("__Result")]
-            public Result Result { get; set; }
-            public Input Input { get; set; }
-            public string InUrl { get; set; }
+        //public class TestResult : IEventData
+        //{
+        //    [JsonPropertyName("CallResult")]
+        //    public Result CallResult { get; set; }
+        //    public Input Input { get; set; }
+        //    public string InUrl { get; set; }
 
-            public string EventProviderName => "WebApiEventProvider-Example.Api";
+        //    public string EventProviderName => "WebApiEventProvider-Example.Api";
 
-            public string EventIdentifier => "POST#/WeatherForecast";
-        }
-        public record Input(string ProjectId, string Accepted, string Rejected);
-        public record Result(string Message, int Number);
+        //    public string EventIdentifier => "POST#/WeatherForecast";
+        //}
+        //public record Input(string ProjectId, string Accepted, string Rejected);
+        //public record Result(string Message, int Number);
     }
 }

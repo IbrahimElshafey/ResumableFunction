@@ -2,9 +2,9 @@
 
 namespace ResumableFunction.Engine.Abstraction
 {
-    public interface IEventsRepository
+    public interface IWaitsRepository
     {
-        Task<IQueryable<SingleEventWaiting>> GetActiveWaits(string providerName,string eventType,object eventData);
+        Task<IQueryable<SingleEventWaiting>> GetWaits(string providerName,string eventType,object eventData);
         Task<List<SingleEventWaiting>> GetEventWaits(PushedEvent pushedEvent);
     }
 }

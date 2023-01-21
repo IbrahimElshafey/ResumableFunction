@@ -1,13 +1,14 @@
 # ToDo
-* Write Implementation for EventsDataJsonFile : IEventsData.
-* Write Implementation for Engine,Database Presist,... to test the engine.
+* Write Implementation for:
+	* Engine
+	* Database Presist
 
-* Event provider may be:
-	* Local implementation
-	* Remote implementation (Will use gRPC to contact with)
-		* TCP, HTTP, or Named Pipes based on IEventProviderConfiguration
-	* 
+
 * Parameter check lib use
 
-* Add log
+
+* Add Log
 * Add Resumable Function History
+* Add event provider that monitor network requests
+* Add UI project to monitor and control function
+* 

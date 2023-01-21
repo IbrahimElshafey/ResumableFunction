@@ -11,7 +11,7 @@ namespace ResumableFunction.Abstraction
     /// Event provider will listen to events and push events to the engine.<br\>
     /// This may be a client for remote event provider or local implementation.
     /// </summary>
-    public interface IEventProvider : IDisposable
+    public interface IEventProviderHandler : IDisposable
     {
         /// <summary>
         /// Unique name for the provider.
@@ -43,6 +43,9 @@ namespace ResumableFunction.Abstraction
         /// <param name="eventToSubscribe"></param>
         /// <returns></returns>
         Task<bool> UnSubscribeEvent(IEventData eventData);
+
+
+        //todo:add method to check if listen or not
 
     }
 }

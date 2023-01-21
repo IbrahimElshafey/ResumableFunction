@@ -25,7 +25,7 @@ namespace ResumableFunction.Abstraction
         /// </summary>
         /// <param name="pushedEvent"></param>
         /// <returns></returns>
-        Task WhenEventProviderPushEvent(PushedEvent pushedEvent);
+        Task WhenProviderPushEvent(PushedEvent pushedEvent);
 
         /// <summary>
         /// Will execueted when a Function instance run and return ask for EventWaiting result.<br/>
@@ -37,8 +37,8 @@ namespace ResumableFunction.Abstraction
         /// but the provider will send this data back
         /// </summary>
         /// <param name="eventWaiting"></param>
-        Task RequestEventWait(SingleEventWaiting eventWaiting);
-        Task RequestEventWait(AllEventWaiting eventWaiting);
-        Task RequestEventWait(AnyEventWaiting eventWaiting);
+        Task RequestWait(SingleEventWaiting eventWaiting);
+        Task RequestWait(AllEventWaiting eventWaiting);
+        Task RequestWait(AnyEventWaiting eventWaiting);
     }
 }

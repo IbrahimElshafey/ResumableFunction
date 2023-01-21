@@ -2,7 +2,7 @@
 
 namespace ResumableFunction.Engine
 {
-    public class SimpleFunctionRepository : IFunctionRepository
+    public class FunctionRepository : IFunctionRepository
     {
         public Task<FunctionData> GetFunctionData<FunctionData>(Guid instanceId, string functionName)
         {

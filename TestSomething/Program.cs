@@ -30,7 +30,7 @@ namespace Test
             //save data to database
         }
 
-        public class TestWebApiEventProvider : WebApiEventProviderClient
+        public class TestWebApiEventProvider : WebApiEventProviderHandler
         {
             protected override string ApiUrl => "https://localhost:7241/";
 

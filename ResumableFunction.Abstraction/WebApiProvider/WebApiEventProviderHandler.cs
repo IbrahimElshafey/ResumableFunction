@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ResumableFunction.Abstraction.WebApiProvider
 {
-    public abstract class WebApiEventProviderClient : IEventProvider
+    public abstract class WebApiEventProviderHandler : IEventProviderHandler
     {
         protected abstract string ApiUrl { get; }
         protected abstract string ApiProjectName { get; }

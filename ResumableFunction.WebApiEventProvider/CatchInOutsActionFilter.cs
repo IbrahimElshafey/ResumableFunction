@@ -28,7 +28,8 @@ namespace ResumableFunction.Abstraction.WebApiEventProvider
 
         public async void OnActionExecuting(ActionExecutingContext context)
         {
-            if (await IsDisabled(context.ActionDescriptor)) return;
+
+            if (await IsEnabled(context) is false) return;
             if (await eventsData.IsSubscribedToAction(context.HttpContext.GetEventIdentifier()))
                 eventsData.ActiveCalls.Add(
                     context.HttpContext.TraceIdentifier,
@@ -39,12 +40,12 @@ namespace ResumableFunction.Abstraction.WebApiEventProvider
         {
             //if (await IsDisabled(context.ActionDescriptor)) return;
             //if (!await eventsData.IsSubscribedToAction(context.HttpContext.GetEventIdentifier())) return;
-          
+
             string traceIdentifier = context.HttpContext.TraceIdentifier;
             if (!eventsData.ActiveCalls.ContainsKey(traceIdentifier)) return;
 
             ApiCallEvent pushedEvent = eventsData.ActiveCalls[traceIdentifier];
-            pushedEvent.Add($"__Result", (context.Result as ObjectResult)?.Value);
+            pushedEvent.Add("ApiCallResult", (context.Result as ObjectResult)?.Value);
             pushedEvent.EventProviderName = Extensions.GetEventProviderName();
             pushedEvent.EventIdentifier = $"{context.HttpContext.Request.Method}#{context.HttpContext.Request.Path}";
             pushedEvent.EventIdentifier = context.HttpContext.GetEventIdentifier();
@@ -69,14 +70,29 @@ namespace ResumableFunction.Abstraction.WebApiEventProvider
             eventsData.ActiveCalls.Remove(traceIdentifier);
         }
 
-        private async Task<bool> IsDisabled(ActionDescriptor actionDescriptor)
+        private async Task<bool> IsEnabled(ActionExecutingContext context)
         {
-            if (actionDescriptor is ControllerActionDescriptor cad)
+            var classEnabled = AttributeIsEnable(context.Controller.GetType());
+            if (context.ActionDescriptor is ControllerActionDescriptor controllerActionDescriptor)
             {
-                if (cad.MethodInfo.GetCustomAttributes(true).Any(a => a.GetType().Equals(typeof(DisableEventProviderAttribute))))
-                    return true;
+                var methodEnabled = AttributeIsEnable(controllerActionDescriptor.MethodInfo);
+
+                var isEnabled = methodEnabled == true || (methodEnabled == null && classEnabled == true);
+                if(isEnabled)
+                    return await eventsData.IsStarted();
             }
-            return !await eventsData.IsStarted();
+            return false;
+
+            bool? AttributeIsEnable(MemberInfo memberInfo)
+            {
+                return memberInfo
+                  .GetCustomAttributes(true)
+                  .FirstOrDefault(
+                        a =>
+                        a.GetType().Equals(typeof(EnableEventProviderAttribute)) ||
+                        a.GetType().Equals(typeof(DisableEventProviderAttribute))
+                    )?.Equals(new EnableEventProviderAttribute());
+            }
         }
 
     }

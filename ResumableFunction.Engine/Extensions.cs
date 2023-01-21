@@ -13,8 +13,8 @@ namespace ResumableFunction.Engine
     {
         public static void AddFunctionEngine(this IServiceCollection services)
         {
-            services.AddScoped<IEventsRepository, SimpleActiveEventsRepository>();
-            services.AddScoped<IFunctionRepository, SimpleFunctionRepository>();
+            services.AddScoped<IWaitsRepository, WaitsRepository>();
+            services.AddScoped<IFunctionRepository, FunctionRepository>();
             services.AddScoped<IEventProviderRepository, EventProviderRepository>();
             services.AddScoped<IFunctionEngine, FunctionEngine>();
         }

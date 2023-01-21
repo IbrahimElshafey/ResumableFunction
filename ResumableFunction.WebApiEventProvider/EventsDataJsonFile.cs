@@ -20,7 +20,13 @@ namespace ResumableFunction.WebApiEventProvider
         public EventsDataJsonFile()
         {
             if (File.Exists(_dataFile))
+            {
                 _data = JsonConvert.DeserializeObject<ApiCallsData>(File.ReadAllText(_dataFile));
+                if(_data.IsStarted) 
+                    SetStarted();
+                else
+                    SetStopped();
+            }
             else
                 _data = new ApiCallsData();
         }

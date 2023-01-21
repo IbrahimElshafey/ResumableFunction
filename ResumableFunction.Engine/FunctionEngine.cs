@@ -12,32 +12,38 @@ namespace ResumableFunction.Engine
 {
     public class FunctionEngine : IFunctionEngine
     {
-        private readonly IEventsRepository _eventsList;
+        private readonly IWaitsRepository _waitsRepository;
         private readonly IFunctionRepository _functionRepository;
         private readonly IEventProviderRepository _eventProviderRepository;
 
         public FunctionEngine(
-            IEventsRepository eventsRepository,
+            IWaitsRepository waitsRepository,
             IFunctionRepository functionRepository, 
             IEventProviderRepository eventProviderRepository)
         {
-            _eventsList = eventsRepository;
+            _waitsRepository = waitsRepository;
             _functionRepository = functionRepository;
             _eventProviderRepository = eventProviderRepository;
         }
 
-        public Task RequestEventWait(SingleEventWaiting eventWaiting)
+        public Task RequestWait(SingleEventWaiting eventWaiting)
         {
+            /// Will execueted when a Function instance run and return ask for EventWaiting result.<br/>
+            /// * Find event provider or load it.<br/>
+            /// * Start event provider if not started <br/>
+            /// * Call SubscribeToEvent with current paylaod type (eventWaiting.EventData)
+            /// * Save event to IActiveEventsRepository <br/>
+            /// ** important ?? must we send some of SingleEventWaiting props to event provider?? this will make filtering more accurate
+            /// but the provider will send this data back
             return Task.CompletedTask;
-            //throw new NotImplementedException();
         }
 
-        public Task RequestEventWait(AllEventWaiting eventWaiting)
+        public Task RequestWait(AllEventWaiting eventWaiting)
         {
             return Task.CompletedTask;
         }
 
-        public Task RequestEventWait(AnyEventWaiting eventWaiting)
+        public Task RequestWait(AnyEventWaiting eventWaiting)
         {
             return Task.CompletedTask;
         }
@@ -62,7 +68,7 @@ namespace ResumableFunction.Engine
             throw new NotImplementedException();
         }
 
-        public async Task WhenEventProviderPushEvent(PushedEvent pushedEvent)
+        public async Task WhenProviderPushEvent(PushedEvent pushedEvent)
         {
             //pushed event  comes to the engine from event provider 
             //pushed event contains properties (ProviderName,EventDataType,EventData,DataConverterName)
@@ -70,7 +76,7 @@ namespace ResumableFunction.Engine
             //* engine now know related function instances list
             //* load context data and start/resume active instance Function
             //* call EventProvider.UnSubscribeEvent(pushedEvent.EventData) if no other intances waits this type for the same provider
-            var matchedEvents = await _eventsList.GetEventWaits(pushedEvent);
+            var matchedEvents = await _waitsRepository.GetEventWaits(pushedEvent);
             //pushedEvent.Data must be IEventData or can convert to IEventData
             matchedEvents = matchedEvents.Where(x => x.IsMatch(pushedEvent)).ToList();
             //foreach (var eventWaiting in matchedEvents)

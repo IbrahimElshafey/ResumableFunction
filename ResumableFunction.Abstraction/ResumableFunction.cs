@@ -12,20 +12,21 @@ namespace ResumableFunction.Abstraction
 {
     public abstract partial class ResumableFunction<ContextData>
     {
+        //will be set by the engine after load the instance
         private readonly IFunctionEngine _engine;
-        public ResumableFunction(ContextData data, IFunctionEngine engine)
-        {
-            InstanceId = Guid.NewGuid();
-            FunctionData = data;
-            _engine = engine;
-            CurrentEvents = new List<SingleEventWaiting>();
-        }
+        //public ResumableFunction(ContextData data, IFunctionEngine engine)
+        //{
+        //    InstanceId = Guid.NewGuid();
+        //    FunctionData = data;
+        //    _engine = engine;
+        //    CurrentEvents = new List<SingleEventWaiting>();
+        //}
         protected AnyEventWaiting WaitAnyEvent(
             params SingleEventWaiting[] events)
         {
             Array.ForEach(events, SetCommonProps);
             var result = new AnyEventWaiting { Events = events };
-            _engine.RequestEventWait(result);
+            _engine.RequestWait(result);
             return result;
         }
 
@@ -39,7 +40,7 @@ namespace ResumableFunction.Abstraction
             var result = new AllEventWaiting { WaitingEvents = events };
             Array.ForEach(result.WaitingEvents, SetCommonProps);
             Array.ForEach(result.WaitingEvents, x => x.ParentGroupId = result.Id);
-            _engine.RequestEventWait(result);
+            _engine.RequestWait(result);
             return result;
         }
 
@@ -47,7 +48,7 @@ namespace ResumableFunction.Abstraction
         {
             var result = new SingleEventWaiting(eventType, eventName) { InitiatedByFunction = callerName };
             SetCommonProps(result);
-            _engine.RequestEventWait(result);
+            _engine.RequestWait(result);
             return result;
         }
 
