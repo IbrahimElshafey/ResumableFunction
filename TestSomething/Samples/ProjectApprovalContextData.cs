@@ -9,7 +9,7 @@ namespace ResumableFunction.Abstraction.Samples
 {
 
 
-    public class ProjectApprovalContextData
+    public class ProjectApprovalFunctionData
     {
         public ProjectRequestedEvent Project { get; set; }
         public ManagerApprovalEvent OwnerApprovalResult { get; set; }

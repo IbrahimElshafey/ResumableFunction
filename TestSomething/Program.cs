@@ -22,7 +22,7 @@ namespace Test
             await x.Start();
         }
         ///To use Expression trees <see cref="PropertyManager.EnsurePropertySettersAndGettersForType"/> line 79 ( if (property.CanWrite))
-        private static void SetContextData(ProjectApprovalContextData FunctionData, string contextProp, object eventData)
+        private static void SetFunctionData(ProjectApprovalFunctionData FunctionData, string contextProp, object eventData)
         {
 
             var piInstance = FunctionData.GetType().GetProperty(contextProp);

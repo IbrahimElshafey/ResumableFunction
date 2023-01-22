@@ -7,11 +7,10 @@ using ResumableFunction.Abstraction.InOuts;
 
 namespace ResumableFunction.Abstraction
 {
+    //may be deleted
     public interface IEventDataConverter
     {
         string UniqeName { get; }
-        string FromType { get; }
-        string ToType { get; }
-        IEventData Convert(object objectToConvert); 
+        T Convert<T>(PushedEvent pushedEvent) where T : IEventData;
     }
 }

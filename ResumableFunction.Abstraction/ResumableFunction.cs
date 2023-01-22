@@ -10,23 +10,19 @@ using ResumableFunction.Abstraction.InOuts;
 
 namespace ResumableFunction.Abstraction
 {
-    public abstract partial class ResumableFunction<ContextData>
+    /// <summary>
+    /// The function that paused when WaitEvent requested and resumed when event come.
+    /// `FunctionData` Must be a class with parameter less constructor.
+    /// </summary>
+    //Can i make this class not generic? we use generic for match and set property expressions only?
+    public abstract partial class ResumableFunction<FunctionData>
     {
         //will be set by the engine after load the instance
-        private readonly IFunctionEngine _engine;
-        //public ResumableFunction(ContextData data, IFunctionEngine engine)
-        //{
-        //    InstanceId = Guid.NewGuid();
-        //    FunctionData = data;
-        //    _engine = engine;
-        //    CurrentEvents = new List<SingleEventWaiting>();
-        //}
         protected AnyEventWaiting WaitAnyEvent(
             params SingleEventWaiting[] events)
         {
             Array.ForEach(events, SetCommonProps);
             var result = new AnyEventWaiting { Events = events };
-            _engine.RequestWait(result);
             return result;
         }
 
@@ -40,7 +36,6 @@ namespace ResumableFunction.Abstraction
             var result = new AllEventWaiting { WaitingEvents = events };
             Array.ForEach(result.WaitingEvents, SetCommonProps);
             Array.ForEach(result.WaitingEvents, x => x.ParentGroupId = result.Id);
-            _engine.RequestWait(result);
             return result;
         }
 
@@ -48,7 +43,6 @@ namespace ResumableFunction.Abstraction
         {
             var result = new SingleEventWaiting(eventType, eventName) { InitiatedByFunction = callerName };
             SetCommonProps(result);
-            _engine.RequestWait(result);
             return result;
         }
 
@@ -56,8 +50,7 @@ namespace ResumableFunction.Abstraction
         {
             eventWaiting.InitiatedByClass = GetType();
             eventWaiting.FunctionId = InstanceId;
-            eventWaiting.FunctionDataType = FunctionData?.GetType();
-            CurrentEvents.Add(eventWaiting);
+            eventWaiting.FunctionDataType = this.Data?.GetType();
         }
 
         protected async Task<AnyFunctionWaiting> AnyFunction(params Expression<Func<IAsyncEnumerable<EventWaitingResult>>>[] subFunctions)
@@ -104,42 +97,18 @@ namespace ResumableFunction.Abstraction
         }
 
         public Guid InstanceId { get; set; }
-        public ContextData FunctionData { get; protected set; }
+        public FunctionData Data { get; protected set; }
 
-        /// <summary>
-        /// To be used by engine to translate match function.
-        /// </summary>
-        public List<SingleEventWaiting> CurrentEvents { get; }
+
 
         public async Task SaveFunctionData()
         {
+            //await _engine.SaveFunctionData(Data, InstanceId);
         }
 
-
-        public async Task<EventWaitingResult> Run()
-        {
-            //this method will run based on the activated Function method
-            //may be the main Function "in RunFunction method" or any method that return "IAsyncEnumerable<FunctionEvent>"
-            var FunctionRunner = GetActiveRunner();
-            if (FunctionRunner is null) return null;
-            if (await FunctionRunner.MoveNextAsync())
-            {
-                var incommingEvent = FunctionRunner.Current;
-                //SetContextData(FunctionData, incommingEvent.SetPropExpression, incommingEvent.EventData);
-                //update runtime data active runner status and waiting list
-                await SaveFunctionData();
-                return incommingEvent;
-            }
-            else
-            {
-                //if current Function runner name is "RunFunction"
-                await OnFunctionEnd();
-                return null;
-            }
-        }
 
         protected abstract IAsyncEnumerable<EventWaitingResult> Start();
-        protected virtual Task OnFunctionEnd()
+        public virtual Task OnFunctionEnd()
         {
             return Task.CompletedTask;
         }

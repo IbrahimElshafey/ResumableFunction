@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ResumableFunction.Engine
+namespace ResumableFunction.Engine.EfDataImplementation
 {
     public class WaitsRepository : IWaitsRepository
     {

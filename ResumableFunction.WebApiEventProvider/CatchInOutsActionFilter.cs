@@ -2,9 +2,11 @@
 using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using ResumableFunction.Abstraction.WebApiEventProvider.InOuts;
 using ResumableFunction.WebApiEventProvider;
+using ResumableFunction.WebApiEventProvider.InOuts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,9 +23,11 @@ namespace ResumableFunction.Abstraction.WebApiEventProvider
     public class CatchInOutsActionFilter : IActionFilter
     {
         private readonly IEventsData eventsData;
-        public CatchInOutsActionFilter(IEventsData eventsData)
+        private readonly ResumableFunctionSettings config;
+        public CatchInOutsActionFilter(IEventsData eventsData, IOptions<ResumableFunctionSettings> options)
         {
             this.eventsData = eventsData;
+            config = options.Value;
         }
 
         public async void OnActionExecuting(ActionExecutingContext context)
@@ -38,9 +42,6 @@ namespace ResumableFunction.Abstraction.WebApiEventProvider
 
         public async void OnActionExecuted(ActionExecutedContext context)
         {
-            //if (await IsDisabled(context.ActionDescriptor)) return;
-            //if (!await eventsData.IsSubscribedToAction(context.HttpContext.GetEventIdentifier())) return;
-
             string traceIdentifier = context.HttpContext.TraceIdentifier;
             if (!eventsData.ActiveCalls.ContainsKey(traceIdentifier)) return;
 
@@ -54,15 +55,14 @@ namespace ResumableFunction.Abstraction.WebApiEventProvider
             {
                 try
                 {
-                    //todo:put url in config
                     await client.PostAsync(
-                    "https://localhost:7295/EventReceiver",
-                    new StringContent(JsonConvert.SerializeObject(pushedEvent), Encoding.UTF8, "application/json"));
+                        Path.Combine(config.EngineServiceUrl, "/EventReceiver"),
+                        new StringContent(JsonConvert.SerializeObject(pushedEvent), Encoding.UTF8, "application/json"));
                 }
                 catch (Exception)
                 {
 
-                    //todo:log exception
+                    //todo:log exception and retry
                 }
 
             };
@@ -78,7 +78,7 @@ namespace ResumableFunction.Abstraction.WebApiEventProvider
                 var methodEnabled = AttributeIsEnable(controllerActionDescriptor.MethodInfo);
 
                 var isEnabled = methodEnabled == true || (methodEnabled == null && classEnabled == true);
-                if(isEnabled)
+                if (isEnabled)
                     return await eventsData.IsStarted();
             }
             return false;

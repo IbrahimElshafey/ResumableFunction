@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using ResumableFunction.Abstraction;
 using ResumableFunction.Engine.Abstraction;
+using ResumableFunction.Engine.EfDataImplementation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,7 +17,7 @@ namespace ResumableFunction.Engine
             services.AddScoped<IWaitsRepository, WaitsRepository>();
             services.AddScoped<IFunctionRepository, FunctionRepository>();
             services.AddScoped<IEventProviderRepository, EventProviderRepository>();
-            services.AddScoped<IFunctionEngine, FunctionEngine>();
+            services.AddScoped<FunctionEngine, FunctionEngine>();
         }
     }
 }

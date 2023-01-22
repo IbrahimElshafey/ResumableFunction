@@ -37,8 +37,9 @@ namespace ResumableFunction.Abstraction
         /// but the provider will send this data back
         /// </summary>
         /// <param name="eventWaiting"></param>
-        Task RequestWait(SingleEventWaiting eventWaiting);
-        Task RequestWait(AllEventWaiting eventWaiting);
-        Task RequestWait(AnyEventWaiting eventWaiting);
+        Task RequestWait<FunctionData>(SingleEventWaiting eventWaiting, ResumableFunction<FunctionData> function);
+        Task RequestWait<FunctionData>(AllEventWaiting eventWaiting, ResumableFunction<FunctionData> function);
+        Task RequestWait<FunctionData>(AnyEventWaiting eventWaiting, ResumableFunction<FunctionData> function);
+        Task<bool> SaveFunctionData<FunctionData>(FunctionData? functionData, Guid instanceId);
     }
 }

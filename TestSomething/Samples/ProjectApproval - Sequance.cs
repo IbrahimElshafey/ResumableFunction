@@ -9,26 +9,15 @@ namespace ResumableFunction.Abstraction.Samples
          * موافقة راعي المشروع ليست إجبارية, قد يرد أو لا يرد أبداً
          * 
          */
-    //ProjectApprovalContextData is the data that will bes saved to the database 
+    //ProjectApprovalFunctionData is the data that will bes saved to the database 
     //When the engine match an event it will load the related Function class and set the 
     //FunctionData property by loading it from database
     //No other state saved just the FunctionData and Function author must keep that in mind
     //We can't depend on automatic serialize for state becuse compiler may remove fields and variables we defined
-    public class ProjectApproval : ResumableFunction<ProjectApprovalContextData>
+    public class ProjectApproval : ResumableFunction<ProjectApprovalFunctionData>
     {
-       
 
-
-        //public ProjectApproval(ProjectRequestedEvent p, ManagerApprovalEvent po, ManagerApprovalEvent ps, ManagerApprovalEvent pm)
-        //{
-        //    ProjectRequested = p;
-        //    OwnerApproval = po;
-        //    SponsorApproval = ps;
-        //    ManagerApproval = pm;
-        //    FunctionData = new ProjectApprovalContextData();
-        //}
-
-        //any inherited ResumableFunction must implement 'RunFunction'
+        //any inherited ResumableFunction must implement 'Start'
         protected override async IAsyncEnumerable<EventWaitingResult> Start()
         {
             //yield return await Function(() => SubFunction());
@@ -42,7 +31,7 @@ namespace ResumableFunction.Abstraction.Samples
             //the engine will wait for ProjectRequested event
             //no match function because it's the first one
             //context prop is prop in FunctionData that we will set with event result data
-            yield return WaitEvent(typeof(ProjectRequestedEvent),"ProjectCreated").SetProp(() => FunctionData.Project);
+            yield return WaitEvent(typeof(ProjectRequestedEvent),"ProjectCreated").SetProp(() => Data.Project);
             //the compiler will save state after executing the previous return
             //and wiating for the event
             //it will continue from the line below when event cames
@@ -52,33 +41,33 @@ namespace ResumableFunction.Abstraction.Samples
             //we will initiate a task for Owner and wait to the Owner response
             //That matching function correlates the event to the right instance
             //The matching function will be translated to query language "MongoDB query for example" by the engine to search the active instance.
-            await AskOwnerToApprove(FunctionData.Project);
+            await AskOwnerToApprove(Data.Project);
             yield return WaitEvent(typeof(ManagerApprovalEvent), "OwnerApproval")
-                .Match<ManagerApprovalEvent>(result => result.ProjectId == FunctionData.Project.Id)
-                .SetProp(() => FunctionData.OwnerApprovalResult);
-            if (FunctionData.OwnerApprovalResult.Rejected)
+                .Match<ManagerApprovalEvent>(result => result.ProjectId == Data.Project.Id)
+                .SetProp(() => Data.OwnerApprovalResult);
+            if (Data.OwnerApprovalResult.Rejected)
             {
-                await ProjectRejected(FunctionData.Project, "Owner");
+                await ProjectRejected(Data.Project, "Owner");
                 yield break;
             }
 
-            await AskSponsorToApprove(FunctionData.Project);
+            await AskSponsorToApprove(Data.Project);
             yield return WaitEvent(typeof(ManagerApprovalEvent), "SponsorApproval")
-                .Match<ManagerApprovalEvent>(result => result.ProjectId == FunctionData.Project.Id)
-                .SetProp(() => FunctionData.SponsorApprovalResult);
-            if (FunctionData.SponsorApprovalResult.Rejected)
+                .Match<ManagerApprovalEvent>(result => result.ProjectId == Data.Project.Id)
+                .SetProp(() => Data.SponsorApprovalResult);
+            if (Data.SponsorApprovalResult.Rejected)
             {
-                await ProjectRejected(FunctionData.Project, "Sponsor");
+                await ProjectRejected(Data.Project, "Sponsor");
                 yield break;
             }
 
-            await AskManagerToApprove(FunctionData.Project);
+            await AskManagerToApprove(Data.Project);
             yield return WaitEvent(typeof(ManagerApprovalEvent), "ManagerApproval")
-                .Match<ManagerApprovalEvent>(result => result.ProjectId == FunctionData.Project.Id)
-                .SetProp(() => FunctionData.ManagerApprovalResult);
-            if (FunctionData.ManagerApprovalResult.Rejected)
+                .Match<ManagerApprovalEvent>(result => result.ProjectId == Data.Project.Id)
+                .SetProp(() => Data.ManagerApprovalResult);
+            if (Data.ManagerApprovalResult.Rejected)
             {
-                await ProjectRejected(FunctionData.Project, "Manager");
+                await ProjectRejected(Data.Project, "Manager");
                 yield break;
             }
 
@@ -108,59 +97,59 @@ namespace ResumableFunction.Abstraction.Samples
         {
             yield return WaitAnyEvent(
                 new SingleEventWaiting(typeof(ManagerApprovalEvent), "OwnerApproval_SubFunction")
-                    .Match<ManagerApprovalEvent>(result => result.ProjectId == FunctionData.Project.Id)
-                    .SetProp(() => FunctionData.OwnerApprovalResult),
+                    .Match<ManagerApprovalEvent>(result => result.ProjectId == Data.Project.Id)
+                    .SetProp(() => Data.OwnerApprovalResult),
                 new SingleEventWaiting(typeof(ManagerApprovalEvent), "SponsorApproval_SubFunction")
-                    .Match<ManagerApprovalEvent>(result => result.ProjectId == FunctionData.Project.Id)
-                    .SetProp(() => FunctionData.SponsorApprovalResult),
+                    .Match<ManagerApprovalEvent>(result => result.ProjectId == Data.Project.Id)
+                    .SetProp(() => Data.SponsorApprovalResult),
                 new SingleEventWaiting(typeof(ManagerApprovalEvent), "ManagerApproval_SubFunction")
-                    .Match<ManagerApprovalEvent>(result => result.ProjectId == FunctionData.Project.Id)
-                    .SetProp(() => FunctionData.ManagerApprovalResult)
+                    .Match<ManagerApprovalEvent>(result => result.ProjectId == Data.Project.Id)
+                    .SetProp(() => Data.ManagerApprovalResult)
                 );
         }
         private async IAsyncEnumerable<EventWaitingResult> SubFunction2()
         {
             yield return WaitEvents(
                 new SingleEventWaiting(typeof(ManagerApprovalEvent), "OwnerApproval_SubFunction")
-                    .Match<ManagerApprovalEvent>(result => result.ProjectId == FunctionData.Project.Id)
-                    .SetProp(() => FunctionData.OwnerApprovalResult),
+                    .Match<ManagerApprovalEvent>(result => result.ProjectId == Data.Project.Id)
+                    .SetProp(() => Data.OwnerApprovalResult),
                 new SingleEventWaiting(typeof(ManagerApprovalEvent), "SponsorApproval_SubFunction")
-                    .Match<ManagerApprovalEvent>(result => result.ProjectId == FunctionData.Project.Id)
-                    .SetProp(() => FunctionData.SponsorApprovalResult),
+                    .Match<ManagerApprovalEvent>(result => result.ProjectId == Data.Project.Id)
+                    .SetProp(() => Data.SponsorApprovalResult),
                 new SingleEventWaiting(typeof(ManagerApprovalEvent), "ManagerApproval_SubFunction")
-                    .Match<ManagerApprovalEvent>(result => result.ProjectId == FunctionData.Project.Id)
-                    .SetProp(() => FunctionData.ManagerApprovalResult)
+                    .Match<ManagerApprovalEvent>(result => result.ProjectId == Data.Project.Id)
+                    .SetProp(() => Data.ManagerApprovalResult)
                 );
         }
         private async IAsyncEnumerable<EventWaitingResult> SubFunction1()
         {
-            await AskOwnerToApprove(FunctionData.Project);
+            await AskOwnerToApprove(Data.Project);
             yield return WaitEvent(typeof(ManagerApprovalEvent), "OwnerApproval_SubFunction")
-                .Match<ManagerApprovalEvent>(result => result.ProjectId == FunctionData.Project.Id)
-                .SetProp(() => FunctionData.OwnerApprovalResult);
-            if (FunctionData.OwnerApprovalResult.Rejected)
+                .Match<ManagerApprovalEvent>(result => result.ProjectId == Data.Project.Id)
+                .SetProp(() => Data.OwnerApprovalResult);
+            if (Data.OwnerApprovalResult.Rejected)
             {
-                await ProjectRejected(FunctionData.Project, "Owner_SubFunction");
+                await ProjectRejected(Data.Project, "Owner_SubFunction");
                 yield break;
             }
 
-            await AskSponsorToApprove(FunctionData.Project);
+            await AskSponsorToApprove(Data.Project);
             yield return WaitEvent(typeof(ManagerApprovalEvent), "SponsorApproval_SubFunction")
-                .Match<ManagerApprovalEvent>(result => result.ProjectId == FunctionData.Project.Id)
-                .SetProp(() => FunctionData.SponsorApprovalResult);
-            if (FunctionData.SponsorApprovalResult.Rejected)
+                .Match<ManagerApprovalEvent>(result => result.ProjectId == Data.Project.Id)
+                .SetProp(() => Data.SponsorApprovalResult);
+            if (Data.SponsorApprovalResult.Rejected)
             {
-                await ProjectRejected(FunctionData.Project, "Sponsor_SubFunction");
+                await ProjectRejected(Data.Project, "Sponsor_SubFunction");
                 yield break;
             }
 
-            await AskManagerToApprove(FunctionData.Project);
+            await AskManagerToApprove(Data.Project);
             yield return WaitEvent(typeof(ManagerApprovalEvent), "ManagerApproval_SubFunction")
-                .Match<ManagerApprovalEvent>(result => result.ProjectId == FunctionData.Project.Id)
-                .SetProp(() => FunctionData.ManagerApprovalResult);
-            if (FunctionData.ManagerApprovalResult.Rejected)
+                .Match<ManagerApprovalEvent>(result => result.ProjectId == Data.Project.Id)
+                .SetProp(() => Data.ManagerApprovalResult);
+            if (Data.ManagerApprovalResult.Rejected)
             {
-                await ProjectRejected(FunctionData.Project, "Manager");
+                await ProjectRejected(Data.Project, "Manager");
                 yield break;
             }
 

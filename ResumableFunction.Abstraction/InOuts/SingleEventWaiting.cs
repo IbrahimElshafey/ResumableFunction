@@ -55,7 +55,6 @@ namespace ResumableFunction.Abstraction.InOuts
 
         public SingleEventWaiting Match<T>(Expression<Func<T, bool>> func) where T : IEventData
         {
-            //todo:rerwite expression and replace every FunctionData.Prop with constant value
             MatchExpression = func;
             return this;
         }

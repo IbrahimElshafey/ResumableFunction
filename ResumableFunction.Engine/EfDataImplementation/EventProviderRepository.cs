@@ -1,7 +1,7 @@
 ﻿using ResumableFunction.Abstraction;
 using ResumableFunction.Engine.Abstraction;
 
-namespace ResumableFunction.Engine
+namespace ResumableFunction.Engine.EfDataImplementation
 {
     public class EventProviderRepository : IEventProviderRepository
     {

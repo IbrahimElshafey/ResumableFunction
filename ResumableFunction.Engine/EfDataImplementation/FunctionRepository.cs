@@ -1,6 +1,6 @@
 ﻿using ResumableFunction.Engine.Abstraction;
 
-namespace ResumableFunction.Engine
+namespace ResumableFunction.Engine.EfDataImplementation
 {
     public class FunctionRepository : IFunctionRepository
     {

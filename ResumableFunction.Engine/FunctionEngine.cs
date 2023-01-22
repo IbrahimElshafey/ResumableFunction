@@ -10,7 +10,7 @@ using ResumableFunction.Engine.Abstraction;
 
 namespace ResumableFunction.Engine
 {
-    public class FunctionEngine : IFunctionEngine
+    public class FunctionEngine
     {
         private readonly IWaitsRepository _waitsRepository;
         private readonly IFunctionRepository _functionRepository;
@@ -26,9 +26,19 @@ namespace ResumableFunction.Engine
             _eventProviderRepository = eventProviderRepository;
         }
 
-        public Task RequestWait(SingleEventWaiting eventWaiting)
+        public Task ScanFunctionsFolder()
         {
-            /// Will execueted when a Function instance run and return ask for EventWaiting result.<br/>
+            //find event providers and call RegisterEventProvider
+            //find functions and call RegisterFunction
+            //find event data converters and call RegisterEventDataConverter
+            return Task.CompletedTask;
+        }
+
+        public Task RequestWait<FunctionData>(SingleEventWaiting eventWaiting,ResumableFunction<FunctionData> function)
+        {
+            //todo:rerwite match expression and replace every FunctionData.Prop with constant value
+
+            /// Will execueted when a Function instance run and return ask for EventWaiting.<br/>
             /// * Find event provider or load it.<br/>
             /// * Start event provider if not started <br/>
             /// * Call SubscribeToEvent with current paylaod type (eventWaiting.EventData)
@@ -38,35 +48,6 @@ namespace ResumableFunction.Engine
             return Task.CompletedTask;
         }
 
-        public Task RequestWait(AllEventWaiting eventWaiting)
-        {
-            return Task.CompletedTask;
-        }
-
-        public Task RequestWait(AnyEventWaiting eventWaiting)
-        {
-            return Task.CompletedTask;
-        }
-
-        public Task RegisterAssembly(Assembly assembly)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task RegisterFunction(Type functionType)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task RegisterEventProvider(Type eventProviderType)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task RegisterEventDataConverter(Type converterType)
-        {
-            throw new NotImplementedException();
-        }
 
         public async Task WhenProviderPushEvent(PushedEvent pushedEvent)
         {

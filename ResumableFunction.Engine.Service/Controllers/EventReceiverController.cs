@@ -10,9 +10,9 @@ namespace ResumableFunction.Engine.Service.Controllers
     [Route("[controller]")]
     public class EventReceiverController : ControllerBase
     {
-        private readonly IFunctionEngine _engine;
+        private readonly FunctionEngine _engine;
 
-        public EventReceiverController(IFunctionEngine engine)
+        public EventReceiverController(FunctionEngine engine)
         {
             _engine = engine;
         }

@@ -54,7 +54,7 @@ I evaluated the existing solutions and found that there is no solution that fits
 # Example
 Keep in mind that the work is in progress
 ```C#
-//ProjectApprovalContextData is the data that will bes saved to the database 
+//ProjectApprovalFunctionData is the data that will bes saved to the database 
 
 //When the engine match an event it will load the related Function class
 // and set the FunctionData property by loading it from database.
@@ -62,7 +62,7 @@ Keep in mind that the work is in progress
 //No other state saved just the FunctionData and Function author must keep that in mind.
 
 //We can't depend on automatic serialize for state becuse compiler may remove fields and variables we defined.
-public class ProjectApproval : ResumableFunction<ProjectApprovalContextData>
+public class ProjectApproval : ResumableFunction<ProjectApprovalFunctionData>
 {
 	//any inherited ResumableFunction must implement 'RunFunction'
 	protected override async IAsyncEnumerable<EventWaitingResult> RunFunction()

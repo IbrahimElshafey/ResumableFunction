@@ -1,33 +1,74 @@
-﻿using System;
+﻿using ResumableFunction.Abstraction;
+using ResumableFunction.Abstraction.InOuts;
+using ResumableFunction.Engine.InOuts;
+using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Reflection.Metadata.Ecma335;
-using ResumableFunction.Abstraction.InOuts;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace ResumableFunction.Abstraction
+namespace ResumableFunction.Engine
 {
-    public abstract partial class ResumableFunction<ContextData>
+    public class FunctionRunner<FunctionData>
     {
-        private string _currentRunner = nameof(Start);
+        private readonly string _currentRunner;
+        private readonly int _state;
+        private readonly ResumableFunction<FunctionData> _function;
+        private readonly SingleEventWaiting _currentWait;
         private object? _activeRunner;
+
+        public FunctionRunner(
+            ResumableFunction<FunctionData> resumableFunction,
+            SingleEventWaiting currentWait,
+            int state)
+        {
+            _function = resumableFunction;
+            _currentWait = currentWait;
+            _currentRunner = _currentWait.InitiatedByFunction;
+            _state = state;
+        }
+
+        public async Task<WaitResult> Run()
+        {
+            var functionRunner = GetCurrentRunner();
+            SetActiveRunnerState(_state);
+            if (functionRunner is null)
+                throw new Exception($"Can't initiate runner `{_currentWait.InitiatedByFunction}` for {_currentWait.EventType.FullName}");
+            if (await functionRunner.MoveNextAsync())
+            {
+                var incommingWait = functionRunner.Current;
+                var state = GetActiveRunnerState();
+                return new WaitResult(incommingWait, state, false);
+            }
+            else
+            {
+                //if current Function runner name is "RunFunction"
+                //await _function.OnFunctionEnd();
+                var state = GetActiveRunnerState();
+                return new WaitResult(null, state, true);
+            }
+        }
+
+
+
         private void SetActiveRunnerState(int state)
         {
-            if (_activeRunner != null || GetActiveRunner() != null)
+            if (_activeRunner != null || GetCurrentRunner() != null)
             {
                 var stateField = _activeRunner?.GetType().GetField("<>1__state");
-                if (stateField != null) 
+                if (stateField != null)
                 {
-                    
+
                     stateField.SetValue(_activeRunner, state);
                 }
             }
         }
         private int GetActiveRunnerState()
         {
-            if (_activeRunner != null || GetActiveRunner() != null)
+            if (_activeRunner != null || GetCurrentRunner() != null)
             {
                 var stateField = _activeRunner?.GetType().GetField("<>1__state");
                 if (stateField != null)
@@ -37,7 +78,8 @@ namespace ResumableFunction.Abstraction
             }
             return int.MinValue;
         }
-        private IAsyncEnumerator<EventWaitingResult>? GetActiveRunner()
+
+        private IAsyncEnumerator<EventWaitingResult>? GetCurrentRunner()
         {
             if (_activeRunner == null)
             {
@@ -60,20 +102,25 @@ namespace ResumableFunction.Abstraction
                 //var thisField = FunctionRunnerType.GetField("<>4__this");
                 thisField?.SetValue(_activeRunner, this);
 
+                //set in start state
                 SetActiveRunnerState(int.MinValue);
                 return _activeRunner as IAsyncEnumerator<EventWaitingResult>;
             }
             return _activeRunner as IAsyncEnumerator<EventWaitingResult>;
         }
 
-        private void SetContextData(ContextData FunctionData, LambdaExpression contextProp, object eventData)
+        /// <summary>
+        /// will be called by the engine after event received
+        /// </summary>
+        public void SetFunctionData(object data)
         {
             //todo:check type && me.Type
+            var contextProp = _currentWait.SetPropExpression;
             if (contextProp.Body is MemberExpression me)
             {
                 var property = (PropertyInfo)me.Member;
 
-                var FunctionDataParam = Expression.Parameter(typeof(object), "FunctionData");
+                var FunctionDataParam = Expression.Parameter(typeof(object), "functionData");
                 var eventDataParam = Expression.Parameter(typeof(object), "eventData");
 
                 var isValueType = property.PropertyType.IsClass == false && property.PropertyType.IsInterface == false;
@@ -84,7 +131,7 @@ namespace ResumableFunction.Abstraction
                 else
                     valueExpression = Expression.Convert(eventDataParam, property.PropertyType);
 
-                var thisExpression = Expression.Property(Expression.Convert(FunctionDataParam, FunctionData.GetType()), property);
+                var thisExpression = Expression.Property(Expression.Convert(FunctionDataParam, typeof(FunctionData)), property);
 
 
                 Expression body = Expression.Assign(thisExpression, valueExpression);
@@ -98,13 +145,10 @@ namespace ResumableFunction.Abstraction
                 var lambda = Expression.Lambda(block, FunctionDataParam, eventDataParam);
 
                 var set = lambda.Compile() as Action<object, object>;
-                if (set != null)
-                    set(FunctionData, eventData);
+                if (set != null && _function.Data != null)
+                    set(_function.Data, data);
             }
 
         }
-
     }
-
-
 }
