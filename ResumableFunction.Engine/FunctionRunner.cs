@@ -12,23 +12,23 @@ using System.Threading.Tasks;
 
 namespace ResumableFunction.Engine
 {
-    public class FunctionRunner<FunctionData>
+    public class FunctionRunner
     {
         private readonly string _currentRunner;
         private readonly int _state;
-        private readonly ResumableFunction<FunctionData> _function;
+        private readonly object _functionClass;
         private readonly SingleEventWait _currentWait;
         private object? _activeRunner;
 
         public FunctionRunner(
-            ResumableFunction<FunctionData> resumableFunction,
             SingleEventWait currentWait,
-            int state)
+            int state,
+            object functionClass)
         {
-            _function = resumableFunction;
             _currentWait = currentWait;
             _currentRunner = _currentWait.InitiatedByFunction;
             _state = state;
+            _functionClass = functionClass;
         }
 
         public async Task<WaitResult> Run()
@@ -83,7 +83,7 @@ namespace ResumableFunction.Engine
         {
             if (_activeRunner == null)
             {
-                var FunctionRunnerType = GetType()
+                var FunctionRunnerType = _currentWait.InitiatedByClass
                    .GetNestedTypes(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.SuppressChangeType)
                    .FirstOrDefault(x => x.Name.StartsWith($"<{_currentRunner}>"));
 
@@ -100,55 +100,13 @@ namespace ResumableFunction.Engine
                 //set parent class who call
                 var thisField = FunctionRunnerType.GetFields().FirstOrDefault(x => x.Name.EndsWith("__this"));
                 //var thisField = FunctionRunnerType.GetField("<>4__this");
-                thisField?.SetValue(_activeRunner, this);
+                thisField?.SetValue(_activeRunner, _functionClass);
 
                 //set in start state
                 SetActiveRunnerState(int.MinValue);
                 return _activeRunner as IAsyncEnumerator<EventWaitingResult>;
             }
             return _activeRunner as IAsyncEnumerator<EventWaitingResult>;
-        }
-
-        /// <summary>
-        /// will be called by the engine after event received
-        /// </summary>
-        public void SetFunctionData(object data)
-        {
-            //todo:check type && me.Type
-            var contextProp = _currentWait.SetPropExpression;
-            if (contextProp.Body is MemberExpression me)
-            {
-                var property = (PropertyInfo)me.Member;
-
-                var FunctionDataParam = Expression.Parameter(typeof(object), "functionData");
-                var eventDataParam = Expression.Parameter(typeof(object), "eventData");
-
-                var isValueType = property.PropertyType.IsClass == false && property.PropertyType.IsInterface == false;
-
-                Expression valueExpression;
-                if (isValueType)
-                    valueExpression = Expression.Unbox(eventDataParam, property.PropertyType);
-                else
-                    valueExpression = Expression.Convert(eventDataParam, property.PropertyType);
-
-                var thisExpression = Expression.Property(Expression.Convert(FunctionDataParam, typeof(FunctionData)), property);
-
-
-                Expression body = Expression.Assign(thisExpression, valueExpression);
-
-                var block = Expression.Block(new[]
-                {
-                                    body,
-                                    Expression.Empty ()
-                                });
-
-                var lambda = Expression.Lambda(block, FunctionDataParam, eventDataParam);
-
-                var set = lambda.Compile() as Action<object, object>;
-                if (set != null && _function.Data != null)
-                    set(_function.Data, data);
-            }
-
         }
     }
 }

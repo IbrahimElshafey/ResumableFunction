@@ -9,7 +9,6 @@
 * Automatic Generator for
 	* Event Classes
 	* Flurl Interfaces
-	* 
 
 
 * Parameter check lib use

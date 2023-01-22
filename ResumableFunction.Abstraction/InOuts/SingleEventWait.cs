@@ -29,6 +29,13 @@ namespace ResumableFunction.Abstraction.InOuts
         public Type FunctionDataType { get; set; }
         public Guid FunctionId { get; set; }
 
+        private static Func<IEventData, bool> _matchExpressionCompiled;
+        public bool IsMatch(IEventData eventData)
+        {
+            if (_matchExpressionCompiled == null)
+                _matchExpressionCompiled = (Func<IEventData, bool>)MatchExpression.Compile();
+            return _matchExpressionCompiled(eventData);
+        }
     }
 
     public class SingleEventWait<T> : SingleEventWait where T : class, IEventData, new()
@@ -66,14 +73,6 @@ namespace ResumableFunction.Abstraction.InOuts
         {
             IsOptional = true;
             return this;
-        }
-
-        private static Func<IEventData, bool> _matchExpressionCompiled;
-        public bool IsMatch(IEventData eventData)
-        {
-            if (_matchExpressionCompiled == null)
-                _matchExpressionCompiled = (Func<IEventData, bool>)MatchExpression.Compile();
-            return _matchExpressionCompiled(eventData);
         }
     }
 

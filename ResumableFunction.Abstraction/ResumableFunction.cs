@@ -15,7 +15,8 @@ namespace ResumableFunction.Abstraction
     /// `FunctionData` Must be a class with parameter less constructor.
     /// </summary>
     //Can i make this class not generic? we use generic for match and set property expressions only?
-    public abstract partial class ResumableFunction<FunctionData>
+
+    public abstract partial class ResumableFunction<FunctionData> where FunctionData : class, new()
     {
         //will be set by the engine after load the instance
         protected AnyEventWait WaitAnyEvent(
@@ -95,10 +96,9 @@ namespace ResumableFunction.Abstraction
             return result;
         }
 
-        public Guid InstanceId { get; set; }
-        public FunctionData Data { get; protected set; }
 
-
+        public FunctionData Data { get; set; }
+        public Guid InstanceId { get; private set; }
 
         public async Task SaveFunctionData()
         {

@@ -17,18 +17,19 @@ namespace Test
     {
         static async Task Main(string[] args)
         {
+          
+            //await TestWebApiEventProviderClient();
+        }
 
+
+        private static async Task TestWebApiEventProviderClient()
+        {
             var x = new TestWebApiEventProvider();
             await x.Start();
         }
-        ///To use Expression trees <see cref="PropertyManager.EnsurePropertySettersAndGettersForType"/> line 79 ( if (property.CanWrite))
-        private static void SetFunctionData(ProjectApprovalFunctionData FunctionData, string contextProp, object eventData)
-        {
 
-            var piInstance = FunctionData.GetType().GetProperty(contextProp);
-            piInstance?.SetValue(FunctionData, eventData);
-            //save data to database
-        }
+        ///To use Expression trees <see cref="PropertyManager.EnsurePropertySettersAndGettersForType"/> line 79 ( if (property.CanWrite))
+
 
         public class TestWebApiEventProvider : WebApiEventProviderHandler
         {
@@ -36,5 +37,16 @@ namespace Test
 
             protected override string ApiProjectName => "Example.Api";
         }
+    }
+
+    public class Test<T>where T : class,new()
+    {
+        public T Data { get; set; }
+    }
+
+    public class Data
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
     }
 }

@@ -4,7 +4,7 @@ namespace ResumableFunction.Engine.EfDataImplementation
 {
     public class FunctionRepository : IFunctionRepository
     {
-        public Task<FunctionData> GetFunctionData<FunctionData>(Guid instanceId, string functionName)
+        public Task<object> GetFunctionData(Guid instanceId, string functionName)
         {
             throw new NotImplementedException();
         }

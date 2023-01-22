@@ -86,3 +86,6 @@ https://stackoverflow.com/questions/39072001/dependency-injection-resolving-by-n
 
 * Generic host
 * https://learn.microsoft.com/en-us/aspnet/core/fundamentals/host/generic-host?view=aspnetcore-7.0
+
+* How to: Examine and Instantiate Generic Types with Reflection
+https://learn.microsoft.com/en-us/dotnet/framework/reflection-and-codedom/how-to-examine-and-instantiate-generic-types-with-reflection
