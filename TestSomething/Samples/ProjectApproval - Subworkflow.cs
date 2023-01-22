@@ -17,9 +17,6 @@ namespace ResumableFunction.Abstraction.Samples
          */
     public class ProjectApprovalSubFunction : ProjectApproval
     {
-        public ProjectApprovalSubFunction(ProjectApprovalContextData data, IFunctionEngine engine) : base(data, engine)
-        {
-        }
 
         protected override async IAsyncEnumerable<EventWaitingResult> Start()
         {

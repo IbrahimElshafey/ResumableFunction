@@ -14,10 +14,7 @@ namespace ResumableFunction.Abstraction.Samples
          */
     public class ProjectApprovalWaitMany : ProjectApproval
     {
-        public ProjectApprovalWaitMany(ProjectApprovalContextData data, IFunctionEngine engine) : base(data, engine)
-        {
-        }
-
+        
         protected override async IAsyncEnumerable<EventWaitingResult> Start()
         {
             yield return WaitEvent(typeof(ProjectRequestedEvent), "ProjectRequested").SetProp(() => FunctionData.Project);
