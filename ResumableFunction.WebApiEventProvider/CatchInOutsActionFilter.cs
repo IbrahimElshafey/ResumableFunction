@@ -37,7 +37,7 @@ namespace ResumableFunction.Abstraction.WebApiEventProvider
             if (await eventsData.IsSubscribedToAction(context.HttpContext.GetEventIdentifier()))
                 eventsData.ActiveCalls.Add(
                     context.HttpContext.TraceIdentifier,
-                    new ApiCallEvent().AddArgs(context.ActionArguments));
+                    new ApiCallEvent().AddArgs(context.ActionArguments, config.FlatObject));
         }
 
         public async void OnActionExecuted(ActionExecutedContext context)
@@ -46,17 +46,17 @@ namespace ResumableFunction.Abstraction.WebApiEventProvider
             if (!eventsData.ActiveCalls.ContainsKey(traceIdentifier)) return;
 
             ApiCallEvent pushedEvent = eventsData.ActiveCalls[traceIdentifier];
-            pushedEvent.Add("ApiCallResult", (context.Result as ObjectResult)?.Value);
+            pushedEvent.AddResult((context.Result as ObjectResult)?.Value, config.FlatObject);
             pushedEvent.EventProviderName = Extensions.GetEventProviderName();
-            pushedEvent.EventIdentifier = $"{context.HttpContext.Request.Method}#{context.HttpContext.Request.Path}";
             pushedEvent.EventIdentifier = context.HttpContext.GetEventIdentifier();
 
             using (var client = new HttpClient())
             {
                 try
                 {
+                    var slash = config.EngineServiceUrl.EndsWith('/') ? string.Empty : "/";
                     await client.PostAsync(
-                        Path.Combine(config.EngineServiceUrl, "/EventReceiver"),
+                        $"{config.EngineServiceUrl}{slash}EventReceiver",
                         new StringContent(JsonConvert.SerializeObject(pushedEvent), Encoding.UTF8, "application/json"));
                 }
                 catch (Exception)
@@ -91,7 +91,7 @@ namespace ResumableFunction.Abstraction.WebApiEventProvider
                         a =>
                         a.GetType().Equals(typeof(EnableEventProviderAttribute)) ||
                         a.GetType().Equals(typeof(DisableEventProviderAttribute))
-                    )?.Equals(new EnableEventProviderAttribute());
+                    , config.FlatObject)?.Equals(new EnableEventProviderAttribute());
             }
         }
 

@@ -17,12 +17,12 @@ namespace ResumableFunction.Engine
         private readonly string _currentRunner;
         private readonly int _state;
         private readonly ResumableFunction<FunctionData> _function;
-        private readonly SingleEventWaiting _currentWait;
+        private readonly SingleEventWait _currentWait;
         private object? _activeRunner;
 
         public FunctionRunner(
             ResumableFunction<FunctionData> resumableFunction,
-            SingleEventWaiting currentWait,
+            SingleEventWait currentWait,
             int state)
         {
             _function = resumableFunction;

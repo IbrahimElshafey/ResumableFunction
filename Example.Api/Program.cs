@@ -1,4 +1,5 @@
 using Example.Api;
+using Example.Api.Controllers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using ResumableFunction.Abstraction.WebApiEventProvider;
@@ -17,6 +18,7 @@ builder.Services
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddSingleton<Data>();
 builder.Services.Configure<ResumableFunctionSettings>(builder.Configuration.GetSection(nameof(ResumableFunctionSettings)));
 
 var app = builder.Build();

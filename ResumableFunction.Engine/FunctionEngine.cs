@@ -34,7 +34,7 @@ namespace ResumableFunction.Engine
             return Task.CompletedTask;
         }
 
-        public Task RequestWait<FunctionData>(SingleEventWaiting eventWaiting,ResumableFunction<FunctionData> function)
+        public Task RequestWait<FunctionData>(SingleEventWait eventWaiting,ResumableFunction<FunctionData> function)
         {
             //todo:rerwite match expression and replace every FunctionData.Prop with constant value
 
@@ -59,7 +59,7 @@ namespace ResumableFunction.Engine
             //* call EventProvider.UnSubscribeEvent(pushedEvent.EventData) if no other intances waits this type for the same provider
             var matchedEvents = await _waitsRepository.GetEventWaits(pushedEvent);
             //pushedEvent.Data must be IEventData or can convert to IEventData
-            matchedEvents = matchedEvents.Where(x => x.IsMatch(pushedEvent)).ToList();
+            //matchedEvents = matchedEvents.Where(x => x.IsMatch(pushedEvent)).ToList();
             //foreach (var eventWaiting in matchedEvents)
             //{
             //    eventWaiting.FunctionDataType;

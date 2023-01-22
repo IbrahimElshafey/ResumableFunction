@@ -22,7 +22,7 @@ namespace ResumableFunction.Abstraction.Samples
         {
 
             await Task.Delay(100);
-            yield return WaitEvent(typeof(ProjectRequestedEvent), "ProjectRequested").SetProp(() => Data.Project);
+            yield return WaitEvent<ProjectRequestedEvent>("ProjectRequested").SetProp(() => Data.Project);
 
             yield return await Function(() => SubFunction());
 
@@ -37,11 +37,11 @@ namespace ResumableFunction.Abstraction.Samples
             Console.WriteLine("All three approved");
         }
 
-        private async IAsyncEnumerable<SingleEventWaiting> SubFunction()
+        private async IAsyncEnumerable<SingleEventWait> SubFunction()
         {
             await AskOwnerToApprove(Data.Project);
-            yield return WaitEvent(typeof(ManagerApprovalEvent), "OwnerApproval")
-                .Match<ManagerApprovalEvent>(result => result.ProjectId == Data.Project.Id)
+            yield return WaitEvent<ManagerApprovalEvent>( "OwnerApproval")
+                .Match(result => result.ProjectId == Data.Project.Id)
                 .SetProp(() => Data.OwnerApprovalResult);
             if (Data.OwnerApprovalResult.Rejected)
             {
@@ -50,8 +50,8 @@ namespace ResumableFunction.Abstraction.Samples
             }
 
             await AskSponsorToApprove(Data.Project);
-            yield return WaitEvent(typeof(ManagerApprovalEvent), "SponsorApproval")
-                .Match<ManagerApprovalEvent>(result => result.ProjectId == Data.Project.Id)
+            yield return WaitEvent<ManagerApprovalEvent>( "SponsorApproval")
+                .Match(result => result.ProjectId == Data.Project.Id)
                 .SetProp(() => Data.SponsorApprovalResult);
             if (Data.SponsorApprovalResult.Rejected)
             {
@@ -60,8 +60,8 @@ namespace ResumableFunction.Abstraction.Samples
             }
 
             await AskManagerToApprove(Data.Project);
-            yield return WaitEvent(typeof(ManagerApprovalEvent), "ManagerApproval")
-                .Match<ManagerApprovalEvent>(result => result.ProjectId == Data.Project.Id)
+            yield return WaitEvent<ManagerApprovalEvent>( "ManagerApproval")
+                .Match(result => result.ProjectId == Data.Project.Id)
                 .SetProp(() => Data.ManagerApprovalResult);
             if (Data.ManagerApprovalResult.Rejected)
             {

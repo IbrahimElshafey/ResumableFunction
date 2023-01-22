@@ -18,39 +18,38 @@ namespace ResumableFunction.Abstraction
     public abstract partial class ResumableFunction<FunctionData>
     {
         //will be set by the engine after load the instance
-        protected AnyEventWaiting WaitAnyEvent(
-            params SingleEventWaiting[] events)
+        protected AnyEventWait WaitAnyEvent(
+            params SingleEventWait[] events)
         {
             Array.ForEach(events, SetCommonProps);
-            var result = new AnyEventWaiting { Events = events };
+            var result = new AnyEventWait { Events = events };
             return result;
         }
 
 
-        protected AllEventWaiting WaitEvents(
-            params SingleEventWaiting[] events)
+        protected SingleEventWait<T> WaitEvent<T>(string eventIdentifier, [CallerMemberName] string callerName = "") where T : class, IEventData, new()
         {
-            if (events.Count(x => x.IsOptional) == events.Count())
-                throw new Exception($"When use {WaitEvents} at least one event must be mandatory.");
-
-            var result = new AllEventWaiting { WaitingEvents = events };
-            Array.ForEach(result.WaitingEvents, SetCommonProps);
-            Array.ForEach(result.WaitingEvents, x => x.ParentGroupId = result.Id);
-            return result;
-        }
-
-        protected SingleEventWaiting WaitEvent(Type eventType, string eventName, [CallerMemberName] string callerName = "")
-        {
-            var result = new SingleEventWaiting(eventType, eventName) { InitiatedByFunction = callerName };
+            var result = new SingleEventWait<T>(eventIdentifier) { InitiatedByFunction = callerName };
             SetCommonProps(result);
             return result;
         }
 
-        private void SetCommonProps(SingleEventWaiting eventWaiting)
+        protected AllEventWaits WaitEvents(params SingleEventWait[] events)
+        {
+            var result = new AllEventWaits { WaitingEvents = events };
+            foreach (var item in result.WaitingEvents)
+            {
+                SetCommonProps(item);
+                item.ParentGroupId = result.Id;
+            }
+            return result;
+        }
+
+        private void SetCommonProps(SingleEventWait eventWaiting)
         {
             eventWaiting.InitiatedByClass = GetType();
             eventWaiting.FunctionId = InstanceId;
-            eventWaiting.FunctionDataType = this.Data?.GetType();
+            eventWaiting.FunctionDataType = Data?.GetType();
         }
 
         protected async Task<AnyFunctionWaiting> AnyFunction(params Expression<Func<IAsyncEnumerable<EventWaitingResult>>>[] subFunctions)

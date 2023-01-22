@@ -15,4 +15,5 @@ namespace ResumableFunction.Abstraction.InOuts
         string EventProviderName { get;}
         string EventIdentifier { get; }
     }
+
 }

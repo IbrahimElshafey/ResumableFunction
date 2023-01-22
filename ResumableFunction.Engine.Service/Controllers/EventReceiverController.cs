@@ -23,6 +23,7 @@ namespace ResumableFunction.Engine.Service.Controllers
             //var y = pushEvent.ToObject<TestResult>();
             await _engine.WhenProviderPushEvent(pushEvent);
         }
+
         //public class TestResult : IEventData
         //{
         //    [JsonPropertyName("CallResult")]

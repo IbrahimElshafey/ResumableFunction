@@ -22,9 +22,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Example.Api", "Example.Api\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ResumableFunction.Engine.Service", "ResumableFunction.Engine.Service\ResumableFunction.Engine.Service.csproj", "{E8099F7F-011D-47B7-BB0B-81AD13CE2281}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ResumableFunction.WebApiEventProvider", "ResumableFunction.WebApiEventProvider\ResumableFunction.WebApiEventProvider.csproj", "{222CE6EB-68D0-44C4-BC61-843A941C77C8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ResumableFunction.WebApiEventProvider", "ResumableFunction.WebApiEventProvider\ResumableFunction.WebApiEventProvider.csproj", "{222CE6EB-68D0-44C4-BC61-843A941C77C8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Example.ResumableFunction.ProjectApproval", "Example.ResumableFunction.ProjectApproval\Example.ResumableFunction.ProjectApproval.csproj", "{B5A136C8-6052-40BE-8418-A96BCF3DF0A5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Example.ProjectApproval", "Example.ResumableFunction.ProjectApproval\Example.ProjectApproval.csproj", "{B5A136C8-6052-40BE-8418-A96BCF3DF0A5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -11,12 +11,12 @@ namespace ResumableFunction.Engine.EfDataImplementation
 {
     public class WaitsRepository : IWaitsRepository
     {
-        public Task<IQueryable<SingleEventWaiting>> GetWaits(string providerName, string eventType, object eventData)
+        public Task<IQueryable<SingleEventWait>> GetWaits(string providerName, string eventType, object eventData)
         {
             throw new NotImplementedException();
         }
 
-        public Task<List<SingleEventWaiting>> GetEventWaits(PushedEvent pushedEvent)
+        public Task<List<SingleEventWait>> GetEventWaits(PushedEvent pushedEvent)
         {
             throw new NotImplementedException();
         }
