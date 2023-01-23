@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 using ResumableFunction.Abstraction;
 using ResumableFunction.Abstraction.InOuts;
 using ResumableFunction.Engine.Abstraction;
@@ -20,23 +22,77 @@ namespace ResumableFunction.Engine
         private readonly IWaitsRepository _waitsRepository;
         private readonly IFunctionRepository _functionRepository;
         private readonly IEventProviderRepository _eventProviderRepository;
+        private readonly IFunctionFolderRepository _functionFolderRepository;
+        private readonly EngineSettings _settings;
 
         public FunctionEngine(
             IWaitsRepository waitsRepository,
             IFunctionRepository functionRepository,
-            IEventProviderRepository eventProviderRepository)
+            IEventProviderRepository eventProviderRepository,
+            IFunctionFolderRepository functionFolderRepository,
+            IOptions<EngineSettings> options)
         {
             _waitsRepository = waitsRepository;
             _functionRepository = functionRepository;
             _eventProviderRepository = eventProviderRepository;
+            _functionFolderRepository = functionFolderRepository;
+            _settings = options.Value;
         }
 
-        public Task ScanFunctionsFolder()
+        public async Task ScanFunctionsFolder()
+        {
+            var functionFolders = await _functionFolderRepository.GetFunctionFolders();
+            foreach (var folder in functionFolders)
+            {
+                //check if folder DLLs need to be scan
+                if (FolderNeedScan(folder) is false) continue;
+                foreach (var dllName in folder.NeedScanDlls)
+                {
+                    var dllPath = Path.Combine(folder.Path, dllName);
+
+                    //get types in assembly without loading and register them
+                    await RegisterTypes(GetTypes(dllPath));
+                    //check if assembly use the same .net version
+                   
+                }
+            }
+        }
+
+        private Task RegisterTypes(Type[] types)
         {
             //find event providers and call RegisterEventProvider
             //find functions and call RegisterFunction
-            //find event data converters and call RegisterEventDataConverter
+            //save scan json file to function folder
             return Task.CompletedTask;
+        }
+
+        private Type[] GetTypes(string assemblyPath)
+        {
+
+            string[] runtimeDlls = Directory.GetFiles(RuntimeEnvironment.GetRuntimeDirectory(), "*.dll");
+            var resolver = new PathAssemblyResolver(new List<string>(runtimeDlls) { assemblyPath });
+
+            using (var metadataContext = new MetadataLoadContext(resolver))
+            {
+                Assembly assembly = metadataContext.LoadFromAssemblyPath(assemblyPath);
+                return assembly.GetTypes();
+            }
+        }
+
+        private bool FolderNeedScan(FunctionFolder functionFolder)
+        {
+            var result = new FunctionFolder();
+            //exclude "ResumableFunction.Abstraction"
+            var dlls = Directory
+                .GetFiles(functionFolder.Path, "*.dll")
+                .Except(new[] { "ResumableFunction.Abstraction.dll" })
+                .Select(x => new FileInfo(x));
+            foreach (var dll in dlls)
+            {
+                if (dll.LastWriteTime > functionFolder.LastScanDate)
+                    functionFolder.NeedScanDlls.Add(dll.Name);
+            }
+            return functionFolder.NeedScanDlls?.Any() ?? false;
         }
 
         /// <summary>
@@ -84,7 +140,7 @@ namespace ResumableFunction.Engine
                 functionClass.Data = functionData;
                 var runner = new FunctionRunner(eventWait, state, functionClass);
                 SetFunctionData(functionData, "propname", pushedEvent);
-                
+
 
                 //get next event wait
                 var waitResult = await runner.Run();

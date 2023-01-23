@@ -4,6 +4,7 @@ using ResumableFunction.Abstraction.Samples;
 using ResumableFunction.Abstraction.WebApiProvider;
 using ResumableFunction.Abstraction;
 using ResumableFunction.Engine;
+using System.Runtime.InteropServices;
 
 namespace Test
 {
@@ -12,16 +13,14 @@ namespace Test
 
         static async Task Main(string[] args)
         {
-            var type = Assembly
-                .GetExecutingAssembly()
-                .DefinedTypes
-                .First(x => x.FullName == "ResumableFunction.Abstraction.Samples.ProjectApprovalWaitMany");
-            Console.WriteLine(type.IsGenericType);
-            Console.WriteLine(type.IsGenericTypeDefinition);
-            var x = new FunctionWrapper(type);
-            Console.WriteLine(x.InstanceId);
-            Console.WriteLine(x.Data.GetType());
-            //await TestWebApiEventProviderClient();
+            var assemblyPath = "D:\\Workflow\\WorkflowInCode\\ResumableFunction.WebApiEventProvider\\bin\\Debug\\net7.0\\ResumableFunction.WebApiEventProvider.dll";
+            string[] runtimeDlls = Directory.GetFiles(RuntimeEnvironment.GetRuntimeDirectory(), "*.dll");
+            var resolver = new PathAssemblyResolver(new List<string>(runtimeDlls) { assemblyPath });
+            using (var metadataContext = new MetadataLoadContext(resolver))
+            {
+                Assembly assembly = metadataContext.LoadFromAssemblyPath(assemblyPath);
+                var types= assembly.GetTypes();
+            }
         }
 
         

@@ -83,3 +83,6 @@ https://learn.microsoft.com/en-us/dotnet/framework/reflection-and-codedom/how-to
 https://stackoverflow.com/questions/6258160/unloading-the-assembly-loaded-with-assembly-loadfrom
 Note that .NET Core supports only a single application domain.
 
+
+# assemblies-load-in-dotnet
+* https://michaelscodingspot.com/assemblies-load-in-dotnet/

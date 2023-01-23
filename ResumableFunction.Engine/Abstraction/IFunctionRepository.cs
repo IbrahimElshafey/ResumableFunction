@@ -5,9 +5,14 @@ using System.Text;
 using System.Threading.Tasks;
 using ResumableFunction.Abstraction;
 using ResumableFunction.Abstraction.InOuts;
+using ResumableFunction.Engine.InOuts;
 
 namespace ResumableFunction.Engine.Abstraction
 {
+    public interface IFunctionFolderRepository
+    {
+        Task<List<FunctionFolder>> GetFunctionFolders();
+    }
     public interface IFunctionRepository
     {
         Task<bool> IsFunctionRegistred(Type functionType);

@@ -2,8 +2,10 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using ResumableFunction.Abstraction.WebApiEventProvider;
+using ResumableFunction.WebApiEventProvider.InOuts;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -18,6 +20,8 @@ namespace ResumableFunction.WebApiEventProvider
             mvcBuilder.AddApplicationPart(typeof(EventProviderController).Assembly).AddControllersAsServices();
             mvcBuilder.AddMvcOptions(x => x.Filters.Add(typeof(CatchInOutsActionFilter)));
             mvcBuilder.Services.AddSingleton<IEventsData, EventsDataJsonFile>();
+            //todo:add configuration here
+            //mvcBuilder.Services.Configure<ResumableFunctionSettings>(configuration.GetSection(nameof(ResumableFunctionSettings)));
         }
 
         public static string GetEventProviderName() => $"WebApiEventProvider-{Assembly.GetEntryAssembly().GetName().Name}";

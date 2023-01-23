@@ -10,6 +10,5 @@
         public string Name { get; set; }
         public string Description { get; set; }
 
-        public (int Idx, string Namex, string Descriptionx) Value { get; set; }
     }
 }
