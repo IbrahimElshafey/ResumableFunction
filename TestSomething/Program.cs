@@ -1,27 +1,30 @@
-﻿using System.Formats.Asn1;
-using System.IO.MemoryMappedFiles;
-using System.Linq.Expressions;
-using System.Reflection;
-using System.Reflection.Metadata;
-using System.Reflection.Metadata.Ecma335;
-using System.Runtime.CompilerServices;
+﻿using System.Reflection;
 using TestSomething.MayUse;
-using ResumableFunction.Abstraction.InOuts;
 using ResumableFunction.Abstraction.Samples;
-using ResumableFunction.Engine;
 using ResumableFunction.Abstraction.WebApiProvider;
+using ResumableFunction.Abstraction;
+using ResumableFunction.Engine;
 
 namespace Test
 {
     public static class Program
     {
+
         static async Task Main(string[] args)
         {
-          
+            var type = Assembly
+                .GetExecutingAssembly()
+                .DefinedTypes
+                .First(x => x.FullName == "ResumableFunction.Abstraction.Samples.ProjectApprovalWaitMany");
+            Console.WriteLine(type.IsGenericType);
+            Console.WriteLine(type.IsGenericTypeDefinition);
+            var x = new FunctionWrapper(type);
+            Console.WriteLine(x.InstanceId);
+            Console.WriteLine(x.Data.GetType());
             //await TestWebApiEventProviderClient();
         }
 
-
+        
         private static async Task TestWebApiEventProviderClient()
         {
             var x = new TestWebApiEventProvider();
@@ -39,7 +42,7 @@ namespace Test
         }
     }
 
-    public class Test<T>where T : class,new()
+    public class Test<T> where T : class, new()
     {
         public T Data { get; set; }
     }

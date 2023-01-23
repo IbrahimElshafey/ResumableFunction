@@ -72,14 +72,16 @@ namespace ResumableFunction.Abstraction.WebApiEventProvider
 
         private async Task<bool> IsEnabled(ActionExecutingContext context)
         {
+            if (await eventsData.IsStarted() is false)
+                return false;
+
             var classEnabled = AttributeIsEnable(context.Controller.GetType());
             if (context.ActionDescriptor is ControllerActionDescriptor controllerActionDescriptor)
             {
                 var methodEnabled = AttributeIsEnable(controllerActionDescriptor.MethodInfo);
 
                 var isEnabled = methodEnabled == true || (methodEnabled == null && classEnabled == true);
-                if (isEnabled)
-                    return await eventsData.IsStarted();
+                return isEnabled;
             }
             return false;
 

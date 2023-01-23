@@ -27,9 +27,11 @@ namespace Example.ProjectApproval
             Console.WriteLine("Done");
         }
 
-        private Task AskManagerApproval(int id)
+        private async Task AskManagerApproval(int id)
         {
-            throw new NotImplementedException();
+            using (var client = new HttpClient())
+                await client.PostAsync(
+                    $"https://localhost:7241/api/project/AskManagerApproval?projectId={id}",null);
         }
     }
 }

@@ -16,7 +16,7 @@ namespace ResumableFunction.Engine.EfDataImplementation
             throw new NotImplementedException();
         }
 
-        public Task<List<SingleEventWait>> GetEventWaits(PushedEvent pushedEvent)
+        public Task<List<SingleEventWait>> GetEventWaits(string eventIdentifier, string eventProvider)
         {
             throw new NotImplementedException();
         }

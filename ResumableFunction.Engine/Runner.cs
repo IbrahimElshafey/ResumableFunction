@@ -1,5 +1,4 @@
-﻿using ResumableFunction.Abstraction;
-using ResumableFunction.Abstraction.InOuts;
+﻿using ResumableFunction.Abstraction.InOuts;
 using ResumableFunction.Engine.InOuts;
 using System;
 using System.Collections;

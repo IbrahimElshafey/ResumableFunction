@@ -18,4 +18,9 @@
 * Add Resumable Function History
 * Add event provider that monitor network requests
 * Add UI project to monitor and control function
-* 
+
+* Find alternative for App domains to be able to 
+	* load/unload assembiles at runtime 
+	* separate errors and process control 
+
+* Maintain list of start event

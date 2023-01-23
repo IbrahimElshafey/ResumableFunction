@@ -8,7 +8,7 @@
 
 
 
-# Generate API controller for class
+# Code generation
 * https://github.com/Testura/Testura.Code
 # Generate swagger definition for created API
 
@@ -52,18 +52,6 @@ https://www.litedb.org/
 https://agirlamonggeeks.com/2019/06/04/cannot-implicitly-convert-type-abc-to-iabc-contravariance-vs-covariance-part-2/
 
 
-# Find a service bus
-	*Zebus https://github.com/Abc-Arbitrage/Zebus (no broker)
-
-	* Silverback https://silverback-messaging.net/ A simple but feature-rich message bus "Broker" for .NET core (Apache Kafka, MQTT and RabbitMQ)
-	
-	* SlimMessageBus https://github.com/zarusz/SlimMessageBus (Apache Kafka, Azure EventHub, MQTT/Mosquitto, Redis Pub/Sub),and provides request-response implementation over message queues.
-		* wit Mosquitto http://www.steves-internet-guide.com/install-mosquitto-broker/#manual
-		* http://www.steves-internet-guide.com/mosquitto_pub-sub-clients/
-
-	* https://github.com/zarusz/SlimMessageBus
-	* Use https://github.com/Cysharp/MessagePipe to send events to the engine
-	* https://stackoverflow.com/questions/58549763/how-should-ipc-be-handled-in-net-core
 
 # Resolve by name
 https://stackoverflow.com/questions/39072001/dependency-injection-resolving-by-name
@@ -89,3 +77,9 @@ https://stackoverflow.com/questions/39072001/dependency-injection-resolving-by-n
 
 * How to: Examine and Instantiate Generic Types with Reflection
 https://learn.microsoft.com/en-us/dotnet/framework/reflection-and-codedom/how-to-examine-and-instantiate-generic-types-with-reflection
+
+
+* Use app domain
+https://stackoverflow.com/questions/6258160/unloading-the-assembly-loaded-with-assembly-loadfrom
+Note that .NET Core supports only a single application domain.
+

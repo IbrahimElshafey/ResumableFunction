@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using ResumableFunction.Abstraction;
 using ResumableFunction.Abstraction.InOuts;
 using ResumableFunction.Engine.Abstraction;
+using ResumableFunction.Engine.InOuts;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace ResumableFunction.Engine
@@ -38,11 +39,14 @@ namespace ResumableFunction.Engine
             return Task.CompletedTask;
         }
 
-        public Task RequestWait<FunctionData>(SingleEventWait eventWaiting, ResumableFunction<FunctionData> function) where FunctionData : class, new()
+        /// <summary>
+        /// Will execueted when a function instance run and ask for EventWaiting.
+        /// </summary>
+        public Task WaitRequested(WaitResult waitResult, object functionClass)
         {
             //todo:rerwite match expression and replace every FunctionData.Prop with constant value
 
-            /// Will execueted when a Function instance run and return ask for EventWaiting.<br/>
+            /// <br/>
             /// * Find event provider or load it.<br/>
             /// * Start event provider if not started <br/>
             /// * Call SubscribeToEvent with current paylaod type (eventWaiting.EventData)
@@ -65,7 +69,7 @@ namespace ResumableFunction.Engine
 
 
             //engine search waits list with(ProviderName, EventType)
-            var matchedEvents = await _waitsRepository.GetEventWaits(pushedEvent);
+            var matchedEvents = await _waitsRepository.GetEventWaits(pushedEvent.EventIdentifier, pushedEvent.EventProviderName);
             //and pass payload to match expression
             matchedEvents = matchedEvents.Where(x => x.IsMatch(pushedEvent)).ToList();
             //engine now know related function instances list
@@ -80,10 +84,13 @@ namespace ResumableFunction.Engine
                 functionClass.Data = functionData;
                 var runner = new FunctionRunner(eventWait, state, functionClass);
                 SetFunctionData(functionData, "propname", pushedEvent);
-                await _functionRepository.SaveFunctionData(functionData, eventWait.FunctionId, eventWait.InitiatedByClass.FullName);
+                
 
                 //get next event wait
                 var waitResult = await runner.Run();
+                await _functionRepository
+                    .SaveFunctionData(functionData, eventWait.FunctionId, eventWait.InitiatedByClass.FullName);
+                await WaitRequested(waitResult, functionClass);
             }
             //return Task.CompletedTask;
         }

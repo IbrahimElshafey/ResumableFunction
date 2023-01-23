@@ -18,6 +18,12 @@ namespace ResumableFunction.Abstraction
 
     public abstract partial class ResumableFunction<FunctionData> where FunctionData : class, new()
     {
+        public ResumableFunction()
+        {
+            InstanceId = Guid.NewGuid();
+            Data = new FunctionData();
+        }
+
         //will be set by the engine after load the instance
         protected AnyEventWait WaitAnyEvent(
             params SingleEventWait[] events)
@@ -99,11 +105,6 @@ namespace ResumableFunction.Abstraction
 
         public FunctionData Data { get; set; }
         public Guid InstanceId { get; private set; }
-
-        public async Task SaveFunctionData()
-        {
-            //await _engine.SaveFunctionData(Data, InstanceId);
-        }
 
 
         protected abstract IAsyncEnumerable<EventWaitingResult> Start();

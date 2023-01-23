@@ -16,6 +16,11 @@ namespace ResumableFunction.Abstraction.Samples
     //We can't depend on automatic serialize for state becuse compiler may remove fields and variables we defined
     public class ProjectApproval : ResumableFunction<ProjectApprovalFunctionData>
     {
+        public override Task OnFunctionEnd()
+        {
+            Console.WriteLine("ProjectApproval.OnFunctionEnd called.");
+            return base.OnFunctionEnd();
+        }
 
         //any inherited ResumableFunction must implement 'Start'
         protected override async IAsyncEnumerable<EventWaitingResult> Start()
