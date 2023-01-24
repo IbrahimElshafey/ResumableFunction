@@ -29,12 +29,12 @@ namespace ResumableFunction.Abstraction.InOuts
         public Type FunctionDataType { get; set; }
         public Guid FunctionId { get; set; }
 
-        private static Func<IEventData, bool> _matchExpressionCompiled;
-        public bool IsMatch(IEventData eventData)
+        private static Delegate? _matchExpressionCompiled;
+        public bool IsMatch(object eventData)
         {
-            if (_matchExpressionCompiled == null)
-                _matchExpressionCompiled = (Func<IEventData, bool>)MatchExpression.Compile();
-            return _matchExpressionCompiled(eventData);
+            if (_matchExpressionCompiled is null)
+                _matchExpressionCompiled = MatchExpression.Compile();
+            return (bool)_matchExpressionCompiled.DynamicInvoke(eventData);
         }
     }
 
@@ -74,6 +74,7 @@ namespace ResumableFunction.Abstraction.InOuts
             IsOptional = true;
             return this;
         }
+
     }
 
 

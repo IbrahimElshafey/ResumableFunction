@@ -19,6 +19,7 @@ namespace ResumableFunction.Engine
             services.AddScoped<IWaitsRepository, WaitsRepository>();
             services.AddScoped<IFunctionRepository, FunctionRepository>();
             services.AddScoped<IEventProviderRepository, EventProviderRepository>();
+            services.AddScoped<IFunctionFolderRepository, FunctionFolderRepository>();
             services.AddScoped<FunctionEngine, FunctionEngine>();
         }
 

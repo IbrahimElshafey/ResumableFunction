@@ -1,24 +1,42 @@
-﻿using System.Text.Json;
+﻿using Newtonsoft.Json.Linq;
+using System.Dynamic;
+using System.Runtime.InteropServices.JavaScript;
+using System.Text.Json;
 
 namespace ResumableFunction.Abstraction.InOuts
 {
     /*
         {
-          "provider": "EventproviderName",
+          "eventProviderName": "EventproviderNameqqqqqqqqqqqqqqq",
+          "eventIdentifier": "eventIdentifierrrrrrrrrrrrrrrrr",
           "dataType": "ResumableFunction.Abstraction.Samples.ManagerApprovalEvent",
           "data": {"ProjectId":"125", "Accepted":"true", "Rejected":"false"},
-          "dataConverterName": ""
         }
      */
     public class PushedEvent : Dictionary<string, object>, IEventData
     {
-        //revisit: to vlaidate
+        public string EventProviderName
+        {
+            get
+            {
+                if (ContainsKey(nameof(EventProviderName)))
+                    return (string)this[nameof(EventProviderName)];
+                else if (ContainsKey("eventProviderName"))
+                    return (string)this["eventProviderName"];
+                return null;
+            }
+        }
+        public string EventIdentifier
+        {
+            get
+            {
+                if (ContainsKey(nameof(EventIdentifier)))
+                    return (string)this[nameof(EventIdentifier)];
+                else if (ContainsKey("eventIdentifier"))
+                    return (string)this["eventIdentifier"];
+                return null;
+            }
+        }
 
-        public string EventProviderName => ((JsonElement)this[nameof(EventProviderName)]).GetString();
-
-        public string EventIdentifier => ((JsonElement)this[nameof(EventIdentifier)]).GetString();
     }
-
-
-
 }

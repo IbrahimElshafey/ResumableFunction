@@ -46,24 +46,29 @@ namespace ResumableFunction.Engine
             {
                 //check if folder DLLs need to be scan
                 if (FolderNeedScan(folder) is false) continue;
+                folder.LastScanDate = DateTime.Now;
                 foreach (var dllName in folder.NeedScanDlls)
                 {
                     var dllPath = Path.Combine(folder.Path, dllName);
-
+                    //check if assembly use the same .net version
                     //get types in assembly without loading and register them
                     await RegisterTypes(GetTypes(dllPath));
-                    //check if assembly use the same .net version
-                   
+
                 }
             }
         }
 
-        private Task RegisterTypes(Type[] types)
+        private async Task RegisterTypes(Type[] types)
         {
-            //find event providers and call RegisterEventProvider
-            //find functions and call RegisterFunction
-            //save scan json file to function folder
-            return Task.CompletedTask;
+            foreach (var type in types)
+            { 
+                //find functions and call RegisterFunction
+                if (type.IsSubclassOfRawGeneric(typeof(ResumableFunction<>)))
+                    await _functionRepository.RegisterFunction(type);
+                //find event providers and call RegisterEventProvider
+                else if (typeof(IEventProviderHandler).IsAssignableFrom(type))
+                    await _eventProviderRepository.RegsiterEventProvider(type);
+            }
         }
 
         private Type[] GetTypes(string assemblyPath)
@@ -127,12 +132,12 @@ namespace ResumableFunction.Engine
             //engine search waits list with(ProviderName, EventType)
             var matchedEvents = await _waitsRepository.GetEventWaits(pushedEvent.EventIdentifier, pushedEvent.EventProviderName);
             //and pass payload to match expression
-            matchedEvents = matchedEvents.Where(x => x.IsMatch(pushedEvent)).ToList();
+            //matchedEvents = matchedEvents.Where(x => x.IsMatch(pushedEvent)).ToList();
             //engine now know related function instances list
             foreach (var eventWait in matchedEvents)
             {
-                var state = await _functionRepository
-                    .GetFunctionState(eventWait.FunctionId, eventWait.InitiatedByFunction);
+                var state = 
+                    await _functionRepository.GetFunctionState(eventWait.FunctionId, eventWait.InitiatedByFunction);
 
                 //load context data
                 var functionData = await _functionRepository.GetFunctionData(eventWait.FunctionId);
