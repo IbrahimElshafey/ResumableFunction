@@ -14,17 +14,18 @@ namespace ResumableFunction.Engine
     public class RewriteMatchExpression : ExpressionVisitor
     {
         private readonly object _functionData;
+        public LambdaExpression Result { get; set; }
 
-        public RewriteMatchExpression(object data)
+        public RewriteMatchExpression(object data, LambdaExpression expression)
         {
             _functionData = data;
+            Result = (LambdaExpression)Visit(expression);
         }
 
-        public LambdaExpression Modify(LambdaExpression expression)
+        protected override Expression VisitLambda<T>(Expression<T> node)
         {
-            return (LambdaExpression)Visit(expression);
+            return base.VisitLambda(node);
         }
-
         protected override Expression VisitMember(MemberExpression node)
         {
             if (IsParamterAccess(node))

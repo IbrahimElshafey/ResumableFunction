@@ -24,18 +24,26 @@ namespace Test
         static async Task Main(string[] args)
         {
             var wait = new SingleEventWait<ManagerApprovalEvent>("OwnerApproval")
-                      .Match(result =>
-                      result.ProjectId > Math.Min(5, 10) &&
-                      result.ProjectId == Data.Project.Id)
-                      //.Match(result => result.ProjectId == 11)
+                      .Match<ProjectApprovalFunctionData>((data, result) =>
+                          result.ProjectId > Math.Min(5, 10) &&
+                          result.PreviousApproval.Equals(data.ManagerApprovalResult) &&
+                          result.ProjectId == data.Project.Id)
                       .SetProp(() => Data.OwnerApprovalResult)
                       .SetOptional();
-            var newExpresssion = new RewriteMatchExpression(Data).Modify(wait.MatchExpression);
+            var newExpresssion =
+                wait.NeedFunctionDataForMatch ?
+                wait.MatchExpression :
+                new RewriteMatchExpression(Data, wait.MatchExpression).Result;
             var matchCompiled = newExpresssion.Compile();
             var pushedEvent = new PushedEvent();
             pushedEvent["ProjectId"] = 11;
-            pushedEvent["PreviousApproval"] = new ManagerApprovalEvent { ProjectId = 11, Accepted = true, Rejected = false };
-            var isMatch = wait.IsMatch(pushedEvent.ToObject(typeof(ManagerApprovalEvent)));
+            pushedEvent["PreviousApproval"] =
+                new ManagerApprovalEvent { ProjectId = 11, Accepted = true, Rejected = false };
+
+            var isMatch =
+                wait.NeedFunctionDataForMatch ?
+                wait.IsMatch(Data, pushedEvent.ToObject(typeof(ManagerApprovalEvent))) :
+                wait.IsMatch(pushedEvent.ToObject(typeof(ManagerApprovalEvent)));
         }
 
         private static void LoadAssemblyTypes()

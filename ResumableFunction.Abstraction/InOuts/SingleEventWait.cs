@@ -28,6 +28,7 @@ namespace ResumableFunction.Abstraction.InOuts
         public Type EventType { get; set; }
         public Type FunctionDataType { get; set; }
         public Guid FunctionId { get; set; }
+        public bool NeedFunctionDataForMatch { get; set; }
 
         private static Delegate? _matchExpressionCompiled;
         public bool IsMatch(object eventData)
@@ -36,19 +37,25 @@ namespace ResumableFunction.Abstraction.InOuts
                 _matchExpressionCompiled = MatchExpression.Compile();
             return (bool)_matchExpressionCompiled.DynamicInvoke(eventData);
         }
+        public bool IsMatch(object functiondata,object eventData)
+        {
+            if (_matchExpressionCompiled is null)
+                _matchExpressionCompiled = MatchExpression.Compile();
+            return (bool)_matchExpressionCompiled.DynamicInvoke(functiondata,eventData);
+        }
     }
 
-    public class SingleEventWait<T> : SingleEventWait where T : class, IEventData, new()
+    public class SingleEventWait<Data> : SingleEventWait where Data : class, IEventData, new()
     {
-        public T EventData { get; set; }
+        public Data EventData { get; set; }
 
         public SingleEventWait(string eventIdentifier = "", [CallerMemberName] string callerName = "")
         {
-            var instance = new T();
+            var instance = new Data();
             EventIdentifier = eventIdentifier ?? instance.EventIdentifier;
             if (EventIdentifier == null)
                 throw new NullReferenceException("EventIdentifier can't be null.");
-            EventData = instance;
+            this.EventData = instance;
             EventProviderName = instance.EventProviderName;
             if (EventProviderName == null)
                 throw new NullReferenceException("EventProviderName can't be null.");
@@ -56,20 +63,26 @@ namespace ResumableFunction.Abstraction.InOuts
             InitiatedByFunction = callerName;
         }
 
+        public SingleEventWait<Data> Match<FunctionData>(Expression<Func<FunctionData,Data, bool>> func)
+        {
+            MatchExpression = func;
+            NeedFunctionDataForMatch = true;
+            return this;
+        }
 
-        public SingleEventWait<T> Match(Expression<Func<T, bool>> func)
+        public SingleEventWait<Data> Match(Expression<Func<Data, bool>> func)
         {
             MatchExpression = func;
             return this;
         }
 
-        public SingleEventWait<T> SetProp(Expression<Func<T>> instancePropFunc)
+        public SingleEventWait<Data> SetProp(Expression<Func<Data>> instancePropFunc)
         {
             SetPropExpression = instancePropFunc;
             return this;
         }
 
-        public SingleEventWait<T> SetOptional()
+        public SingleEventWait<Data> SetOptional()
         {
             IsOptional = true;
             return this;
