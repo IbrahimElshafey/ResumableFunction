@@ -37,11 +37,11 @@ namespace ResumableFunction.Abstraction.InOuts
                 _matchExpressionCompiled = MatchExpression.Compile();
             return (bool)_matchExpressionCompiled.DynamicInvoke(eventData);
         }
-        public bool IsMatch(object functiondata,object eventData)
+        public bool IsMatch(object functiondata, object eventData)
         {
             if (_matchExpressionCompiled is null)
                 _matchExpressionCompiled = MatchExpression.Compile();
-            return (bool)_matchExpressionCompiled.DynamicInvoke(functiondata,eventData);
+            return (bool)_matchExpressionCompiled.DynamicInvoke(functiondata, eventData);
         }
     }
 
@@ -63,7 +63,7 @@ namespace ResumableFunction.Abstraction.InOuts
             InitiatedByFunction = callerName;
         }
 
-        public SingleEventWait<Data> Match<FunctionData>(Expression<Func<FunctionData,Data, bool>> func)
+        public SingleEventWait<Data> Match<FunctionData>(Expression<Func<FunctionData, Data, bool>> func)
         {
             MatchExpression = func;
             NeedFunctionDataForMatch = true;

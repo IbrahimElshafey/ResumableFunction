@@ -1,4 +1,6 @@
 # ToDo
+* Event receiver will parse body to (event identifier,provider) type
+	* (event identifier,provider) must use one type (type may have multiple identifiers)
 * Match Function Expression options:
 	* Translate use props from FunctionData to constants
 	* Transalte expression to query and search the related FunctionData table/collection
