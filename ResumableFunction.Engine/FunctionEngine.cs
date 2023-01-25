@@ -61,7 +61,7 @@ namespace ResumableFunction.Engine
         private async Task RegisterTypes(Type[] types)
         {
             foreach (var type in types)
-            { 
+            {
                 //find functions and call RegisterFunction
                 if (type.IsSubclassOfRawGeneric(typeof(ResumableFunction<>)))
                     await _functionRepository.RegisterFunction(type);
@@ -120,23 +120,10 @@ namespace ResumableFunction.Engine
 
         public async Task WhenProviderPushEvent(PushedEvent pushedEvent)
         {
-            //pushed event  comes to the engine from event provider 
-            //pushed event contains properties (ProviderName,EventIdentifier,EventData as props)
-            //*  
-            //* 
-            //*  and start/resume active instance Function
-            //* call EventProvider.UnSubscribeEvent(pushedEvent.EventData) if no other intances waits this type for the same provider
-
-
-
             //engine search waits list with(ProviderName, EventType)
-            var matchedEvents = await _waitsRepository.GetEventWaits(pushedEvent.EventIdentifier, pushedEvent.EventProviderName);
-            //and pass payload to match expression
-            //matchedEvents = matchedEvents.Where(x => x.IsMatch(pushedEvent)).ToList();
-            //engine now know related function instances list
-            foreach (var eventWait in matchedEvents)
+            foreach (var eventWait in await MatchedWaits(pushedEvent))
             {
-                var state = 
+                var state =
                     await _functionRepository.GetFunctionState(eventWait.FunctionId, eventWait.InitiatedByFunction);
 
                 //load context data
@@ -146,14 +133,24 @@ namespace ResumableFunction.Engine
                 var runner = new FunctionRunner(eventWait, state, functionClass);
                 SetFunctionData(functionData, "propname", pushedEvent);
 
-
+                //*  and start/resume active instance Function
                 //get next event wait
                 var waitResult = await runner.Run();
                 await _functionRepository
                     .SaveFunctionData(functionData, eventWait.FunctionId, eventWait.InitiatedByClass.FullName);
                 await WaitRequested(waitResult, functionClass);
+                //* call EventProvider.UnSubscribeEvent(pushedEvent.EventData) if no other intances waits this type for the same provider
             }
             //return Task.CompletedTask;
+        }
+
+        private async Task<List<SingleEventWait>> MatchedWaits(PushedEvent pushedEvent)
+        {
+            var matchedEvents = await _waitsRepository.GetEventWaits(pushedEvent.EventIdentifier, pushedEvent.EventProviderName);
+            //and pass payload to match expression
+            // matchedEvents = matchedEvents.Where(x => x.IsMatch(pushedEvent)).ToList();
+            //engine now know related function instances list
+            return matchedEvents;
         }
 
         /// <summary>

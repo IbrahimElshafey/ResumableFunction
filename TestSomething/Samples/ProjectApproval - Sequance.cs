@@ -1,4 +1,5 @@
 ﻿using ResumableFunction.Abstraction.InOuts;
+using System.Linq.Expressions;
 
 namespace ResumableFunction.Abstraction.Samples
 {
@@ -161,6 +162,16 @@ namespace ResumableFunction.Abstraction.Samples
             }
 
             Console.WriteLine("All three approved");
+        }
+
+        internal Expression Expression1()
+        {
+            Expression<Func<ManagerApprovalEvent, bool>> match1 =
+                (result) =>
+                    result.ProjectId > Math.Min(5, 10) &&
+                    //result.PreviousApproval.Equals(Data.ManagerApprovalResult) &&
+                    result.ProjectId == Data.Project.Id;
+            return match1;
         }
     }
 }

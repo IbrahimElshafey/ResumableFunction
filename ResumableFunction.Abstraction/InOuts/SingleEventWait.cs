@@ -31,12 +31,6 @@ namespace ResumableFunction.Abstraction.InOuts
         public bool NeedFunctionDataForMatch { get; set; }
 
         private static Delegate? _matchExpressionCompiled;
-        public bool IsMatch(object eventData)
-        {
-            if (_matchExpressionCompiled is null)
-                _matchExpressionCompiled = MatchExpression.Compile();
-            return (bool)_matchExpressionCompiled.DynamicInvoke(eventData);
-        }
         public bool IsMatch(object functiondata, object eventData)
         {
             if (_matchExpressionCompiled is null)

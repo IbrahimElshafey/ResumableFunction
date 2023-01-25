@@ -40,7 +40,8 @@ https://devblogs.microsoft.com/dotnet/migrating-realproxy-usage-to-dispatchproxy
 
 # Expression Trees
 * [Converting Expression Trees to Source Code]https://bagoum.medium.com/c-heresy-converting-expression-trees-to-source-code-1082ba8963a6
-* [astExpressionCompiler]https://github.com/dadhi/FastExpressionCompiler
+* [FastExpressionCompiler]https://github.com/dadhi/FastExpressionCompiler
+* [Expression Tree Visualizer]https://github.com/zspitz/ExpressionTreeVisualizer
 
 # Get all method calls
 * https://stackoverflow.com/questions/57118269/get-all-method-calls
