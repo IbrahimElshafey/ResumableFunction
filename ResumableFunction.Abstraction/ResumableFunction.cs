@@ -41,9 +41,9 @@ namespace ResumableFunction.Abstraction
             return result;
         }
 
-        protected AllEventWait WaitEvents(params EventWait[] events)
+        protected AllEventsWait WaitEvents(params EventWait[] events)
         {
-            var result = new AllEventWait { WaitingEvents = events };
+            var result = new AllEventsWait { WaitingEvents = events };
             foreach (var item in result.WaitingEvents)
             {
                 SetCommonProps(item);
@@ -71,9 +71,9 @@ namespace ResumableFunction.Abstraction
             return result;
         }
 
-        protected async Task<AllFunctionWait> Functions(params Expression<Func<IAsyncEnumerable<Wait>>>[] subFunctions)
+        protected async Task<AllFunctionsWait> Functions(params Expression<Func<IAsyncEnumerable<Wait>>>[] subFunctions)
         {
-            var result = new AllFunctionWait { WaitingFunctions = new FunctionWait[subFunctions.Length] };
+            var result = new AllFunctionsWait { WaitingFunctions = new FunctionWait[subFunctions.Length] };
             for (int i = 0; i < subFunctions.Length; i++)
             {
                 var currentFunction = subFunctions[i];

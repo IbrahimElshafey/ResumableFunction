@@ -2,33 +2,34 @@
 # What is Resumable Function?
 A function/method/procedure/routine that paused when match an event waiting statement and resumed to the same place when event fired and matched.
 
-# Key parts
-* Engine: component responsible for running and resume function execution.
-* Event Provider: is a component that push events to the engine.
-* Queung service: is a way to separate engine and providers.
-* Event: Plain object but contains a property for it's provider.
-
-# Event Waiting,we can wait
-* Single Event (similar to `await` in `async\await`)
-* First event in a group (similar to `Task.WhenAny()`)
-* A group of event (similar to `Task.WhenAll()`)
-* Call another resumable function (call another async method)
-* Wait one or more resumable function to complete.
-* Wait first resumable function to complete.
-
-# what are the expected types and resources for events?
-* Any implementation for `IEventProvider` interface that push events to the engine such as:
-* A WEB proxy listen to server in outs HTTP calls.
-* File watcher.
-* Long pooling service that monitor a database table.
-* Timer service.
-
 # Why this project?
 * I want to write code that reflects the business requirements so that a developer handover another without needing business documents to understand the code.
 * Most Function engines can't be extended to support complex scenarios, for example, the below link contains a list of Function patterns, which are elementary to implement by any developer if we just write code and not think about how communications work.
 	http://www.Functionpatterns.com/patterns/
 * The source code must be a source of truth about how project parts function, and handover a project with hundreds of classes and methods to a new developer does not tell him what business flow executed but a Function method will simplify understanding of what happens under the hood.
 *  With Pub/Sub loosely coupled services it's hard to trace what happened without implementing a complex architecture.
+
+# Key parts
+* Engine: component responsible for running and resume function execution.
+* Event Provider: is a component that push events to the engine.
+* Queung service: is a way to separate engine and providers.
+* Event: Plain object but contains a property for it's provider.
+
+# Event Wait Types
+* Single Event `EventWait` (similar to `await` in `async\await`)
+* First event in a group `AnyEventWait` (similar to `Task.WhenAny()`)
+* A group of event `AllEventsWait` (similar to `Task.WhenAll()`)
+* Call another resumable function `FunctionWait` (call another async method)
+* Wait one or more resumable function to complete `AllFunctionsWait`.
+* Wait first resumable function to complete `AnyFunctionWait`.
+
+# What are the expected types and resources for events?
+* Any implementation for `IEventProvider` interface that push events to the engine such as:
+* A WEB proxy listen to server in outs HTTP calls.
+* File watcher.
+* Long pooling service that monitor a database table.
+* Timer service.
+
 
 
 # Simple resumable function scenario 
