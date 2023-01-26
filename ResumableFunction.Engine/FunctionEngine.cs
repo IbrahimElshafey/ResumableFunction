@@ -130,7 +130,7 @@ namespace ResumableFunction.Engine
             // * Call SubscribeToEvent with current paylaod type (eventWaiting.EventData)
             await eventProviderHandler.SubscribeToEvent(eventWait.EventData);
             // * Save event to IActiveEventsRepository 
-            // 
+            await _waitsRepository.AddWait(eventWait); 
             // ** important ?? must we send some of SingleEventWaiting props to event provider?? this will make filtering more accurate
             // but the provider will send this data back
         }
