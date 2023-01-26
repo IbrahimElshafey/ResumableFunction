@@ -26,7 +26,7 @@ namespace ResumableFunction.Abstraction
 
         //will be set by the engine after load the instance
         protected AnyEventWait WaitAnyEvent(
-            params SingleEventWait[] events)
+            params EventWait[] events)
         {
             Array.ForEach(events, SetCommonProps);
             var result = new AnyEventWait { Events = events };
@@ -34,16 +34,16 @@ namespace ResumableFunction.Abstraction
         }
 
 
-        protected SingleEventWait<T> WaitEvent<T>(string eventIdentifier, [CallerMemberName] string callerName = "") where T : class, IEventData, new()
+        protected EventWait<T> WaitEvent<T>(string eventIdentifier, [CallerMemberName] string callerName = "") where T : class, IEventData, new()
         {
-            var result = new SingleEventWait<T>(eventIdentifier) { InitiatedByFunction = callerName };
+            var result = new EventWait<T>(eventIdentifier) { InitiatedByFunction = callerName };
             SetCommonProps(result);
             return result;
         }
 
-        protected AllEventWaits WaitEvents(params SingleEventWait[] events)
+        protected AllEventWait WaitEvents(params EventWait[] events)
         {
-            var result = new AllEventWaits { WaitingEvents = events };
+            var result = new AllEventWait { WaitingEvents = events };
             foreach (var item in result.WaitingEvents)
             {
                 SetCommonProps(item);
@@ -52,16 +52,16 @@ namespace ResumableFunction.Abstraction
             return result;
         }
 
-        private void SetCommonProps(SingleEventWait eventWaiting)
+        private void SetCommonProps(EventWait eventWaiting)
         {
             eventWaiting.InitiatedByClass = GetType();
             eventWaiting.FunctionId = InstanceId;
             eventWaiting.FunctionDataType = Data?.GetType();
         }
 
-        protected async Task<AnyFunctionWaiting> AnyFunction(params Expression<Func<IAsyncEnumerable<EventWaitingResult>>>[] subFunctions)
+        protected async Task<AnyFunctionWait> AnyFunction(params Expression<Func<IAsyncEnumerable<Wait>>>[] subFunctions)
         {
-            var result = new AnyFunctionWaiting { Functions = new FunctionWaitingResult[subFunctions.Length] };
+            var result = new AnyFunctionWait { Functions = new FunctionWait[subFunctions.Length] };
             for (int i = 0; i < subFunctions.Length; i++)
             {
                 var currentFunction = subFunctions[i];
@@ -71,9 +71,9 @@ namespace ResumableFunction.Abstraction
             return result;
         }
 
-        protected async Task<AllFunctionWaiting> Functions(params Expression<Func<IAsyncEnumerable<EventWaitingResult>>>[] subFunctions)
+        protected async Task<AllFunctionWait> Functions(params Expression<Func<IAsyncEnumerable<Wait>>>[] subFunctions)
         {
-            var result = new AllFunctionWaiting { WaitingFunctions = new FunctionWaitingResult[subFunctions.Length] };
+            var result = new AllFunctionWait { WaitingFunctions = new FunctionWait[subFunctions.Length] };
             for (int i = 0; i < subFunctions.Length; i++)
             {
                 var currentFunction = subFunctions[i];
@@ -83,9 +83,9 @@ namespace ResumableFunction.Abstraction
             return result;
         }
 
-        protected async Task<FunctionWaitingResult> Function(Expression<Func<IAsyncEnumerable<EventWaitingResult>>> subFunction)
+        protected async Task<FunctionWait> Function(Expression<Func<IAsyncEnumerable<Wait>>> subFunction)
         {
-            var result = new FunctionWaitingResult();
+            var result = new FunctionWait();
             var methodCall = subFunction.Body as MethodCallExpression;
             if (methodCall != null)
             {
@@ -107,7 +107,7 @@ namespace ResumableFunction.Abstraction
         public Guid InstanceId { get; private set; }
 
 
-        protected abstract IAsyncEnumerable<EventWaitingResult> Start();
+        protected abstract IAsyncEnumerable<Wait> Start();
         public virtual Task OnFunctionEnd()
         {
             return Task.CompletedTask;

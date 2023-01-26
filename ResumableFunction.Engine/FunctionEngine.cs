@@ -103,7 +103,7 @@ namespace ResumableFunction.Engine
         /// <summary>
         /// Will execueted when a function instance run and ask for EventWaiting.
         /// </summary>
-        public Task WaitRequested(WaitResult waitResult, object functionClass)
+        public Task WaitRequested(WaitResult1 waitResult, object functionClass)
         {
             //todo:rerwite match expression and replace every FunctionData.Prop with constant value
 
@@ -144,7 +144,7 @@ namespace ResumableFunction.Engine
             //return Task.CompletedTask;
         }
 
-        private async Task<List<SingleEventWait>> MatchedWaits(PushedEvent pushedEvent)
+        private async Task<List<EventWait>> MatchedWaits(PushedEvent pushedEvent)
         {
             var matchedEvents = await _waitsRepository.GetEventWaits(pushedEvent.EventIdentifier, pushedEvent.EventProviderName);
             //and pass payload to match expression

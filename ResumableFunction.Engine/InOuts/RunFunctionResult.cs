@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ResumableFunction.Engine.InOuts
 {
-    public record WaitResult(EventWaitingResult Result,int State,bool IsEnd)
+    public record WaitResult1(Wait Result,int State,bool IsEnd)
     {
     }
 }

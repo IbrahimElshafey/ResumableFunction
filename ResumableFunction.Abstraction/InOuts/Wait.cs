@@ -1,9 +1,9 @@
 ﻿namespace ResumableFunction.Abstraction.InOuts
 {
 
-    public abstract class EventWaitingResult
+    public abstract class Wait
     {
-        public EventWaitingResult()
+        public Wait()
         {
             Id = Guid.NewGuid();
         }

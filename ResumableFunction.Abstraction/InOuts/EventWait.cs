@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 
 namespace ResumableFunction.Abstraction.InOuts
 {
-    public abstract class SingleEventWait : EventWaitingResult
+    public abstract class EventWait : Wait
     {
         public Guid ParentGroupId { get; set; }
         public string EventIdentifier { get; set; }
@@ -39,11 +39,11 @@ namespace ResumableFunction.Abstraction.InOuts
         }
     }
 
-    public class SingleEventWait<Data> : SingleEventWait where Data : class, IEventData, new()
+    public sealed class EventWait<Data> : EventWait where Data : class, IEventData, new()
     {
         public Data EventData { get; set; }
 
-        public SingleEventWait(string eventIdentifier = "", [CallerMemberName] string callerName = "")
+        public EventWait(string eventIdentifier = "", [CallerMemberName] string callerName = "")
         {
             var instance = new Data();
             EventIdentifier = eventIdentifier ?? instance.EventIdentifier;
@@ -57,26 +57,26 @@ namespace ResumableFunction.Abstraction.InOuts
             InitiatedByFunction = callerName;
         }
 
-        public SingleEventWait<Data> Match<FunctionData>(Expression<Func<FunctionData, Data, bool>> func)
+        public EventWait<Data> Match<FunctionData>(Expression<Func<FunctionData, Data, bool>> func)
         {
             MatchExpression = func;
             NeedFunctionDataForMatch = true;
             return this;
         }
 
-        public SingleEventWait<Data> Match(Expression<Func<Data, bool>> func)
+        public EventWait<Data> Match(Expression<Func<Data, bool>> func)
         {
             MatchExpression = func;
             return this;
         }
 
-        public SingleEventWait<Data> SetProp(Expression<Func<Data>> instancePropFunc)
+        public EventWait<Data> SetProp(Expression<Func<Data>> instancePropFunc)
         {
             SetPropExpression = instancePropFunc;
             return this;
         }
 
-        public SingleEventWait<Data> SetOptional()
+        public EventWait<Data> SetOptional()
         {
             IsOptional = true;
             return this;

@@ -12,7 +12,7 @@ namespace Example.ProjectApproval
 {
     public class ProjectApprovalWorkflow : ResumableFunction<ProjectApprovalWorkflowData>
     {
-        protected override async IAsyncEnumerable<EventWaitingResult> Start()
+        protected override async IAsyncEnumerable<Wait> Start()
         {
             yield return
                 WaitEvent<ProjectSumbitted>(Constant.ProjectSumbittedEvent)

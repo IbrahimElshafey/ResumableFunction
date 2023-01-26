@@ -24,7 +24,7 @@ namespace ResumableFunction.Abstraction.Samples
         }
 
         //any inherited ResumableFunction must implement 'Start'
-        protected override async IAsyncEnumerable<EventWaitingResult> Start()
+        protected override async IAsyncEnumerable<Wait> Start()
         {
             //yield return await Function(() => SubFunction());
             yield return await Functions(
@@ -101,35 +101,35 @@ namespace ResumableFunction.Abstraction.Samples
         {
             await Task.Delay(1000);
         }
-        private async IAsyncEnumerable<EventWaitingResult> SubFunction3()
+        private async IAsyncEnumerable<Wait> SubFunction3()
         {
             yield return WaitAnyEvent(
-                new SingleEventWait<ManagerApprovalEvent>("OwnerApproval_SubFunction")
+                new EventWait<ManagerApprovalEvent>("OwnerApproval_SubFunction")
                     .Match(result => result.ProjectId == Data.Project.Id)
                     .SetProp(() => Data.OwnerApprovalResult),
-                new SingleEventWait<ManagerApprovalEvent>("SponsorApproval_SubFunction")
+                new EventWait<ManagerApprovalEvent>("SponsorApproval_SubFunction")
                     .Match(result => result.ProjectId == Data.Project.Id)
                     .SetProp(() => Data.SponsorApprovalResult),
-                new SingleEventWait<ManagerApprovalEvent>("ManagerApproval_SubFunction")
+                new EventWait<ManagerApprovalEvent>("ManagerApproval_SubFunction")
                     .Match(result => result.ProjectId == Data.Project.Id)
                     .SetProp(() => Data.ManagerApprovalResult)
                 );
         }
-        private async IAsyncEnumerable<EventWaitingResult> SubFunction2()
+        private async IAsyncEnumerable<Wait> SubFunction2()
         {
             yield return WaitEvents(
-                new SingleEventWait<ManagerApprovalEvent>("OwnerApproval_SubFunction")
+                new EventWait<ManagerApprovalEvent>("OwnerApproval_SubFunction")
                     .Match(result => result.ProjectId == Data.Project.Id)
                     .SetProp(() => Data.OwnerApprovalResult),
-                new SingleEventWait<ManagerApprovalEvent>("SponsorApproval_SubFunction")
+                new EventWait<ManagerApprovalEvent>("SponsorApproval_SubFunction")
                     .Match(result => result.ProjectId == Data.Project.Id)
                     .SetProp(() => Data.SponsorApprovalResult),
-                new SingleEventWait<ManagerApprovalEvent>("ManagerApproval_SubFunction")
+                new EventWait<ManagerApprovalEvent>("ManagerApproval_SubFunction")
                     .Match(result => result.ProjectId == Data.Project.Id)
                     .SetProp(() => Data.ManagerApprovalResult)
                 );
         }
-        private async IAsyncEnumerable<EventWaitingResult> SubFunction1()
+        private async IAsyncEnumerable<Wait> SubFunction1()
         {
             await AskOwnerToApprove(Data.Project);
             yield return WaitEvent<ManagerApprovalEvent>("OwnerApproval_SubFunction")

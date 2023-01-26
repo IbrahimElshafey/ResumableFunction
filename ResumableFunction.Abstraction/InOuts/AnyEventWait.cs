@@ -1,8 +1,8 @@
 ﻿namespace ResumableFunction.Abstraction.InOuts
 {
-    public class AnyEventWait : EventWaitingResult
+    public sealed class AnyEventWait : Wait
     {
-        public SingleEventWait[] Events { get; set; }
-        public SingleEventWait MatchedEvent { get; set; }
+        public EventWait[] Events { get; set; }
+        public EventWait MatchedEvent { get; set; }
     }
 }

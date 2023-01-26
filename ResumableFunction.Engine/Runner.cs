@@ -16,11 +16,11 @@ namespace ResumableFunction.Engine
         private readonly string _currentRunner;
         private readonly int _state;
         private readonly object _functionClass;
-        private readonly SingleEventWait _currentWait;
+        private readonly EventWait _currentWait;
         private object? _activeRunner;
 
         public FunctionRunner(
-            SingleEventWait currentWait,
+            EventWait currentWait,
             int state,
             object functionClass)
         {
@@ -30,7 +30,7 @@ namespace ResumableFunction.Engine
             _functionClass = functionClass;
         }
 
-        public async Task<WaitResult> Run()
+        public async Task<WaitResult1> Run()
         {
             var functionRunner = GetCurrentRunner();
             SetActiveRunnerState(_state);
@@ -40,14 +40,14 @@ namespace ResumableFunction.Engine
             {
                 var incommingWait = functionRunner.Current;
                 var state = GetActiveRunnerState();
-                return new WaitResult(incommingWait, state, false);
+                return new WaitResult1(incommingWait, state, false);
             }
             else
             {
                 //if current Function runner name is "RunFunction"
                 //await _function.OnFunctionEnd();
                 var state = GetActiveRunnerState();
-                return new WaitResult(null, state, true);
+                return new WaitResult1(null, state, true);
             }
         }
 
@@ -78,7 +78,7 @@ namespace ResumableFunction.Engine
             return int.MinValue;
         }
 
-        private IAsyncEnumerator<EventWaitingResult>? GetCurrentRunner()
+        private IAsyncEnumerator<Wait>? GetCurrentRunner()
         {
             if (_activeRunner == null)
             {
@@ -103,9 +103,9 @@ namespace ResumableFunction.Engine
 
                 //set in start state
                 SetActiveRunnerState(int.MinValue);
-                return _activeRunner as IAsyncEnumerator<EventWaitingResult>;
+                return _activeRunner as IAsyncEnumerator<Wait>;
             }
-            return _activeRunner as IAsyncEnumerator<EventWaitingResult>;
+            return _activeRunner as IAsyncEnumerator<Wait>;
         }
     }
 }

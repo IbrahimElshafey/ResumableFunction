@@ -51,7 +51,7 @@ namespace Test
         }
         private static void TestMatchTranslation()
         {
-            var wait = new SingleEventWait<ManagerApprovalEvent>("OwnerApproval")
+            var wait = new EventWait<ManagerApprovalEvent>("OwnerApproval")
                                   .Match<ProjectApprovalFunctionData>((data, result) =>
                                       result.ProjectId > Math.Min(5, 10) &&
                                       result.PreviousApproval.Equals(data.ManagerApprovalResult) &&

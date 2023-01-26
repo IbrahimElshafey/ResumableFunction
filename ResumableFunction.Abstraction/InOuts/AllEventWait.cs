@@ -2,13 +2,13 @@
 
 namespace ResumableFunction.Abstraction.InOuts
 {
-    public class AllEventWaits : EventWaitingResult
+    public sealed class AllEventWait : Wait
     {
-        public SingleEventWait[] WaitingEvents { get; set; }
-        public SingleEventWait[] MatchedEvents { get; set; }
+        public EventWait[] WaitingEvents { get; set; }
+        public EventWait[] MatchedEvents { get; set; }
         public Expression<Func<int, bool>> WhenCountExpression { get; private set; }
 
-        public AllEventWaits WhenCount(Expression<Func<int, bool>> matchCountFilter)
+        public AllEventWait WhenCount(Expression<Func<int, bool>> matchCountFilter)
         {
             WhenCountExpression = matchCountFilter;
             return this;

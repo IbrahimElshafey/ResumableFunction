@@ -18,7 +18,7 @@ namespace ResumableFunction.Abstraction.Samples
     public class ProjectApprovalSubFunction : ProjectApproval
     {
 
-        protected override async IAsyncEnumerable<EventWaitingResult> Start()
+        protected override async IAsyncEnumerable<Wait> Start()
         {
 
             await Task.Delay(100);
@@ -37,7 +37,7 @@ namespace ResumableFunction.Abstraction.Samples
             Console.WriteLine("All three approved");
         }
 
-        private async IAsyncEnumerable<SingleEventWait> SubFunction()
+        private async IAsyncEnumerable<EventWait> SubFunction()
         {
             await AskOwnerToApprove(Data.Project);
             yield return WaitEvent<ManagerApprovalEvent>( "OwnerApproval")
