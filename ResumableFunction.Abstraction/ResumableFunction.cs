@@ -16,12 +16,18 @@ namespace ResumableFunction.Abstraction
     /// </summary>
     //Can i make this class not generic? we use generic for match and set property expressions only?
 
-    public abstract partial class ResumableFunction<FunctionData> where FunctionData : class, new()
+    public abstract partial class ResumableFunction<FunctionData> : IResumableFunction<FunctionData> where FunctionData : class, new()
     {
         public ResumableFunction()
         {
-            InstanceId = Guid.NewGuid();
-            Data = new FunctionData();
+            Data = new FunctionData(); 
+            FunctionState = new ResumableFunctionState
+            {
+                DataType = typeof(FunctionData),
+                FunctionId = Guid.NewGuid(),
+                InitiatedByClass = GetType(),
+                Data = Data
+            };
         }
 
         //will be set by the engine after load the instance
@@ -54,9 +60,7 @@ namespace ResumableFunction.Abstraction
 
         private void SetCommonProps(EventWait eventWaiting)
         {
-            eventWaiting.InitiatedByClass = GetType();
-            eventWaiting.FunctionId = InstanceId;
-            eventWaiting.FunctionDataType = Data?.GetType();
+            eventWaiting.ParentFunctionState = FunctionState;
         }
 
         protected async Task<AnyFunctionWait> AnyFunction(params Expression<Func<IAsyncEnumerable<Wait>>>[] subFunctions)
@@ -103,11 +107,14 @@ namespace ResumableFunction.Abstraction
         }
 
 
+
         public FunctionData Data { get; set; }
-        public Guid InstanceId { get; private set; }
+
+        public ResumableFunctionState FunctionState { get; set; }
 
 
-        protected abstract IAsyncEnumerable<Wait> Start();
+
+        public abstract IAsyncEnumerable<Wait> Start();
         public virtual Task OnFunctionEnd()
         {
             return Task.CompletedTask;

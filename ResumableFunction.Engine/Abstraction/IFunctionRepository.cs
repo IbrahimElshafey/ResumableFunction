@@ -13,8 +13,9 @@ namespace ResumableFunction.Engine.Abstraction
     {
         Task<bool> IsFunctionRegistred(Type functionType);
         Task<bool> RegisterFunction(Type functionType);
-        Task<bool> SaveFunctionData(object data, Guid instanceId, string functionClassName);
+        Task<bool> SaveFunctionState(ResumableFunctionState functionState);
         Task<object> GetFunctionData(Guid instanceId);
         Task<int> GetFunctionState(Guid functionId, string initiatedByFunction);
+        Task MoveFunctionToRecycleBin(ResumableFunctionState functionState);
     }
 }

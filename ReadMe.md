@@ -44,7 +44,7 @@ I evaluated the existing solutions and found that there is no solution that fits
 * [D-Async (The best)](https://github.com/Dasync/Dasync)
 * [MassTransit](https://masstransit-project.com/)
 * [Durable Task Framework](https://github.com/Azure/durabletask)
-* [Function Core](https://github.com/danielgerlag/Function-core)
+* [Workflow Core](https://github.com/danielgerlag/workflow-core)
 * [Infinitic (Kotlin)](https://github.com/infiniticio/infinitic)
 
 # My Solution 

@@ -1,4 +1,5 @@
-﻿using ResumableFunction.Engine.Abstraction;
+﻿using ResumableFunction.Abstraction.InOuts;
+using ResumableFunction.Engine.Abstraction;
 
 namespace ResumableFunction.Engine.EfDataImplementation
 {
@@ -24,6 +25,11 @@ namespace ResumableFunction.Engine.EfDataImplementation
             throw new NotImplementedException();
         }
 
+        public Task MoveFunctionToRecycleBin(ResumableFunctionState functionState)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task<bool> RegisterFunction(Type functionType)
         {
             throw new NotImplementedException();
@@ -35,6 +41,11 @@ namespace ResumableFunction.Engine.EfDataImplementation
         }
 
         public Task<bool> SaveFunctionData(object data, Guid instanceId, string functionClassName)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<bool> SaveFunctionState(ResumableFunctionState functionState)
         {
             throw new NotImplementedException();
         }

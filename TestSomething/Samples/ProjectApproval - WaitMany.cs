@@ -16,7 +16,7 @@ namespace ResumableFunction.Abstraction.Samples
     public class ProjectApprovalWaitMany : ProjectApproval
     {
 
-        protected override async IAsyncEnumerable<Wait> Start()
+        public override async IAsyncEnumerable<Wait> Start()
         {
             yield return WaitEvent<ProjectRequestedEvent>("ProjectRequested").SetProp(() => Data.Project);
             if (Data.Project is not null)

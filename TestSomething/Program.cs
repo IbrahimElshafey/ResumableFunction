@@ -27,6 +27,36 @@ namespace Test
             };
         static async Task Main(string[] args)
         {
+            //MatchFunctionTranslation();
+
+            //TestMatchTranslation();
+            // using static System.Linq.Expressions.Expression
+
+            //TestFunctionClassWrapper();
+            TestSetPropRewrite();
+        }
+
+        private static void TestSetPropRewrite()
+        {
+            var wait = new ProjectApproval().EventWait();
+            var setPropRewrite = new RewriteSetPropExpression(wait).Result;
+            var eventData = new ManagerApprovalEvent { Accepted = true, ProjectId = 11 };
+            ProjectApprovalFunctionData functionData = new ProjectApprovalFunctionData();
+            setPropRewrite.Compile().DynamicInvoke(functionData, eventData);
+        }
+
+        private static void TestFunctionClassWrapper()
+        {
+            var wrapper = new ResumableFunctionWrapper(new ProjectApproval().EventWait());
+            Console.WriteLine(wrapper.FunctionClassInstance);
+            Console.WriteLine(wrapper.FunctionClassInstance.GetType());
+            Console.WriteLine(wrapper.Data);
+            Console.WriteLine(wrapper.Data.GetType());
+            Console.WriteLine(wrapper.FunctionState);
+        }
+
+        private static void MatchFunctionTranslation()
+        {
             var managerApprovalEvent = new ManagerApprovalEvent
             {
                 ProjectId = 11,
@@ -37,30 +67,19 @@ namespace Test
             var match1 = new ProjectApproval().Expression1();
             var rewriteMatch = new RewriteMatchExpression(Data, match1);
             var matchCompiled = rewriteMatch.Result.Compile();
-            var result = rewriteMatch.NeedFunctionData ?
-                matchCompiled.DynamicInvoke(Data, managerApprovalEvent) :
-                matchCompiled.DynamicInvoke(null, managerApprovalEvent);
-
-            //TestMatchTranslation();
-            // using static System.Linq.Expressions.Expression
-
-
-
-
-
+            var result = matchCompiled.DynamicInvoke(Data, managerApprovalEvent);
         }
+
         private static void TestMatchTranslation()
         {
             var wait = new EventWait<ManagerApprovalEvent>("OwnerApproval")
-                                  .Match<ProjectApprovalFunctionData>((data, result) =>
+                                  .Match(result =>
                                       result.ProjectId > Math.Min(5, 10) &&
-                                      result.PreviousApproval.Equals(data.ManagerApprovalResult) &&
-                                      result.ProjectId == data.Project.Id)
+                                      result.PreviousApproval.Equals(Data.ManagerApprovalResult) &&
+                                      result.ProjectId == Data.Project.Id)
                                   .SetProp(() => Data.OwnerApprovalResult)
                                   .SetOptional();
             var newExpresssion =
-                wait.NeedFunctionDataForMatch ?
-                wait.MatchExpression :
                 new RewriteMatchExpression(Data, wait.MatchExpression).Result;
             var matchCompiled = newExpresssion.Compile();
             var pushedEvent = new PushedEvent();

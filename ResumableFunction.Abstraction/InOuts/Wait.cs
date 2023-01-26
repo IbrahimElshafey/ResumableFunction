@@ -1,4 +1,5 @@
-﻿namespace ResumableFunction.Abstraction.InOuts
+﻿using System.ComponentModel.DataAnnotations.Schema;
+namespace ResumableFunction.Abstraction.InOuts
 {
 
     public abstract class Wait
@@ -8,5 +9,7 @@
             Id = Guid.NewGuid();
         }
         public Guid Id { get; private set; }
+
+        public ResumableFunctionState ParentFunctionState { get; internal set; }
     }
 }

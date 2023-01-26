@@ -12,7 +12,7 @@ namespace Example.ProjectApproval
 {
     public class ProjectApprovalWorkflow : ResumableFunction<ProjectApprovalWorkflowData>
     {
-        protected override async IAsyncEnumerable<Wait> Start()
+        public override async IAsyncEnumerable<Wait> Start()
         {
             yield return
                 WaitEvent<ProjectSumbitted>(Constant.ProjectSumbittedEvent)
@@ -31,7 +31,7 @@ namespace Example.ProjectApproval
         {
             using (var client = new HttpClient())
                 await client.PostAsync(
-                    $"https://localhost:7241/api/project/AskManagerApproval?projectId={id}",null);
+                    $"https://localhost:7241/api/project/AskManagerApproval?projectId={id}", null);
         }
     }
 }

@@ -24,7 +24,7 @@ namespace ResumableFunction.Abstraction.Samples
         }
 
         //any inherited ResumableFunction must implement 'Start'
-        protected override async IAsyncEnumerable<Wait> Start()
+        public override async IAsyncEnumerable<Wait> Start()
         {
             //yield return await Function(() => SubFunction());
             yield return await Functions(
@@ -37,7 +37,7 @@ namespace ResumableFunction.Abstraction.Samples
             //the engine will wait for ProjectRequested event
             //no match function because it's the first one
             //context prop is prop in FunctionData that we will set with event result data
-            yield return 
+            yield return
                 WaitEvent<ProjectRequestedEvent>("ProjectCreated")
                 .SetProp(() => Data.Project);
             //the compiler will save state after executing the previous return
@@ -164,6 +164,13 @@ namespace ResumableFunction.Abstraction.Samples
             Console.WriteLine("All three approved");
         }
 
+        internal EventWait EventWait()
+        {
+            var result = WaitEvent<ManagerApprovalEvent>("OwnerApproval_SubFunction")
+            .Match(result => result.ProjectId == Data.Project.Id)
+            .SetProp(() => Data.OwnerApprovalResult);
+            return result;
+        }
         internal Expression Expression1()
         {
             Expression<Func<ManagerApprovalEvent, bool>> match1 =

@@ -18,7 +18,7 @@ namespace ResumableFunction.Abstraction.Samples
     public class ProjectApprovalSubFunction : ProjectApproval
     {
 
-        protected override async IAsyncEnumerable<Wait> Start()
+        public override async IAsyncEnumerable<Wait> Start()
         {
 
             await Task.Delay(100);
