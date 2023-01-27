@@ -11,13 +11,14 @@ namespace ResumableFunction.Engine.EfDataImplementation
 {
     public class WaitsRepository : IWaitsRepository
     {
-
-        public async Task<List<EventWait>> GetMatchedWaits(PushedEvent pushedEvent)
+        public Task AddWait(EventWait eventWait)
         {
-            var matchedWaits=new List<EventWait>();
-            //pass payload to match expression
-            matchedWaits = matchedWaits.Where(x => x.IsMatch()).ToList();
-            return matchedWaits;
+            throw new NotImplementedException();
+        }
+
+        public Task<List<EventWait>> GetMatchedWaits(PushedEvent pushedEvent)
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -169,6 +169,22 @@ namespace ResumableFunction.Abstraction.Samples
             var result = WaitEvent<ManagerApprovalEvent>("OwnerApproval_SubFunction")
             .Match(result => result.ProjectId == Data.Project.Id)
             .SetProp(() => Data.OwnerApprovalResult);
+            result.ParentFunctionState = new ResumableFunctionState
+            {
+                Data = new ProjectApprovalFunctionData
+                {
+                    SponsorApprovalResult = new ManagerApprovalEvent
+                    {
+                        ProjectId = 11,
+                        Accepted = true,
+                        Rejected = false
+                    }
+                },
+                DataType = typeof(ProjectApprovalFunctionData),
+                FunctionId = Guid.NewGuid(),
+                InitiatedByClass = GetType(),
+                FunctionsStates = new Dictionary<string, int> { { "Start", 1 } }
+            };
             return result;
         }
         internal Expression Expression1()

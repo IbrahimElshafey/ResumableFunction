@@ -10,6 +10,6 @@ namespace ResumableFunction.Abstraction.InOuts
         }
         public Guid Id { get; private set; }
 
-        public ResumableFunctionState ParentFunctionState { get; internal set; }
+        public ResumableFunctionState ParentFunctionState { get; set; }
     }
 }

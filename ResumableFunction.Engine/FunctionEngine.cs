@@ -100,39 +100,6 @@ namespace ResumableFunction.Engine
             return functionFolder.NeedScanDlls?.Any() ?? false;
         }
 
-        /// <summary>
-        /// Will execueted when a function instance run and ask for EventWaiting.
-        /// </summary>
-        private async Task WaitRequested(NextWaitResult waitResult, ResumableFunctionWrapper functionClass)
-        {
-            switch (waitResult.Result)
-            {
-                case null when waitResult.IsFinalExit:
-                    await _functionRepository.MoveFunctionToRecycleBin(functionClass.FunctionState);
-                    break;
-                case EventWait eventWait:
-                    await EventWaitRequested(eventWait, functionClass);
-                    break;
-            }
-
-
-        }
-
-        private async Task EventWaitRequested(EventWait eventWait, ResumableFunctionWrapper functionClass)
-        {
-            // * Rerwite match expression and set prop expresssion
-            eventWait.MatchExpression = new RewriteMatchExpression(functionClass.Data, eventWait.MatchExpression).Result;
-            eventWait.SetPropExpression = new RewriteSetPropExpression(eventWait).Result;
-            // * Find event provider handler or load it.
-            var eventProviderHandler = await _eventProviderRepository.GetByName(eventWait.EventProviderName);
-            // * Start event provider if not started 
-            await eventProviderHandler.Start();
-            // * Call SubscribeToEvent with current paylaod type (eventWaiting.EventData)
-            await eventProviderHandler.SubscribeToEvent(eventWait.EventData);
-            // * Save event to IActiveEventsRepository 
-            await _waitsRepository.AddWait(eventWait); 
-            // ** important ?? must we send some of SingleEventWaiting props to event provider?? this will make filtering more accurate
-            // but the provider will send this data back
-        }
+        
     }
 }

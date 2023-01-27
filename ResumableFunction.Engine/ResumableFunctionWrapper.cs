@@ -19,13 +19,15 @@ namespace ResumableFunction.Engine
                 throw new Exception("functionClassType must inherit ResumableFunction<>");
 
             FunctionClassInstance = Activator.CreateInstance(functionClassType);
-            if (FunctionClassInstance is null) return;
-            if (FunctionClassInstance.Data == null)
-            {
-                var propType = functionClassType.GetProperty("Data").PropertyType;
-                Data = Activator.CreateInstance(propType);
-            }
-            Data = FunctionClassInstance.Data;
+            if (FunctionClassInstance is null)
+                throw new Exception($"Can't create instance of `{functionClassType}` with .ctor()"); ;
+            //if (FunctionClassInstance.Data == null)
+            //{
+            //    var propType = functionClassType.GetProperty("Data").PropertyType;
+            //    Data = Activator.CreateInstance(propType);
+            //}
+            FunctionState = eventWait.ParentFunctionState;
+            Data = eventWait.ParentFunctionState.Data;
         }
 
 
@@ -55,6 +57,7 @@ namespace ResumableFunction.Engine
         {
             _currentWait.SetDataProp();
             Data = _currentWait.ParentFunctionState.Data;
+            FunctionState.Data = Data;
         }
 
         /// <summary>
@@ -63,11 +66,11 @@ namespace ResumableFunction.Engine
         public async Task<NextWaitResult> GetNextWait()
         {
             var functionRunner = GetCurrentRunner();
-            SetActiveRunnerState(CurrentRunnerLastState());
+
             if (functionRunner is null)
                 throw new Exception(
                     $"Can't initiate runner `{_currentWait.InitiatedByFunction}` for {_currentWait.EventDataType.FullName}");
-
+            SetActiveRunnerState(CurrentRunnerLastState());
             bool waitExist = await functionRunner.MoveNextAsync();
             //after function resumed data may be changed (for example user set some props)
             FunctionState.Data = Data;
@@ -76,7 +79,7 @@ namespace ResumableFunction.Engine
                 FunctionState.FunctionsStates[_currentWait.InitiatedByFunction] = GetActiveRunnerState();
             else
                 FunctionState.FunctionsStates.Add(_currentWait.InitiatedByFunction, GetActiveRunnerState());
-            
+
             if (waitExist)
                 return new NextWaitResult(functionRunner.Current, false, false);
             else
