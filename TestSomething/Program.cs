@@ -17,6 +17,11 @@ using System.Linq.Expressions;
 using System.Reflection.Emit;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
+using Aq.ExpressionJsonSerializer;
+using Newtonsoft.Json;
+using FastExpressionCompiler;
+using ExposedObject;
+using System.Net.Security;
 
 namespace Test
 {
@@ -38,60 +43,93 @@ namespace Test
             //TestFunctionClassWrapper();
             //TestSetPropRewrite();
 
-            SaveExpressionToDisk();
+            //SaveExpressionAsJson();
+            SaveExpressionAsBinary();
         }
 
-        private static void SaveExpressionToDisk()
+        private static void SaveExpressionAsBinary()
         {
-            ////var assembly = AssemblyDefinition.ReadAssembly();
-            //Action<string> directAction = s => Console.WriteLine(s+"6258858585");
-            //var actionBody = directAction.Method.GetMethodBody().GetILAsByteArray();
-            //var dynamicMethod = new DynamicMethod("PrintString", typeof(void), new Type[] { typeof(string) });
-           
-            //var iLInfo = dynamicMethod.GetDynamicILInfo();
-            //iLInfo.SetCode(actionBody, directAction.Method.GetMethodBody().MaxStackSize);
-            //Action<string> invokePrintString = (Action<string>)dynamicMethod.CreateDelegate(typeof(Action<string>));
-            //invokePrintString("56278888sds");
-            ////ILGenerator il = dm.GetILGenerator();
-            ////il.Emit(OpCodes.Conv_I8);
-            ////il.Emit(OpCodes.Dup);
-            ////il.Emit(OpCodes.Mul);
-            ////il.Emit(OpCodes.Ret);
-            
+            var wait = new ProjectApproval().EventWait();
+            wait.MatchExpression = new RewriteMatchExpression(wait).Result;
+            DynamicMethod dynamicMatch = new DynamicMethod(
+                 "DynamicIsMatch",
+                 typeof(bool),
+                 new[] { typeof(ProjectApprovalFunctionData), typeof(ManagerApprovalEvent) });
+            ILGenerator il1 = dynamicMatch.GetILGenerator();
+            wait.MatchExpression.CompileFastToIL(il1);
+            var dynamicInvoker = (Func<ProjectApprovalFunctionData, ManagerApprovalEvent, bool>)
+                dynamicMatch.CreateDelegate(typeof(Func<ProjectApprovalFunctionData, ManagerApprovalEvent, bool>));
+            var result1 = dynamicInvoker((ProjectApprovalFunctionData)wait.ParentFunctionState?.Data, wait.EventData);
 
-            Expression<Action<string>> matchExpression = s => Console.WriteLine(s);
-            var bytes = Serialize(matchExpression);
-            var compiled = matchExpression.Compile();
-            var xx = compiled.GetMethodInfo().GetMethodBody().GetILAsByteArray();
-            var body = compiled.GetMethodInfo().Module.Assembly;
+            DynamicMethod dynamicMatch2 = new DynamicMethod(
+                "DynamicIsMatch",
+                typeof(bool),
+                new[] { typeof(ProjectApprovalFunctionData), typeof(ManagerApprovalEvent) });
+            dynamic il = Exposed.From(dynamicMatch.GetILGenerator());
+            var codeBytes = ((byte[])il.m_ILStream).Take((int)il.ILOffset).ToArray();
+            var maxStackSize = il.m_maxDepth;
+            var scope = (List<object>)Exposed.From(il.m_scope).m_tokens;//System.Reflection.Emit.DynamicScope
+            //var signature = BitConverter.GetBytes(il.m_methodSigToken);
+            var localSignature = Exposed.From(il.m_localSignature);
+            var signature = ((byte[])localSignature.m_signature).Take((int)localSignature.m_currSig).ToArray();
+            var ilInfo = dynamicMatch2.GetDynamicILInfo();
+
+            ilInfo.SetCode(codeBytes, maxStackSize);
+            ilInfo.SetLocalSignature(signature);
+            foreach ( var item in scope)
+            {
+                switch(item)
+                {
+                    case RuntimeMethodHandle method:
+                        ilInfo.GetTokenFor(method);
+                        break;
+                    case RuntimeFieldHandle fieldHandle:
+                        ilInfo.GetTokenFor(fieldHandle);
+                        break;
+                    case string literal:
+                        ilInfo.GetTokenFor(literal);
+                        break;
+                    case RuntimeTypeHandle runtimeTypeHandle:
+                        ilInfo.GetTokenFor(runtimeTypeHandle);
+                        break;
+                    case DynamicMethod dynamicMethod:
+                        ilInfo.GetTokenFor(dynamicMethod);
+                        break;
+                    default:
+                        throw new Exception();
+                        break;
+                }
+            }
+            
+            var isMatch = (Func<ProjectApprovalFunctionData, ManagerApprovalEvent, bool>)dynamicMatch2.CreateDelegate(typeof(Func<ProjectApprovalFunctionData, ManagerApprovalEvent, bool>));
+            var result2 = isMatch((ProjectApprovalFunctionData)wait.ParentFunctionState?.Data, wait.EventData);
             //https://learn.microsoft.com/en-us/dotnet/framework/reflection-and-codedom/how-to-define-and-execute-dynamic-methods
             //https://learn.microsoft.com/en-us/dotnet/api/system.reflection.methodbody.getilasbytearray?view=net-5.0
             //https://microsoft.public.dotnet.framework.clr.narkive.com/LO5UHhZe/injecting-il-byte-codes
+            //https://github.com/aquilae/expression-json-serializer
+            //https://github.com/dadhi/FastExpressionCompiler
+            //https://github.com/wttech/ExposedObject
+            //https://github.com/skolima/ExposedObject
         }
-        //private static Func<int, int, int> CreateFromILBytes(byte[] bytes)
-        //{
-        //    //var asmName = new AssemblyName("DynamicAssembly");
-        //    //var asmBuilder = AppDomain.CurrentDomain.DefineDynamicAssembly(asmName, AssemblyBuilderAccess.RunAndSave);
-        //    //var module = asmBuilder.DefineDynamicModule("DynamicModule");
-        //    //var typeBuilder = module.DefineType("DynamicType");
-        //    //var method = typeBuilder.DefineMethod("DynamicMethod",
-        //    //    MethodAttributes.Public | MethodAttributes.Static,
-        //    //    typeof(int),
-        //    //    new[] { typeof(int), typeof(int) });
-        //    //method.CreateMethodBody(bytes, bytes.Length);
-        //    //var type = typeBuilder.CreateType();
-        //    //return (Func<int, int, int>)type.GetMethod("DynamicMethod").CreateDelegate(typeof(Func<int, int, int>));
-        //}
-        static byte[] Serialize(object obj)
+
+        private static void SaveExpressionAsJson()
         {
-            using (var s = new MemoryStream())
-            {
-#pragma warning disable SYSLIB0011 // Type or member is obsolete
-                new BinaryFormatter().Serialize(s, obj);
-#pragma warning restore SYSLIB0011 // Type or member is obsolete
-                return s.ToArray();
-            }
+            var wait = new ProjectApproval().EventWait();
+            wait.MatchExpression = new RewriteMatchExpression(wait).Result;
+            var rr = wait.IsMatch();
+
+            var settings = new JsonSerializerSettings();
+            settings.Converters.Add(
+                new ExpressionJsonConverter(Assembly.GetAssembly(wait.ParentFunctionState.InitiatedByClass)));
+
+            var json = JsonConvert.SerializeObject(wait.MatchExpression, settings);
+            var target = JsonConvert.DeserializeObject<LambdaExpression>(json, settings);
+            wait.MatchExpression = target;
+            rr = wait.IsMatch();
+
         }
+
+
         private static void TestSetPropRewrite()
         {
             var wait = new ProjectApproval().EventWait();
@@ -113,17 +151,17 @@ namespace Test
 
         private static void MatchFunctionTranslation()
         {
-            var managerApprovalEvent = new ManagerApprovalEvent
-            {
-                ProjectId = 11,
-                PreviousApproval = new ManagerApprovalEvent { ProjectId = 11, Accepted = true, Rejected = false }
-            };
+            //var managerApprovalEvent = new ManagerApprovalEvent
+            //{
+            //    ProjectId = 11,
+            //    PreviousApproval = new ManagerApprovalEvent { ProjectId = 11, Accepted = true, Rejected = false }
+            //};
 
 
-            var match1 = new ProjectApproval().Expression1();
-            var rewriteMatch = new RewriteMatchExpression(Data, match1);
-            var matchCompiled = rewriteMatch.Result.Compile();
-            var result = matchCompiled.DynamicInvoke(Data, managerApprovalEvent);
+            //var match1 = new ProjectApproval().Expression1();
+            //var rewriteMatch = new RewriteMatchExpression(Data, match1);
+            //var matchCompiled = rewriteMatch.Result.Compile();
+            //var result = matchCompiled.DynamicInvoke(Data, managerApprovalEvent);
         }
 
         private static void TestMatchTranslation()
@@ -136,7 +174,7 @@ namespace Test
                                   .SetProp(() => Data.OwnerApprovalResult)
                                   .SetOptional();
             var newExpresssion =
-                new RewriteMatchExpression(Data, wait.MatchExpression).Result;
+                new RewriteMatchExpression(wait).Result;
             var matchCompiled = newExpresssion.Compile();
             var pushedEvent = new PushedEvent();
             pushedEvent["ProjectId"] = 11;
@@ -179,3 +217,4 @@ namespace Test
     }
 
 }
+

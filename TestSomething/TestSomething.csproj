@@ -12,9 +12,12 @@
 	  <Folder Include="Properties\" />
 	</ItemGroup>
 	<ItemGroup>
+	  <PackageReference Include="ExposedObject" Version="2.1.0" />
+	  <PackageReference Include="FastExpressionCompiler" Version="3.3.4" />
 	  <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.4.0" />
 	</ItemGroup>
 	<ItemGroup>
+	  <ProjectReference Include="..\Aq.ExpressionJsonSerializer\Aq.ExpressionJsonSerializer.csproj" />
 	  <ProjectReference Include="..\ResumableFunction.Abstraction\ResumableFunction.Abstraction.csproj" />
 	  <ProjectReference Include="..\ResumableFunction.Engine\ResumableFunction.Engine.csproj" />
 	</ItemGroup>

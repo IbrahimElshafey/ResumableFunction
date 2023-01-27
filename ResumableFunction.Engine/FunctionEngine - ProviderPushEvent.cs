@@ -57,7 +57,7 @@ namespace ResumableFunction.Engine
         private async Task EventWaitRequested(EventWait eventWait, ResumableFunctionWrapper functionClass)
         {
             // * Rerwite match expression and set prop expresssion
-            eventWait.MatchExpression = new RewriteMatchExpression(functionClass.Data, eventWait.MatchExpression).Result;
+            eventWait.MatchExpression = new RewriteMatchExpression(eventWait).Result;
             eventWait.SetPropExpression = new RewriteSetPropExpression(eventWait).Result;
             // * Find event provider handler or load it.
             var eventProviderHandler = await _eventProviderRepository.GetByName(eventWait.EventProviderName);

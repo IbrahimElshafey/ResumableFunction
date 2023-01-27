@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ResumableFunction.Abstraction.InOuts;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Dynamic;
@@ -14,13 +15,14 @@ namespace ResumableFunction.Engine
         private readonly object _functionData;
         public LambdaExpression Result { get; private set; }
         private readonly ParameterExpression _dataParamter;
-        public RewriteMatchExpression(object data, Expression expression)
+        public RewriteMatchExpression(EventWait wait)
         {
-            _functionData = data;
-            _dataParamter = Parameter(data.GetType(), "functionData");
+            _functionData = wait.ParentFunctionState.Data;
+            _dataParamter = Parameter(_functionData.GetType(), "functionData");
 
-            var updatedBoy = (LambdaExpression)Visit(expression);
-            var functionType = typeof(Func<,,>).MakeGenericType(_functionData.GetType(), updatedBoy.Parameters[0].Type, typeof(bool));
+            var updatedBoy = (LambdaExpression)Visit(wait.MatchExpression);
+            var functionType = typeof(Func<,,>)
+                .MakeGenericType(_functionData.GetType(), updatedBoy.Parameters[0].Type, typeof(bool));
             Result = Lambda(functionType, updatedBoy.Body, _dataParamter, updatedBoy.Parameters[0]);
             //Result = (LambdaExpression)Visit(Result);
         }

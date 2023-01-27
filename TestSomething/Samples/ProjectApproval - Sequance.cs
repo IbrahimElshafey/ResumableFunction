@@ -173,6 +173,7 @@ namespace ResumableFunction.Abstraction.Samples
             {
                 Data = new ProjectApprovalFunctionData
                 {
+                    Project = new ProjectRequestedEvent { Id = 11 },
                     SponsorApprovalResult = new ManagerApprovalEvent
                     {
                         ProjectId = 11,
@@ -184,6 +185,12 @@ namespace ResumableFunction.Abstraction.Samples
                 FunctionId = Guid.NewGuid(),
                 InitiatedByClass = GetType(),
                 FunctionsStates = new Dictionary<string, int> { { "Start", 1 } }
+            };
+            result.EventData = new ManagerApprovalEvent
+            {
+                ProjectId = 11,
+                Accepted = true,
+                Rejected = false
             };
             return result;
         }

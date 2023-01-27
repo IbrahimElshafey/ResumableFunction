@@ -26,6 +26,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ResumableFunction.WebApiEve
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Example.ProjectApproval", "Example.ProjectApproval\Example.ProjectApproval.csproj", "{AAFC3796-039F-4377-812C-77815A70DADE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Aq.ExpressionJsonSerializer", "Aq.ExpressionJsonSerializer\Aq.ExpressionJsonSerializer.csproj", "{F6FD2AAC-7409-48A1-80C5-112CCAF4FA1A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -98,6 +100,14 @@ Global
 		{AAFC3796-039F-4377-812C-77815A70DADE}.Release|Any CPU.Build.0 = Release|Any CPU
 		{AAFC3796-039F-4377-812C-77815A70DADE}.Release|x64.ActiveCfg = Release|Any CPU
 		{AAFC3796-039F-4377-812C-77815A70DADE}.Release|x64.Build.0 = Release|Any CPU
+		{F6FD2AAC-7409-48A1-80C5-112CCAF4FA1A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F6FD2AAC-7409-48A1-80C5-112CCAF4FA1A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F6FD2AAC-7409-48A1-80C5-112CCAF4FA1A}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{F6FD2AAC-7409-48A1-80C5-112CCAF4FA1A}.Debug|x64.Build.0 = Debug|Any CPU
+		{F6FD2AAC-7409-48A1-80C5-112CCAF4FA1A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F6FD2AAC-7409-48A1-80C5-112CCAF4FA1A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F6FD2AAC-7409-48A1-80C5-112CCAF4FA1A}.Release|x64.ActiveCfg = Release|Any CPU
+		{F6FD2AAC-7409-48A1-80C5-112CCAF4FA1A}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
