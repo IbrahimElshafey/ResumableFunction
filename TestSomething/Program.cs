@@ -96,13 +96,15 @@ namespace Test
                         ilInfo.GetTokenFor(dynamicMethod);
                         break;
                     default:
-                        throw new Exception();
+                        throw new Exception($"Can't GetTokenFor for `{item}`");
                         break;
                 }
             }
-            
-            var isMatch = (Func<ProjectApprovalFunctionData, ManagerApprovalEvent, bool>)dynamicMatch2.CreateDelegate(typeof(Func<ProjectApprovalFunctionData, ManagerApprovalEvent, bool>));
+            var isMatch = 
+                (Func<ProjectApprovalFunctionData, ManagerApprovalEvent, bool>)dynamicMatch2
+                .CreateDelegate(typeof(Func<ProjectApprovalFunctionData, ManagerApprovalEvent, bool>));
             var result2 = isMatch((ProjectApprovalFunctionData)wait.ParentFunctionState?.Data, wait.EventData);
+
             //https://learn.microsoft.com/en-us/dotnet/framework/reflection-and-codedom/how-to-define-and-execute-dynamic-methods
             //https://learn.microsoft.com/en-us/dotnet/api/system.reflection.methodbody.getilasbytearray?view=net-5.0
             //https://microsoft.public.dotnet.framework.clr.narkive.com/LO5UHhZe/injecting-il-byte-codes
