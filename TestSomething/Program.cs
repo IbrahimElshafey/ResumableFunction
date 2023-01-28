@@ -45,10 +45,13 @@ namespace Test
 
             //SaveExpressionAsJson();
             SaveExpressionAsBinary();
+
         }
+
 
         private static void SaveExpressionAsBinary()
         {
+
             var wait = new ProjectApproval().EventWait();
             wait.MatchExpression = new RewriteMatchExpression(wait).Result;
             DynamicMethod dynamicMatch = new DynamicMethod(
@@ -56,15 +59,14 @@ namespace Test
                  typeof(bool),
                  new[] { typeof(ProjectApprovalFunctionData), typeof(ManagerApprovalEvent) });
             ILGenerator il1 = dynamicMatch.GetILGenerator();
+
             wait.MatchExpression.CompileFastToIL(il1);
             var dynamicInvoker = (Func<ProjectApprovalFunctionData, ManagerApprovalEvent, bool>)
                 dynamicMatch.CreateDelegate(typeof(Func<ProjectApprovalFunctionData, ManagerApprovalEvent, bool>));
             var result1 = dynamicInvoker((ProjectApprovalFunctionData)wait.ParentFunctionState?.Data, wait.EventData);
 
-            DynamicMethod dynamicMatch2 = new DynamicMethod(
-                "DynamicIsMatch",
-                typeof(bool),
-                new[] { typeof(ProjectApprovalFunctionData), typeof(ManagerApprovalEvent) });
+
+            //save method to disk
             dynamic il = Exposed.From(dynamicMatch.GetILGenerator());
             var codeBytes = ((byte[])il.m_ILStream).Take((int)il.ILOffset).ToArray();
             var maxStackSize = il.m_maxDepth;
@@ -72,35 +74,50 @@ namespace Test
             //var signature = BitConverter.GetBytes(il.m_methodSigToken);
             var localSignature = Exposed.From(il.m_localSignature);
             var signature = ((byte[])localSignature.m_signature).Take((int)localSignature.m_currSig).ToArray();
+
+            DynamicMethod dynamicMatch2 = new DynamicMethod(
+                "DynamicIsMatch",
+                typeof(bool),
+                new[] { typeof(ProjectApprovalFunctionData), typeof(ManagerApprovalEvent) });
             var ilInfo = dynamicMatch2.GetDynamicILInfo();
 
-            ilInfo.SetCode(codeBytes, maxStackSize);
             ilInfo.SetLocalSignature(signature);
-            foreach ( var item in scope)
+
+            foreach (var item in scope.Skip(2))
             {
-                switch(item)
+                var token = -1;
+                switch (item)
                 {
                     case RuntimeMethodHandle method:
-                        ilInfo.GetTokenFor(method);
+                        var x = typeof(ManagerApprovalEvent).GetMethod("get_ProjectId").MethodHandle;
+                        if (method == x)
+                            token = ilInfo.GetTokenFor(x);
+                        else
+                            token = ilInfo.GetTokenFor(method);
                         break;
                     case RuntimeFieldHandle fieldHandle:
-                        ilInfo.GetTokenFor(fieldHandle);
+                        token = ilInfo.GetTokenFor(fieldHandle);
                         break;
                     case string literal:
-                        ilInfo.GetTokenFor(literal);
+                        //todo:must update IL with new reference
+                        token = ilInfo.GetTokenFor(literal+"1");
+                        //byte[] bytes = BitConverter.GetBytes(token);
+                        //if (BitConverter.IsLittleEndian)
+                        //    Array.Reverse(bytes);
                         break;
                     case RuntimeTypeHandle runtimeTypeHandle:
-                        ilInfo.GetTokenFor(runtimeTypeHandle);
+                        token = ilInfo.GetTokenFor(runtimeTypeHandle);
                         break;
                     case DynamicMethod dynamicMethod:
-                        ilInfo.GetTokenFor(dynamicMethod);
+                        token = ilInfo.GetTokenFor(dynamicMethod);
                         break;
-                    default:
-                        throw new Exception($"Can't GetTokenFor for `{item}`");
-                        break;
+                        //default:
+                        //    throw new Exception($"Can't GetTokenFor for `{item}`");
+                        //    break;
                 }
             }
-            var isMatch = 
+            ilInfo.SetCode(codeBytes, maxStackSize);
+            var isMatch =
                 (Func<ProjectApprovalFunctionData, ManagerApprovalEvent, bool>)dynamicMatch2
                 .CreateDelegate(typeof(Func<ProjectApprovalFunctionData, ManagerApprovalEvent, bool>));
             var result2 = isMatch((ProjectApprovalFunctionData)wait.ParentFunctionState?.Data, wait.EventData);
@@ -114,6 +131,34 @@ namespace Test
             //https://github.com/skolima/ExposedObject
         }
 
+        //private void test()
+        //{
+        //    var targetAsm = AssemblyDefinition.ReadAssembly("target_path");
+        //    var mr1 = targetAsm.MainModule.Import(typeof(ProjectApproval).GetMethod("Test"));
+        //    var targetType = targetAsm.MainModule.Types.FirstOrDefault(e => e.Name == "Target");
+        //    MethodDefinition? m2 = targetType.Methods.FirstOrDefault(e => e.Name == "Test");
+        //    var m1 = mr1.Resolve();
+        //    var m1IL = m1.Body.GetILProcessor();
+        //    foreach (var i in m1.Body.Instructions.ToList())
+        //    {
+        //        var ci = i;
+        //        if (i.Operand is MethodReference)
+        //        {
+        //            var mref = i.Operand as MethodReference;
+        //            ci = m1IL.Create(i.OpCode, targetType.Module.Import(mref));
+        //        }
+        //        else if (i.Operand is TypeReference)
+        //        {
+        //            var tref = i.Operand as TypeReference;
+        //            ci = m1IL.Create(i.OpCode, targetType.Module.Import(tref));
+        //        }
+        //        if (ci != i)
+        //        {
+        //            m1IL.Replace(i, ci);
+        //        }
+        //    }
+        //}
+
         private static void SaveExpressionAsJson()
         {
             var wait = new ProjectApproval().EventWait();
@@ -126,6 +171,11 @@ namespace Test
 
             var json = JsonConvert.SerializeObject(wait.MatchExpression, settings);
             var target = JsonConvert.DeserializeObject<LambdaExpression>(json, settings);
+            wait.MatchExpression = target;
+            rr = wait.IsMatch();
+
+            var json2 = JsonConvert.SerializeObject(wait.MatchExpression, settings);
+            var target2 = JsonConvert.DeserializeObject<LambdaExpression>(json, settings);
             wait.MatchExpression = target;
             rr = wait.IsMatch();
 

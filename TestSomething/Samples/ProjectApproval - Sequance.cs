@@ -26,6 +26,7 @@ namespace ResumableFunction.Abstraction.Samples
         //any inherited ResumableFunction must implement 'Start'
         public override async IAsyncEnumerable<Wait> Start()
         {
+            Console.WriteLine(this.GetType());
             //yield return await Function(() => SubFunction());
             yield return await Functions(
               () => SubFunction1(),
@@ -167,7 +168,8 @@ namespace ResumableFunction.Abstraction.Samples
         internal EventWait EventWait()
         {
             var result = WaitEvent<ManagerApprovalEvent>("OwnerApproval_SubFunction")
-            .Match(result => result.ProjectId == Data.Project.Id)
+            .Match(result => result.ProjectId == Data.Project.Id && result.ProjectId == int.Parse("11"))
+            //.Match(result => result.ProjectId == Data.Project.Id)
             .SetProp(() => Data.OwnerApprovalResult);
             result.ParentFunctionState = new ResumableFunctionState
             {
@@ -192,6 +194,7 @@ namespace ResumableFunction.Abstraction.Samples
                 Accepted = true,
                 Rejected = false
             };
+            result.InitiatedByFunction = nameof(Start);
             return result;
         }
         internal Expression Expression1()

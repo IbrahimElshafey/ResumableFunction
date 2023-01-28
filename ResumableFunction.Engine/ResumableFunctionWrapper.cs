@@ -70,7 +70,7 @@ namespace ResumableFunction.Engine
             if (functionRunner is null)
                 throw new Exception(
                     $"Can't initiate runner `{_currentWait.InitiatedByFunction}` for {_currentWait.EventDataType.FullName}");
-            SetActiveRunnerState(CurrentRunnerLastState());
+            //SetActiveRunnerState(CurrentRunnerLastState());
             bool waitExist = await functionRunner.MoveNextAsync();
             //after function resumed data may be changed (for example user set some props)
             FunctionState.Data = Data;
@@ -96,7 +96,7 @@ namespace ResumableFunction.Engine
 
 
 
-        private void SetActiveRunnerState(int state)
+        public void SetActiveRunnerState(int state)
         {
             if (_activeRunner != null || GetCurrentRunner() != null)
             {
@@ -108,7 +108,7 @@ namespace ResumableFunction.Engine
                 }
             }
         }
-        private int GetActiveRunnerState()
+        public int GetActiveRunnerState()
         {
             if (_activeRunner != null || GetCurrentRunner() != null)
             {
@@ -142,6 +142,7 @@ namespace ResumableFunction.Engine
                 var thisField = FunctionRunnerType.GetFields().FirstOrDefault(x => x.Name.EndsWith("__this"));
                 //var thisField = FunctionRunnerType.GetField("<>4__this");
                 thisField?.SetValue(_activeRunner, FunctionClassInstance);
+                //var xx=thisField?.GetValue(_activeRunner);
 
                 //set in start state
                 SetActiveRunnerState(int.MinValue);
