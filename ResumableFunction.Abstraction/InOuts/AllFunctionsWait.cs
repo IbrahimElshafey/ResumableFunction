@@ -1,8 +1,12 @@
 ﻿namespace ResumableFunction.Abstraction.InOuts
 {
-    public sealed class AllFunctionsWait : Wait
+    public abstract class ManyFunctionsWait : Wait
     {
         public FunctionWait[] WaitingFunctions { get; set; }
+    }
+    public sealed class AllFunctionsWait : ManyFunctionsWait
+    {
+       
         public FunctionWait[] CompletedFunctions { get; set; }
     }
 }

@@ -14,5 +14,6 @@ namespace ResumableFunction.Abstraction.InOuts
         public Type InitiatedByClass { get; set; }
 
         public Dictionary<string, int> FunctionsStates { get; set; } = new Dictionary<string, int>();
+        internal Dictionary<string, int> FunctionsStatesHistory { get; set; } = new Dictionary<string, int>();
     }
 }

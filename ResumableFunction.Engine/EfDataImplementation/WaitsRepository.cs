@@ -16,6 +16,31 @@ namespace ResumableFunction.Engine.EfDataImplementation
             throw new NotImplementedException();
         }
 
+        public Task AddWait(AllEventsWait allEventsWait)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task AddWait(AnyEventWait anyEventWait)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task AddWait(FunctionWait functionWait)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task AddWait(AllFunctionsWait allFunctionsWait)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task AddWait(AnyFunctionWait anyFunctionWait)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task<List<EventWait>> GetMatchedWaits(PushedEvent pushedEvent)
         {
             throw new NotImplementedException();

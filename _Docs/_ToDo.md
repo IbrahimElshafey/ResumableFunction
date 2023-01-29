@@ -1,13 +1,11 @@
 # ToDo
-* Event receiver will parse body to (event identifier,provider) type
-	* (event identifier,provider) must use one type (type may have multiple identifiers)
-* Match Function Expression options:
-	* Translate use props from FunctionData to constants
-	* Transalte expression to query and search the related FunctionData table/collection
-	* Load instance data with each event and apply on it
+* ReplayWait implementation
+* Return 'NeedDataLoad' prop for match function again
+* New database class for wait
 * Write Implementation for:
 	* Engine
 	* Database Presist
+* Implement provider for time based events
 
 * Automatic Generator for
 	* Event Classes
@@ -27,3 +25,11 @@
 	* separate errors and process control 
 
 * Maintain list of start event
+
+
+=======
+# Done
+* Match Function Expression options:
+	* Translate use props from FunctionData to constants
+	* Transalte expression to query and search the related FunctionData table/collection
+	* Load instance data with each event and apply on it

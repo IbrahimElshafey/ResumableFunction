@@ -30,49 +30,53 @@ namespace ResumableFunction.Abstraction.Samples
 
                 //different event types and use optional
                 yield return WaitEvents(
-                   new EventWait<ProjectRequestedEvent>( "ProjectRequested")
+                   "WaitAllManagers",
+                   new EventWait<ProjectRequestedEvent>("ProjectRequested")
                        .Match(result => result.Id == Data.Project.Id)
                        .SetProp(() => Data.Project)
                        .SetOptional(),
-                   new EventWait<ManagerApprovalEvent>( "OwnerApproval")
+                   new EventWait<ManagerApprovalEvent>("OwnerApproval")
                        .Match(result => result.ProjectId == Data.Project.Id)
                        .SetProp(() => Data.OwnerApprovalResult));
 
                 //same type
                 yield return WaitEvents(
-                     new EventWait<ManagerApprovalEvent>( "OwnerApproval")
+                     "WaitAllManagers", 
+                     new EventWait<ManagerApprovalEvent>("OwnerApproval")
                          .Match(result => result.ProjectId == Data.Project.Id)
                          .SetProp(() => Data.OwnerApprovalResult),
-                     new EventWait<ManagerApprovalEvent>( "SponsorApproval")
+                     new EventWait<ManagerApprovalEvent>("SponsorApproval")
                          .Match(result => result.ProjectId == Data.Project.Id)
                          .SetProp(() => Data.SponsorApprovalResult),
-                     new EventWait<ManagerApprovalEvent>( "ManagerApproval")
+                     new EventWait<ManagerApprovalEvent>("ManagerApproval")
                          .Match(result => result.ProjectId == Data.Project.Id)
                          .SetProp(() => Data.ManagerApprovalResult)
                      );
 
                 //wait first matched event in group
                 yield return WaitAnyEvent(
-                   new EventWait<ManagerApprovalEvent>( "OwnerApproval")
+                   "WaitAnyManagerApproval", 
+                   new EventWait<ManagerApprovalEvent>("OwnerApproval")
                        .Match(result => result.ProjectId == Data.Project.Id)
                        .SetProp(() => Data.OwnerApprovalResult),
-                   new EventWait<ManagerApprovalEvent>( "SponsorApproval")
+                   new EventWait<ManagerApprovalEvent>("SponsorApproval")
                        .Match(result => result.ProjectId == Data.Project.Id)
                        .SetProp(() => Data.SponsorApprovalResult),
-                   new EventWait<ManagerApprovalEvent>( "ManagerApproval")
+                   new EventWait<ManagerApprovalEvent>("ManagerApproval")
                        .Match(result => result.ProjectId == Data.Project.Id)
                        .SetProp(() => Data.ManagerApprovalResult)
                    );
 
                 //wait all but if two of them matched then return
                 yield return WaitEvents(
-                  new EventWait<ManagerApprovalEvent>( "OwnerApproval")
+                  "WaitAllManagers",
+                  new EventWait<ManagerApprovalEvent>("OwnerApproval")
                       .Match(result => result.ProjectId == Data.Project.Id)
                       .SetProp(() => Data.OwnerApprovalResult),
-                  new EventWait<ManagerApprovalEvent>( "SponsorApproval")
+                  new EventWait<ManagerApprovalEvent>("SponsorApproval")
                       .Match(result => result.ProjectId == Data.Project.Id)
                       .SetProp(() => Data.SponsorApprovalResult),
-                  new EventWait<ManagerApprovalEvent>( "ManagerApproval")
+                  new EventWait<ManagerApprovalEvent>("ManagerApproval")
                       .Match(result => result.ProjectId == Data.Project.Id)
                       .SetProp(() => Data.ManagerApprovalResult)
                   ).WhenCount(count => count == 2);

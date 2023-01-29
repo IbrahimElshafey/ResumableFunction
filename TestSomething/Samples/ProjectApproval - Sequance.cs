@@ -105,6 +105,7 @@ namespace ResumableFunction.Abstraction.Samples
         private async IAsyncEnumerable<Wait> SubFunction3()
         {
             yield return WaitAnyEvent(
+                "WaitAnyManagerApproval",
                 new EventWait<ManagerApprovalEvent>("OwnerApproval_SubFunction")
                     .Match(result => result.ProjectId == Data.Project.Id)
                     .SetProp(() => Data.OwnerApprovalResult),
@@ -119,6 +120,7 @@ namespace ResumableFunction.Abstraction.Samples
         private async IAsyncEnumerable<Wait> SubFunction2()
         {
             yield return WaitEvents(
+                "WaitAllManagers",
                 new EventWait<ManagerApprovalEvent>("OwnerApproval_SubFunction")
                     .Match(result => result.ProjectId == Data.Project.Id)
                     .SetProp(() => Data.OwnerApprovalResult),

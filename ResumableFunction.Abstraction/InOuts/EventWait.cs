@@ -6,25 +6,25 @@ namespace ResumableFunction.Abstraction.InOuts
 {
     public abstract class EventWait : Wait
     {
-        public Guid ParentGroupId { get; set; }
-        public string EventIdentifier { get; set; }
-        public bool IsOptional { get; set; } = false;
-        public bool IsFirst { get; set; } = false;
-        public LambdaExpression MatchExpression { get; set; }
-        public LambdaExpression SetPropExpression { get; set; }
+        public Guid ParentGroupId { get; internal set;}
+        public string EventIdentifier { get; internal set;}
+        public bool IsOptional { get; internal set;} = false;
+        public bool IsFirst { get; internal set;} = false;
+        public LambdaExpression MatchExpression { get; internal set;}
+        public LambdaExpression SetPropExpression { get; internal set;}
 
         /// <summary>
         /// Resumable function or subfunction that request the event waiting.
         /// </summary>
-        public string InitiatedByFunction { get; set; }
-        public string EventProviderName { get; set; }
+        public string InitiatedByFunction { get; internal set;}
+        public string EventProviderName { get; internal set;}
 
         /// <summary>
         /// Used by engine to desrialze response to this type
         /// </summary>
-        public Type EventDataType { get; set; }
+        public Type EventDataType { get; internal set;}
 
-        public dynamic EventData { get; set; }
+        public dynamic EventData { get; internal set;}
 
         private static Delegate? _matchExpressionCompiled;
         public bool IsMatch()

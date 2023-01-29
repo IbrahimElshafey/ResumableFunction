@@ -20,7 +20,7 @@ namespace ResumableFunction.Abstraction
     {
         public ResumableFunction()
         {
-            Data = new FunctionData(); 
+            Data = new FunctionData();
             FunctionState = new ResumableFunctionState
             {
                 DataType = typeof(FunctionData),
@@ -32,10 +32,10 @@ namespace ResumableFunction.Abstraction
 
         //will be set by the engine after load the instance
         protected AnyEventWait WaitAnyEvent(
-            params EventWait[] events)
+            string name, params EventWait[] events)
         {
             Array.ForEach(events, SetCommonProps);
-            var result = new AnyEventWait { Events = events };
+            var result = new AnyEventWait { WaitingEvents = events, Name = name };
             return result;
         }
 
@@ -47,15 +47,20 @@ namespace ResumableFunction.Abstraction
             return result;
         }
 
-        protected AllEventsWait WaitEvents(params EventWait[] events)
+        protected AllEventsWait WaitEvents(string name, params EventWait[] events)
         {
-            var result = new AllEventsWait { WaitingEvents = events };
+            var result = new AllEventsWait { WaitingEvents = events, Name = name };
             foreach (var item in result.WaitingEvents)
             {
                 SetCommonProps(item);
                 item.ParentGroupId = result.Id;
             }
             return result;
+        }
+
+        protected ReplayWait Replay(string name)
+        {
+            return new ReplayWait(name);
         }
 
         private void SetCommonProps(EventWait eventWaiting)
@@ -65,12 +70,12 @@ namespace ResumableFunction.Abstraction
 
         protected async Task<AnyFunctionWait> AnyFunction(params Expression<Func<IAsyncEnumerable<Wait>>>[] subFunctions)
         {
-            var result = new AnyFunctionWait { Functions = new FunctionWait[subFunctions.Length] };
+            var result = new AnyFunctionWait { WaitingFunctions = new FunctionWait[subFunctions.Length] };
             for (int i = 0; i < subFunctions.Length; i++)
             {
                 var currentFunction = subFunctions[i];
                 var currentFuncResult = await Function(currentFunction);
-                result.Functions[i] = currentFuncResult;
+                result.WaitingFunctions[i] = currentFuncResult;
             }
             return result;
         }
