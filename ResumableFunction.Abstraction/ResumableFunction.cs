@@ -21,7 +21,7 @@ namespace ResumableFunction.Abstraction
         public ResumableFunction()
         {
             Data = new FunctionData();
-            FunctionState = new ResumableFunctionState
+            FunctionRuntimeInfo = new FunctionRuntimeInfo
             {
                 DataType = typeof(FunctionData),
                 FunctionId = Guid.NewGuid(),
@@ -58,14 +58,19 @@ namespace ResumableFunction.Abstraction
             return result;
         }
 
-        protected ReplayWait Replay(string name)
+        protected ReplayWait Replay<T>(string name = "", [CallerMemberName] string callerName = "") where T : class, IEventData, new()
         {
-            return new ReplayWait(name);
+            return new ReplayWait<T>(name) { InitiatedByFunction = callerName };
+        }
+
+        protected ReplayWait Replay(string name = "", [CallerMemberName] string callerName = "")
+        {
+            return new ReplayWait(name) { InitiatedByFunction = callerName };
         }
 
         private void SetCommonProps(EventWait eventWaiting)
         {
-            eventWaiting.ParentFunctionState = FunctionState;
+            eventWaiting.FunctionRuntimeInfo = FunctionRuntimeInfo;
         }
 
         protected async Task<AnyFunctionWait> AnyFunction(params Expression<Func<IAsyncEnumerable<Wait>>>[] subFunctions)
@@ -115,7 +120,7 @@ namespace ResumableFunction.Abstraction
 
         public FunctionData Data { get; set; }
 
-        public ResumableFunctionState FunctionState { get; set; }
+        public FunctionRuntimeInfo FunctionRuntimeInfo { get; set; }
 
 
 

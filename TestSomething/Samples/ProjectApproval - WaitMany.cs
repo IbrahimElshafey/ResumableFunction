@@ -18,7 +18,7 @@ namespace ResumableFunction.Abstraction.Samples
 
         public override async IAsyncEnumerable<Wait> Start()
         {
-            yield return WaitEvent<ProjectRequestedEvent>("ProjectRequested").SetProp(() => Data.Project);
+            yield return WaitEvent<ProjectRequestedEvent>("ProjectRequested").SetData(() => Data.Project);
             if (Data.Project is not null)
             {
                 await AskOwnerToApprove(Data.Project);
@@ -33,24 +33,24 @@ namespace ResumableFunction.Abstraction.Samples
                    "WaitAllManagers",
                    new EventWait<ProjectRequestedEvent>("ProjectRequested")
                        .Match(result => result.Id == Data.Project.Id)
-                       .SetProp(() => Data.Project)
+                       .SetData(() => Data.Project)
                        .SetOptional(),
                    new EventWait<ManagerApprovalEvent>("OwnerApproval")
                        .Match(result => result.ProjectId == Data.Project.Id)
-                       .SetProp(() => Data.OwnerApprovalResult));
+                       .SetData(() => Data.OwnerApprovalResult));
 
                 //same type
                 yield return WaitEvents(
                      "WaitAllManagers", 
                      new EventWait<ManagerApprovalEvent>("OwnerApproval")
                          .Match(result => result.ProjectId == Data.Project.Id)
-                         .SetProp(() => Data.OwnerApprovalResult),
+                         .SetData(() => Data.OwnerApprovalResult),
                      new EventWait<ManagerApprovalEvent>("SponsorApproval")
                          .Match(result => result.ProjectId == Data.Project.Id)
-                         .SetProp(() => Data.SponsorApprovalResult),
+                         .SetData(() => Data.SponsorApprovalResult),
                      new EventWait<ManagerApprovalEvent>("ManagerApproval")
                          .Match(result => result.ProjectId == Data.Project.Id)
-                         .SetProp(() => Data.ManagerApprovalResult)
+                         .SetData(() => Data.ManagerApprovalResult)
                      );
 
                 //wait first matched event in group
@@ -58,13 +58,13 @@ namespace ResumableFunction.Abstraction.Samples
                    "WaitAnyManagerApproval", 
                    new EventWait<ManagerApprovalEvent>("OwnerApproval")
                        .Match(result => result.ProjectId == Data.Project.Id)
-                       .SetProp(() => Data.OwnerApprovalResult),
+                       .SetData(() => Data.OwnerApprovalResult),
                    new EventWait<ManagerApprovalEvent>("SponsorApproval")
                        .Match(result => result.ProjectId == Data.Project.Id)
-                       .SetProp(() => Data.SponsorApprovalResult),
+                       .SetData(() => Data.SponsorApprovalResult),
                    new EventWait<ManagerApprovalEvent>("ManagerApproval")
                        .Match(result => result.ProjectId == Data.Project.Id)
-                       .SetProp(() => Data.ManagerApprovalResult)
+                       .SetData(() => Data.ManagerApprovalResult)
                    );
 
                 //wait all but if two of them matched then return
@@ -72,13 +72,13 @@ namespace ResumableFunction.Abstraction.Samples
                   "WaitAllManagers",
                   new EventWait<ManagerApprovalEvent>("OwnerApproval")
                       .Match(result => result.ProjectId == Data.Project.Id)
-                      .SetProp(() => Data.OwnerApprovalResult),
+                      .SetData(() => Data.OwnerApprovalResult),
                   new EventWait<ManagerApprovalEvent>("SponsorApproval")
                       .Match(result => result.ProjectId == Data.Project.Id)
-                      .SetProp(() => Data.SponsorApprovalResult),
+                      .SetData(() => Data.SponsorApprovalResult),
                   new EventWait<ManagerApprovalEvent>("ManagerApproval")
                       .Match(result => result.ProjectId == Data.Project.Id)
-                      .SetProp(() => Data.ManagerApprovalResult)
+                      .SetData(() => Data.ManagerApprovalResult)
                   ).WhenCount(count => count == 2);
 
                 var allManagerResponse = Data.ManagerApprovalResult.Accepted == Data.OwnerApprovalResult.Accepted == Data.SponsorApprovalResult.Accepted;

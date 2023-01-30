@@ -1,6 +1,5 @@
 # ToDo
 * ReplayWait implementation
-* Return 'NeedDataLoad' prop for match function again
 * New database class for wait
 * Write Implementation for:
 	* Engine

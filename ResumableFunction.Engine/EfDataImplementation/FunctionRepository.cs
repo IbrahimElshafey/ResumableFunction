@@ -25,7 +25,7 @@ namespace ResumableFunction.Engine.EfDataImplementation
             throw new NotImplementedException();
         }
 
-        public Task MoveFunctionToRecycleBin(ResumableFunctionState functionState)
+        public Task MoveFunctionToRecycleBin(FunctionRuntimeInfo functionRuntimeInfo)
         {
             throw new NotImplementedException();
         }
@@ -45,7 +45,7 @@ namespace ResumableFunction.Engine.EfDataImplementation
             throw new NotImplementedException();
         }
 
-        public Task<bool> SaveFunctionState(ResumableFunctionState functionState)
+        public Task<bool> SaveFunctionState(FunctionRuntimeInfo functionRuntimeInfo)
         {
             throw new NotImplementedException();
         }

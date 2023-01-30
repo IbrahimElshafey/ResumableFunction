@@ -13,7 +13,7 @@ namespace ResumableFunction.Engine
         public ResumableFunctionWrapper(EventWait eventWait)
         {
             _currentWait = eventWait;
-            var functionClassType = _currentWait.ParentFunctionState.InitiatedByClass;
+            var functionClassType = _currentWait.FunctionRuntimeInfo.InitiatedByClass;
             var isResumableFunctionClass = functionClassType.IsSubclassOfRawGeneric(typeof(ResumableFunction<>));
             if (isResumableFunctionClass is false)
                 throw new Exception("functionClassType must inherit ResumableFunction<>");
@@ -26,8 +26,8 @@ namespace ResumableFunction.Engine
             //    var propType = functionClassType.GetProperty("Data").PropertyType;
             //    Data = Activator.CreateInstance(propType);
             //}
-            FunctionState = eventWait.ParentFunctionState;
-            Data = eventWait.ParentFunctionState.Data;
+            FunctionRuntimeInfo = eventWait.FunctionRuntimeInfo;
+            Data = eventWait.FunctionRuntimeInfo.Data;
         }
 
 
@@ -37,7 +37,7 @@ namespace ResumableFunction.Engine
             private set => FunctionClassInstance.Data = value;
         }
 
-        public ResumableFunctionState FunctionState
+        public FunctionRuntimeInfo FunctionRuntimeInfo
         {
             get => FunctionClassInstance.FunctionState;
             private set => FunctionClassInstance.FunctionState = value;
@@ -55,9 +55,9 @@ namespace ResumableFunction.Engine
         /// </summary>
         public void UpdateDataWithEventData()
         {
-            _currentWait.SetDataProp();
-            Data = _currentWait.ParentFunctionState.Data;
-            FunctionState.Data = Data;
+            _currentWait.SetData();
+            Data = _currentWait.FunctionRuntimeInfo.Data;
+            FunctionRuntimeInfo.Data = Data;
         }
 
         /// <summary>
@@ -73,12 +73,12 @@ namespace ResumableFunction.Engine
             //SetActiveRunnerState(CurrentRunnerLastState());
             bool waitExist = await functionRunner.MoveNextAsync();
             //after function resumed data may be changed (for example user set some props)
-            FunctionState.Data = Data;
+            FunctionRuntimeInfo.Data = Data;
             //update current runner state
-            if (FunctionState.FunctionsStates.ContainsKey(_currentWait.InitiatedByFunction))
-                FunctionState.FunctionsStates[_currentWait.InitiatedByFunction] = GetActiveRunnerState();
+            if (FunctionRuntimeInfo.FunctionsStates.ContainsKey(_currentWait.InitiatedByFunction))
+                FunctionRuntimeInfo.FunctionsStates[_currentWait.InitiatedByFunction] = GetActiveRunnerState();
             else
-                FunctionState.FunctionsStates.Add(_currentWait.InitiatedByFunction, GetActiveRunnerState());
+                FunctionRuntimeInfo.FunctionsStates.Add(_currentWait.InitiatedByFunction, GetActiveRunnerState());
 
             if (waitExist)
                 return new NextWaitResult(functionRunner.Current, false, false);
@@ -125,7 +125,7 @@ namespace ResumableFunction.Engine
         {
             if (_activeRunner == null)
             {
-                var FunctionRunnerType = FunctionState.InitiatedByClass
+                var FunctionRunnerType = FunctionRuntimeInfo.InitiatedByClass
                    .GetNestedTypes(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.SuppressChangeType)
                    .FirstOrDefault(x => x.Name.StartsWith(CurrentRunnerName()));
 
@@ -161,7 +161,7 @@ namespace ResumableFunction.Engine
         private int CurrentRunnerLastState()
         {
             int result = int.MinValue;
-            FunctionState?.FunctionsStates.TryGetValue(_currentWait.InitiatedByFunction, out result);
+            FunctionRuntimeInfo?.FunctionsStates.TryGetValue(_currentWait.InitiatedByFunction, out result);
             return result;
         }
 

@@ -30,7 +30,7 @@ namespace ResumableFunction.Engine
                 functionClass.UpdateDataWithEventData();
                 //get next event wait
                 var waitResult = await functionClass.GetNextWait();
-                await _functionRepository.SaveFunctionState(wait.ParentFunctionState);
+                await _functionRepository.SaveFunctionState(wait.FunctionRuntimeInfo);
                 await WaitRequested(waitResult, functionClass);
                 //* call EventProvider.UnSubscribeEvent(pushedEvent.EventData) if no other intances waits this type for the same provider
             }
@@ -43,7 +43,7 @@ namespace ResumableFunction.Engine
         {
             if (waitResult.Result is null && waitResult.IsFinalExit)
             {
-                await _functionRepository.MoveFunctionToRecycleBin(functionClass.FunctionState);
+                await _functionRepository.MoveFunctionToRecycleBin(functionClass.FunctionRuntimeInfo);
                 return;
             }
             if (waitResult.Result != null)
@@ -112,7 +112,7 @@ namespace ResumableFunction.Engine
         {
             // * Rerwite match expression and set prop expresssion
             eventWait.MatchExpression = new RewriteMatchExpression(eventWait).Result;
-            eventWait.SetPropExpression = new RewriteSetPropExpression(eventWait).Result;
+            eventWait.SetDataExpression = new RewriteSetDataExpression(eventWait).Result;
             // * Find event provider handler or load it.
             var eventProviderHandler = await _eventProviderRepository.GetByName(eventWait.EventProviderName);
             // * Start event provider if not started 

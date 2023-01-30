@@ -2,7 +2,7 @@
 
 namespace ResumableFunction.Abstraction.InOuts
 {
-    public class ResumableFunctionState
+    public class FunctionRuntimeInfo
     {
         public Guid FunctionId { get; set; }
         public object Data { get; set; }

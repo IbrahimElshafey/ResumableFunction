@@ -43,10 +43,10 @@ namespace Test
             // using static System.Linq.Expressions.Expression
 
             //TestFunctionClassWrapper();
-            //TestSetPropRewrite();
+            TestSetPropRewrite();
 
             //SaveExpressionAsJson();
-            SaveExpressionAsBinary();
+            //SaveExpressionAsBinary();
             //Program2.Main1();
         }
 
@@ -65,7 +65,7 @@ namespace Test
             var dynamicInvoker = (Func<ProjectApprovalFunctionData, ManagerApprovalEvent, bool>)
                 dynamicMatch.CreateDelegate(typeof(Func<ProjectApprovalFunctionData, ManagerApprovalEvent, bool>));
             //dynamicInvoker.GetMethodInfo().GetMethodBody().GetILAsByteArray();
-            var result1 = dynamicInvoker((ProjectApprovalFunctionData)wait.ParentFunctionState?.Data, wait.EventData);
+            var result1 = dynamicInvoker((ProjectApprovalFunctionData)wait.FunctionRuntimeInfo?.Data, wait.EventData);
 
 
             //save method to disk
@@ -95,14 +95,14 @@ namespace Test
 
             //hard serialize
             //newIlgenerator.m_ScopeTree = originalIlGnerator.m_ScopeTree;
-            
+
             newIlgenerator.m_fixupData = originalIlGnerator.m_fixupData;
             newIlgenerator.m_labelList = originalIlGnerator.m_labelList;
             newIlgenerator.m_localSignature = originalIlGnerator.m_localSignature;
             newIlgenerator.m_scope = originalIlGnerator.m_scope;
             var dynamicInvoker2 = (Func<ProjectApprovalFunctionData, ManagerApprovalEvent, bool>)
               dynamicMatch2.CreateDelegate(typeof(Func<ProjectApprovalFunctionData, ManagerApprovalEvent, bool>));
-            var result2 = dynamicInvoker2((ProjectApprovalFunctionData)wait.ParentFunctionState?.Data, wait.EventData);
+            var result2 = dynamicInvoker2((ProjectApprovalFunctionData)wait.FunctionRuntimeInfo?.Data, wait.EventData);
             //TestBinarySaveOne(wait, dynamicMatch);
 
             //https://learn.microsoft.com/en-us/dotnet/framework/reflection-and-codedom/how-to-define-and-execute-dynamic-methods
@@ -187,7 +187,7 @@ namespace Test
             var isMatch =
                 (Func<ProjectApprovalFunctionData, ManagerApprovalEvent, bool>)dynamicMatch2
                 .CreateDelegate(typeof(Func<ProjectApprovalFunctionData, ManagerApprovalEvent, bool>));
-            var result2 = isMatch((ProjectApprovalFunctionData)wait.ParentFunctionState?.Data, wait.EventData);
+            var result2 = isMatch((ProjectApprovalFunctionData)wait.FunctionRuntimeInfo?.Data, wait.EventData);
 
 
             MethodBodyReader mr = new MethodBodyReader(codeBytes, isMatch.Method.Module);
@@ -236,7 +236,7 @@ namespace Test
 
             var settings = new JsonSerializerSettings();
             settings.Converters.Add(
-                new ExpressionJsonConverter(Assembly.GetAssembly(wait.ParentFunctionState.InitiatedByClass)));
+                new ExpressionJsonConverter(Assembly.GetAssembly(wait.FunctionRuntimeInfo.InitiatedByClass)));
 
             var json = JsonConvert.SerializeObject(wait.MatchExpression, settings);
             var target = JsonConvert.DeserializeObject<LambdaExpression>(json, settings);
@@ -248,11 +248,11 @@ namespace Test
 
         private static void TestSetPropRewrite()
         {
+          
             var wait = new ProjectApproval().EventWait();
-            var setPropRewrite = new RewriteSetPropExpression(wait).Result;
-            var eventData = new ManagerApprovalEvent { Accepted = true, ProjectId = 11 };
-            ProjectApprovalFunctionData functionData = new ProjectApprovalFunctionData();
-            setPropRewrite.Compile().DynamicInvoke(functionData, eventData);
+            var setPropRewrite = new RewriteSetDataExpression(wait).Result;
+            wait.SetDataExpression = setPropRewrite;
+            wait.SetData();
         }
 
         private static void TestFunctionClassWrapper()
@@ -262,7 +262,7 @@ namespace Test
             Console.WriteLine(wrapper.FunctionClassInstance.GetType());
             Console.WriteLine(wrapper.Data);
             Console.WriteLine(wrapper.Data.GetType());
-            Console.WriteLine(wrapper.FunctionState);
+            Console.WriteLine(wrapper.FunctionRuntimeInfo);
         }
 
         private static void MatchFunctionTranslation()
@@ -287,7 +287,7 @@ namespace Test
                                       result.ProjectId > Math.Min(5, 10) &&
                                       result.PreviousApproval.Equals(Data.ManagerApprovalResult) &&
                                       result.ProjectId == Data.Project.Id)
-                                  .SetProp(() => Data.OwnerApprovalResult)
+                                  .SetData(() => Data.OwnerApprovalResult)
                                   .SetOptional();
             var newExpresssion =
                 new RewriteMatchExpression(wait).Result;

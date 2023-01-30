@@ -11,7 +11,7 @@ namespace ResumableFunction.Abstraction.InOuts
         public bool IsOptional { get; internal set;} = false;
         public bool IsFirst { get; internal set;} = false;
         public LambdaExpression MatchExpression { get; internal set;}
-        public LambdaExpression SetPropExpression { get; internal set;}
+        public LambdaExpression SetDataExpression { get; internal set;}
 
         /// <summary>
         /// Resumable function or subfunction that request the event waiting.
@@ -25,55 +25,63 @@ namespace ResumableFunction.Abstraction.InOuts
         public Type EventDataType { get; internal set;}
 
         public dynamic EventData { get; internal set;}
+        public bool NeedFunctionData { get; internal set; }
 
         private static Delegate? _matchExpressionCompiled;
         public bool IsMatch()
         {
             if (_matchExpressionCompiled is null)
                 _matchExpressionCompiled = MatchExpression.Compile();
-            return (bool)_matchExpressionCompiled.DynamicInvoke(ParentFunctionState?.Data, EventData);
+            return (bool)_matchExpressionCompiled.DynamicInvoke(FunctionRuntimeInfo?.Data, EventData);
         }
 
         private static Delegate? _setPropExpressionCompiled;
-        public void SetDataProp()
+        public void SetData()
         {
             if (_setPropExpressionCompiled is null)
-                _setPropExpressionCompiled = SetPropExpression.Compile();
-            _setPropExpressionCompiled.DynamicInvoke(ParentFunctionState?.Data, EventData);
+                _setPropExpressionCompiled = SetDataExpression.Compile();
+            _setPropExpressionCompiled.DynamicInvoke(FunctionRuntimeInfo?.Data, EventData);
         }
     }
 
-    public sealed class EventWait<Data> : EventWait where Data : class, IEventData, new()
+    public sealed class EventWait<EventData> : EventWait where EventData : class, IEventData, new()
     {
         public EventWait(string eventIdentifier = "", [CallerMemberName] string callerName = "")
         {
-            var instance = new Data();
+            var instance = new EventData();
             EventIdentifier = eventIdentifier ?? instance.EventIdentifier;
             if (EventIdentifier == null)
                 throw new NullReferenceException("EventIdentifier can't be null.");
             EventProviderName = instance.EventProviderName;
             if (EventProviderName == null)
                 throw new NullReferenceException("EventProviderName can't be null.");
-            EventData = instance;
+            base.EventData = instance;
             EventDataType = instance.GetType();
             InitiatedByFunction = callerName;
         }
 
 
 
-        public EventWait<Data> Match(Expression<Func<Data, bool>> func)
+        public EventWait<EventData> Match(Expression<Func<EventData, bool>> func)
         {
             MatchExpression = func;
             return this;
         }
 
-        public EventWait<Data> SetProp(Expression<Func<Data>> instancePropFunc)
+        public EventWait<EventData> SetData(Expression<Func<EventData>> instancePropFunc)
         {
-            SetPropExpression = instancePropFunc;
+            SetDataExpression = instancePropFunc;
             return this;
         }
 
-        public EventWait<Data> SetOptional()
+        public EventWait<EventData> SetData(Expression<Func<List<EventData>>> instancePropFunc)
+        {
+            SetDataExpression = instancePropFunc;
+            return this;
+        }
+
+
+        public EventWait<EventData> SetOptional()
         {
             IsOptional = true;
             return this;

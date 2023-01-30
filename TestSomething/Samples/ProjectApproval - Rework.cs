@@ -23,22 +23,22 @@ namespace ResumableFunction.Abstraction.Samples
         {
 
             await Task.Delay(100);
-            yield return WaitEvent<ProjectRequestedEvent>(ProjectSubmittedForReview).SetProp(() => Data.Project);
+            yield return WaitEvent<ProjectRequestedEvent>(ProjectSubmittedForReview).SetData(() => Data.Project);
 
             await AskOwnerToApprove(Data.Project);
             yield return WaitEvent<ManagerApprovalEvent>("OwnerApproval")
                 .Match(result => result.ProjectId == Data.Project.Id)
-                .SetProp(() => Data.OwnerApprovalResult);
+                .SetData(() => Data.OwnerApprovalResult);
             if (Data.OwnerApprovalResult.Rejected)
             {
                 await ProjectRejected(Data.Project, "Owner");
-                yield return Replay(ProjectSubmittedForReview);
+                yield return Replay<ProjectRequestedEvent>();
             }
 
             await AskSponsorToApprove(Data.Project);
             yield return WaitEvent<ManagerApprovalEvent>("SponsorApproval")
                 .Match(result => result.ProjectId == Data.Project.Id)
-                .SetProp(() => Data.SponsorApprovalResult);
+                .SetData(() => Data.SponsorApprovalResult);
             if (Data.SponsorApprovalResult.Rejected)
             {
                 await ProjectRejected(Data.Project, "Sponsor");
@@ -48,7 +48,7 @@ namespace ResumableFunction.Abstraction.Samples
             await AskManagerToApprove(Data.Project);
             yield return WaitEvent<ManagerApprovalEvent>("ManagerApproval")
                 .Match(result => result.ProjectId == Data.Project.Id)
-                .SetProp(() => Data.ManagerApprovalResult);
+                .SetData(() => Data.ManagerApprovalResult);
             if (Data.ManagerApprovalResult.Rejected)
             {
                 await ProjectRejected(Data.Project, "Manager");

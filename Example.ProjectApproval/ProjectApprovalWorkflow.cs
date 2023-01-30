@@ -17,13 +17,13 @@ namespace Example.ProjectApproval
             yield return
                 WaitEvent<ProjectSumbitted>(Constant.ProjectSumbittedEvent)
                 .Match(x => x.Project.Id > 0)
-                .SetProp(() => Data.ProjectSumbitted);
+                .SetData(() => Data.ProjectSumbitted);
 
             await AskManagerApproval(Data.ProjectSumbitted.Project.Id);
             yield return
                 WaitEvent<ManagerApprovalEvent>(Constant.ManagerApprovalEvent)
                 .Match(x => x.ProjectId == Data.ProjectSumbitted.Project.Id)
-                .SetProp(() => Data.ManagerApprovalEvent);
+                .SetData(() => Data.ManagerApprovalEvent);
             Console.WriteLine("Done");
         }
 

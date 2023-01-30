@@ -12,12 +12,14 @@ namespace ResumableFunction.Engine
 {
     public class RewriteMatchExpression : ExpressionVisitor
     {
+        private readonly EventWait _wait;
         private readonly object _functionData;
         public LambdaExpression Result { get; private set; }
         private readonly ParameterExpression _dataParamter;
         public RewriteMatchExpression(EventWait wait)
         {
-            _functionData = wait.ParentFunctionState.Data;
+            _wait = wait;
+            _functionData = wait.FunctionRuntimeInfo.Data;
             _dataParamter = Parameter(_functionData.GetType(), "functionData");
 
             var updatedBoy = (LambdaExpression)Visit(wait.MatchExpression);
@@ -34,9 +36,9 @@ namespace ResumableFunction.Engine
             var x = node.GetDataParamterAccess(_dataParamter, _functionData.GetType());
             if (x.IsFunctionData)
             {
-                //if (IsBasicType(node.Type))
-                //    return Constant(GetValue(x.NewExpression), node.Type);
-                //NeedFunctionData = true;
+                if (IsBasicType(node.Type))
+                    return Constant(GetValue(x.NewExpression), node.Type);
+                _wait.NeedFunctionData = true;
                 return x.NewExpression;
             }
             return base.VisitMember(node);
