@@ -45,6 +45,7 @@ namespace ResumableFunction.Engine
 
         public dynamic FunctionClassInstance { get; private set; }
 
+
         public Task OnFunctionEnd()
         {
             return FunctionClassInstance.OnFunctionEnd();
@@ -70,25 +71,28 @@ namespace ResumableFunction.Engine
             if (functionRunner is null)
                 throw new Exception(
                     $"Can't initiate runner `{_currentWait.InitiatedByFunction}` for {_currentWait.EventDataType.FullName}");
-            //SetActiveRunnerState(CurrentRunnerLastState());
+            SetActiveRunnerState(_currentWait.StateAfterWait);
             bool waitExist = await functionRunner.MoveNextAsync();
             //after function resumed data may be changed (for example user set some props)
             FunctionRuntimeInfo.Data = Data;
             //update current runner state
-            if (FunctionRuntimeInfo.FunctionsStates.ContainsKey(_currentWait.InitiatedByFunction))
-                FunctionRuntimeInfo.FunctionsStates[_currentWait.InitiatedByFunction] = GetActiveRunnerState();
-            else
-                FunctionRuntimeInfo.FunctionsStates.Add(_currentWait.InitiatedByFunction, GetActiveRunnerState());
+            //if (FunctionRuntimeInfo.FunctionsStates.ContainsKey(_currentWait.InitiatedByFunction))
+            //    FunctionRuntimeInfo.FunctionsStates[_currentWait.InitiatedByFunction] = GetActiveRunnerState();
+            //else
+            //    FunctionRuntimeInfo.FunctionsStates.Add(_currentWait.InitiatedByFunction, GetActiveRunnerState());
 
             if (waitExist)
+            {
+                functionRunner.Current.StateAfterWait = GetActiveRunnerState();
                 return new NextWaitResult(functionRunner.Current, false, false);
+            }
             else
             {
                 //if current Function runner name is the main function start
                 if (_currentWait.InitiatedByFunction == nameof(Start))
                 {
                     await OnFunctionEnd();
-                    return new NextWaitResult(null, true, true);
+                    return new NextWaitResult(null, true, false);
                 }
                 return new NextWaitResult(null, false, true);
             }
@@ -158,12 +162,12 @@ namespace ResumableFunction.Engine
             return $"<{_currentWait.InitiatedByFunction}>";
         }
 
-        private int CurrentRunnerLastState()
-        {
-            int result = int.MinValue;
-            FunctionRuntimeInfo?.FunctionsStates.TryGetValue(_currentWait.InitiatedByFunction, out result);
-            return result;
-        }
+        //private int CurrentRunnerLastState()
+        //{
+        //    int result = int.MinValue;
+        //    FunctionRuntimeInfo?.FunctionsStates.TryGetValue(_currentWait.InitiatedByFunction, out result);
+        //    return result;
+        //}
 
         public IAsyncEnumerable<Wait> Start()
         {

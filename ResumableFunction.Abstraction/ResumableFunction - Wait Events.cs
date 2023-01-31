@@ -24,7 +24,7 @@ namespace ResumableFunction.Abstraction
         {
             var result = new AllEventsWait
             {
-                WaitingEvents = events,
+                WaitingEvents = events.ToList(),
                 EventIdentifier = eventIdentifier,
                 InitiatedByFunction = events[0].InitiatedByFunction
             };
@@ -41,7 +41,7 @@ namespace ResumableFunction.Abstraction
         {
             var result = new AnyEventWait
             {
-                WaitingEvents = events,
+                WaitingEvents = events.ToList(),
                 EventIdentifier = eventIdentifier,
                 InitiatedByFunction = events[0].InitiatedByFunction
             };

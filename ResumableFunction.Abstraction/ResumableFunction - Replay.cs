@@ -10,9 +10,10 @@ using ResumableFunction.Abstraction.InOuts;
 
 namespace ResumableFunction.Abstraction
 {
-  
+
     public abstract partial class ResumableFunction<FunctionData>
     {
+        //Must be a node with no parents
         protected Wait Replay<T>(string eventIdentifier = null, [CallerMemberName] string callerName = "") where T : class, IEventData, new()
         {
             var eventToReplay = FunctionRuntimeInfo.FunctionWaits
@@ -20,14 +21,26 @@ namespace ResumableFunction.Abstraction
                      x is EventWait ew &&
                      (eventIdentifier == null || ew.EventIdentifier == eventIdentifier) &&
                      ew.EventDataType == typeof(T));
-            return eventToReplay;
+            if (IsNode(eventToReplay))
+                return eventToReplay;
+
+            throw new Exception($"Event replay failed event is [{eventToReplay}].");
         }
 
         protected Wait Replay(string eventIdentifier = "", [CallerMemberName] string callerName = "")
         {
             var eventToReplay = FunctionRuntimeInfo.FunctionWaits
                  .Last(x => x.EventIdentifier == eventIdentifier);
-            return eventToReplay;
+            if (IsNode(eventToReplay))
+                return eventToReplay;
+
+            throw new Exception($"Event replay failed event is [{eventToReplay}].");
+        }
+
+        private bool IsNode(Wait eventToReplay)
+        {
+            //todo:Is node event
+            return true;
         }
     }
 

@@ -23,7 +23,16 @@ namespace ResumableFunction.Engine.EfDataImplementation
             }
         }
 
-        public Task<List<EventWait>> GetMatchedWaits(PushedEvent pushedEvent)
+        public async Task<List<EventWait>> GetMatchedWaits(PushedEvent pushedEvent)
+        {
+
+            var matchedWaits = new List<EventWait>();
+            //pass payload to match expression
+            matchedWaits = matchedWaits.Where(x => x.IsMatch()).ToList();
+            return matchedWaits;
+        }
+
+        public Task<ManyWaits> GetWaitGroup(Guid? parentGroupId)
         {
             throw new NotImplementedException();
         }

@@ -6,7 +6,8 @@ namespace ResumableFunction.Abstraction.InOuts
 {
     public abstract class EventWait : Wait
     {
-        public Guid ParentGroupId { get; internal set;}
+        public Guid? ParentFunctionId { get; internal set;}
+        public Guid? ParentGroupId { get; internal set;}
         public bool IsOptional { get; internal set;} = false;
         
         public LambdaExpression MatchExpression { get; internal set;}

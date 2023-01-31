@@ -49,5 +49,10 @@ namespace ResumableFunction.Engine.EfDataImplementation
         {
             throw new NotImplementedException();
         }
+
+        Task<bool> IFunctionRepository.MoveFunctionToRecycleBin(FunctionRuntimeInfo functionRuntimeInfo)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

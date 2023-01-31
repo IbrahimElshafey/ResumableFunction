@@ -193,7 +193,7 @@ namespace ResumableFunction.Abstraction.Samples
                 DataType = typeof(ProjectApprovalFunctionData),
                 FunctionId = Guid.NewGuid(),
                 InitiatedByClassType = GetType(),
-                FunctionsStates = new Dictionary<string, int> { { "Start", 1 } }
+                //FunctionsStates = new Dictionary<string, int> { { "Start", 1 } }
             };
             result.EventData = new ManagerApprovalEvent
             {

@@ -1,5 +1,6 @@
 # ToDo
 * ReplayWait implementation
+* Function wait is not a Wait type
 * use unit of work pattern for one transaction save
 * Write Implementation for:
 	* Engine

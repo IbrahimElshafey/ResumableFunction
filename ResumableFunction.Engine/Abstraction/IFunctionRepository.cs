@@ -16,6 +16,6 @@ namespace ResumableFunction.Engine.Abstraction
         Task<bool> SaveFunctionState(FunctionRuntimeInfo functionRuntimeInfo);
         Task<object> GetFunctionData(Guid instanceId);
         Task<int> GetFunctionState(Guid functionId, string initiatedByFunction);
-        Task MoveFunctionToRecycleBin(FunctionRuntimeInfo functionRuntimeInfo);
+        Task<bool> MoveFunctionToRecycleBin(FunctionRuntimeInfo functionRuntimeInfo);
     }
 }

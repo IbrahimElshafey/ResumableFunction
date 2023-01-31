@@ -13,7 +13,7 @@ namespace ResumableFunction.Abstraction.InOuts
         /// </summary>
         public Type InitiatedByClassType { get; internal set; }
 
-        public Dictionary<string, int> FunctionsStates { get; internal set; } = new Dictionary<string, int>();
+        //public Dictionary<string, int> FunctionsStates { get; internal set; } = new Dictionary<string, int>();
 
         public List<Wait> FunctionWaits { get; internal set; } = new List<Wait>();
     }

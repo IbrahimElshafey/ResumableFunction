@@ -13,21 +13,24 @@ namespace ResumableFunction.Abstraction
 
     public abstract partial class ResumableFunction<FunctionData>
     {
-        protected async Task<FunctionWait> Function(string eventIdentifier, Expression<Func<IAsyncEnumerable<Wait>>> subFunction, [CallerMemberName] string callerName = "")
+        protected async Task<FunctionWait> Function(string eventIdentifier, Expression<Func<IAsyncEnumerable<Wait>>> function, [CallerMemberName] string callerName = "")
         {
-            var result = new FunctionWait { EventIdentifier = eventIdentifier, InitiatedByFunction = callerName };
-            var methodCall = subFunction.Body as MethodCallExpression;
+            var result = new FunctionWait(eventIdentifier, function)
+            {
+                InitiatedByFunction = callerName
+            };
+            var methodCall = result.Function.Body as MethodCallExpression;
             if (methodCall != null)
             {
                 result.FunctionName = methodCall.Method.Name;
             }
-            var funcEvents = subFunction.Compile()();
-            if (funcEvents != null)
+            var funcCompiled = result.Function.Compile()();
+            if (funcCompiled != null)
             {
-                var asyncEnumerator = funcEvents.GetAsyncEnumerator();
+                var asyncEnumerator = funcCompiled.GetAsyncEnumerator();
                 await asyncEnumerator.MoveNextAsync();
-                var firstEvent = asyncEnumerator.Current;
-                result.CurrentEvent = firstEvent;
+                var firstWait = asyncEnumerator.Current;
+                result.CurrentEvent = firstWait;
             }
             return result;
         }
