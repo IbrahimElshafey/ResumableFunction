@@ -11,34 +11,16 @@ namespace ResumableFunction.Engine.EfDataImplementation
 {
     public class WaitsRepository : IWaitsRepository
     {
-        public Task AddWait(EventWait eventWait)
+        public async Task AddWait(Wait eventWait)
         {
-            throw new NotImplementedException();
-        }
-
-        public Task AddWait(AllEventsWait allEventsWait)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task AddWait(AnyEventWait anyEventWait)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task AddWait(FunctionWait functionWait)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task AddWait(AllFunctionsWait allFunctionsWait)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task AddWait(AnyFunctionWait anyFunctionWait)
-        {
-            throw new NotImplementedException();
+            eventWait.FunctionRuntimeInfo.FunctionWaits.Add(eventWait);
+            switch (eventWait)
+            {
+                case AllFunctionsWait allFunctionsWait:
+                    break;
+                case AnyFunctionWait anyFunctionWait:
+                    break;
+            }
         }
 
         public Task<List<EventWait>> GetMatchedWaits(PushedEvent pushedEvent)

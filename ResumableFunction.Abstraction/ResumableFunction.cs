@@ -26,7 +26,7 @@ namespace ResumableFunction.Abstraction
             {
                 DataType = typeof(FunctionData),
                 FunctionId = Guid.NewGuid(),
-                InitiatedByClass = GetType(),
+                InitiatedByClassType = GetType(),
                 Data = Data
             };
         }

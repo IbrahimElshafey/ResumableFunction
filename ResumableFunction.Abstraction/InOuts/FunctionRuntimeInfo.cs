@@ -11,7 +11,7 @@ namespace ResumableFunction.Abstraction.InOuts
         /// <summary>
         /// The class that contians the resumable functions
         /// </summary>
-        public Type InitiatedByClass { get; internal set; }
+        public Type InitiatedByClassType { get; internal set; }
 
         public Dictionary<string, int> FunctionsStates { get; internal set; } = new Dictionary<string, int>();
 

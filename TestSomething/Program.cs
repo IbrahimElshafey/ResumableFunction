@@ -236,7 +236,7 @@ namespace Test
 
             var settings = new JsonSerializerSettings();
             settings.Converters.Add(
-                new ExpressionJsonConverter(Assembly.GetAssembly(wait.FunctionRuntimeInfo.InitiatedByClass)));
+                new ExpressionJsonConverter(Assembly.GetAssembly(wait.FunctionRuntimeInfo.InitiatedByClassType)));
 
             var json = JsonConvert.SerializeObject(wait.MatchExpression, settings);
             var target = JsonConvert.DeserializeObject<LambdaExpression>(json, settings);

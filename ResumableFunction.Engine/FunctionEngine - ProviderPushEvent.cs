@@ -30,8 +30,8 @@ namespace ResumableFunction.Engine
                 functionClass.UpdateDataWithEventData();
                 //get next event wait
                 var waitResult = await functionClass.GetNextWait();
-                await _functionRepository.SaveFunctionState(wait.FunctionRuntimeInfo);
                 await WaitRequested(waitResult, functionClass);
+                await _functionRepository.SaveFunctionState(wait.FunctionRuntimeInfo);
                 //* call EventProvider.UnSubscribeEvent(pushedEvent.EventData) if no other intances waits this type for the same provider
             }
         }
@@ -58,7 +58,10 @@ namespace ResumableFunction.Engine
                     await EventWaitRequested(eventWait, functionClass);
                     break;
                 case ManyWaits manyWaits:
-                    await AllEventsWaitRequested(manyWaits, functionClass);
+                    await ManyWaitsRequested(manyWaits, functionClass);
+                    break;
+                case FunctionWait functionWait:
+                    await FunctionWaitRequested(functionWait, functionClass);
                     break;
                 case ManyFunctionsWait manyFunctionsWait:
                     await ManyFunctionsWaitRequested(manyFunctionsWait, functionClass);
@@ -66,22 +69,13 @@ namespace ResumableFunction.Engine
             }
         }
 
-        private async Task ManyFunctionsWaitRequested(ManyFunctionsWait functionWait, ResumableFunctionWrapper functionClass)
+        private async Task ManyFunctionsWaitRequested(ManyFunctionsWait functionsWait, ResumableFunctionWrapper functionClass)
         {
-            foreach (var function in functionWait.WaitingFunctions)
+            foreach (var function in functionsWait.WaitingFunctions)
             {
                 await FunctionWaitRequested(function, functionClass);
             }
-
-            switch (functionWait)
-            {
-                case AllFunctionsWait allFunctionsWait:
-                    await _waitsRepository.AddWait(allFunctionsWait);
-                    break;
-                case AnyFunctionWait anyFunctionWait:
-                    await _waitsRepository.AddWait(anyFunctionWait);
-                    break;
-            }
+            await _waitsRepository.AddWait(functionsWait);
         }
 
         private async Task FunctionWaitRequested(FunctionWait functionWait, ResumableFunctionWrapper functionClass)
@@ -90,22 +84,13 @@ namespace ResumableFunction.Engine
             await _waitsRepository.AddWait(functionWait);
         }
 
-        private async Task AllEventsWaitRequested(ManyWaits manyWaits, ResumableFunctionWrapper functionClass)
+        private async Task ManyWaitsRequested(ManyWaits manyWaits, ResumableFunctionWrapper functionClass)
         {
-            //todo:use unit of work pattern
             foreach (var eventWait in manyWaits.WaitingEvents)
             {
                 await EventWaitRequested(eventWait, functionClass);
             }
-            switch (manyWaits)
-            {
-                case AnyEventWait anyEventWait:
-                    await _waitsRepository.AddWait(anyEventWait);
-                    break;
-                case AllEventsWait allEventsWait:
-                    await _waitsRepository.AddWait(allEventsWait);
-                    break;
-            }
+            await _waitsRepository.AddWait(manyWaits);
         }
 
         private async Task EventWaitRequested(EventWait eventWait, ResumableFunctionWrapper functionClass)

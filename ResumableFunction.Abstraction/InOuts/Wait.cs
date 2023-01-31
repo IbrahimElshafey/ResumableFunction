@@ -14,5 +14,6 @@ namespace ResumableFunction.Abstraction.InOuts
         public string EventIdentifier { get; internal set; }
         public bool IsFirst { get; internal set; } = false;
         public string InitiatedByFunction { get; internal set; }
+        internal int StateAfterWait { get; set; }
     }
 }

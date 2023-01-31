@@ -13,7 +13,7 @@ namespace ResumableFunction.Engine
         public ResumableFunctionWrapper(EventWait eventWait)
         {
             _currentWait = eventWait;
-            var functionClassType = _currentWait.FunctionRuntimeInfo.InitiatedByClass;
+            var functionClassType = _currentWait.FunctionRuntimeInfo.InitiatedByClassType;
             var isResumableFunctionClass = functionClassType.IsSubclassOfRawGeneric(typeof(ResumableFunction<>));
             if (isResumableFunctionClass is false)
                 throw new Exception("functionClassType must inherit ResumableFunction<>");
@@ -125,7 +125,7 @@ namespace ResumableFunction.Engine
         {
             if (_activeRunner == null)
             {
-                var FunctionRunnerType = FunctionRuntimeInfo.InitiatedByClass
+                var FunctionRunnerType = FunctionRuntimeInfo.InitiatedByClassType
                    .GetNestedTypes(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.SuppressChangeType)
                    .FirstOrDefault(x => x.Name.StartsWith(CurrentRunnerName()));
 
