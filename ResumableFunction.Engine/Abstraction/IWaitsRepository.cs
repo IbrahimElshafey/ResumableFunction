@@ -5,7 +5,7 @@ namespace ResumableFunction.Engine.Abstraction
     public interface IWaitsRepository
     {
         Task AddWait(Wait eventWait);
-        Task<object> GetFunctionWait(Guid? functionWaitId);
+        Task<Wait> GetFunctionWait(Guid? functionWaitId);
 
         //Task AddWait(EventWait eventWait);
         //Task AddWait(AllEventsWait allEventsWait);

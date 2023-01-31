@@ -23,6 +23,11 @@ namespace ResumableFunction.Engine.EfDataImplementation
             }
         }
 
+        public Task<Wait> GetFunctionWait(Guid? functionWaitId)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task<List<EventWait>> GetMatchedWaits(PushedEvent pushedEvent)
         {
 

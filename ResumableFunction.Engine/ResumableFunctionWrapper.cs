@@ -9,7 +9,7 @@ namespace ResumableFunction.Engine
 {
     public class ResumableFunctionWrapper : IResumableFunction<object>
     {
-        private readonly EventWait _currentWait;
+        private Wait _currentWait;
         private object _activeRunner;
         public ResumableFunctionWrapper(EventWait eventWait)
         {
@@ -31,17 +31,24 @@ namespace ResumableFunction.Engine
             Data = eventWait.FunctionRuntimeInfo.Data;
         }
 
+        public async Task<NextWaitResult> BackToCaller(Wait functionWait)
+        {
+            _currentWait = functionWait;
+            _activeRunner = null;
+            return await GetNextWait();
+        }
+
 
         public dynamic Data
         {
             get => FunctionClassInstance.Data;
-            private set => FunctionClassInstance.Data = value;
+            internal set => FunctionClassInstance.Data = value;
         }
 
         public FunctionRuntimeInfo FunctionRuntimeInfo
         {
             get => FunctionClassInstance.FunctionState;
-            private set => FunctionClassInstance.FunctionState = value;
+            internal set => FunctionClassInstance.FunctionState = value;
         }
 
         public dynamic FunctionClassInstance { get; private set; }
@@ -52,15 +59,7 @@ namespace ResumableFunction.Engine
             return FunctionClassInstance.OnFunctionEnd();
         }
 
-        /// <summary>
-        /// called by the engine after event received
-        /// </summary>
-        public void UpdateDataWithEventData()
-        {
-            _currentWait.SetData();
-            Data = _currentWait.FunctionRuntimeInfo.Data;
-            FunctionRuntimeInfo.Data = Data;
-        }
+
 
         /// <summary>
         /// called by the engine to resume function execution
@@ -71,7 +70,7 @@ namespace ResumableFunction.Engine
 
             if (functionRunner is null)
                 throw new Exception(
-                    $"Can't initiate runner `{_currentWait.InitiatedByFunctionName}` for {_currentWait.EventDataType.FullName}");
+                    $"Can't initiate runner `{_currentWait.InitiatedByFunctionName}` for {_currentWait.FunctionRuntimeInfo.InitiatedByClassType.FullName}");
             SetActiveRunnerState(_currentWait.StateAfterWait);
             bool waitExist = await functionRunner.MoveNextAsync();
             //after function resumed data may be changed (for example user set some props)
@@ -130,12 +129,12 @@ namespace ResumableFunction.Engine
         {
             if (_activeRunner == null)
             {
-                var FunctionRunnerType = FunctionRuntimeInfo.InitiatedByClassType
+                var functionRunnerType = FunctionRuntimeInfo.InitiatedByClassType
                    .GetNestedTypes(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.SuppressChangeType)
                    .FirstOrDefault(x => x.Name.StartsWith(CurrentRunnerName()));
 
-                if (FunctionRunnerType == null) return null;
-                ConstructorInfo? ctor = FunctionRunnerType.GetConstructor(
+                if (functionRunnerType == null) return null;
+                ConstructorInfo? ctor = functionRunnerType.GetConstructor(
                    BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.CreateInstance,
                    new Type[] { typeof(int) });
 
@@ -144,7 +143,7 @@ namespace ResumableFunction.Engine
 
                 if (_activeRunner == null) return null;
                 //set parent class who call
-                var thisField = FunctionRunnerType.GetFields().FirstOrDefault(x => x.Name.EndsWith("__this"));
+                var thisField = functionRunnerType.GetFields().FirstOrDefault(x => x.Name.EndsWith("__this"));
                 //var thisField = FunctionRunnerType.GetField("<>4__this");
                 thisField?.SetValue(_activeRunner, FunctionClassInstance);
                 //var xx=thisField?.GetValue(_activeRunner);

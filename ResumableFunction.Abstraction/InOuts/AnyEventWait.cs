@@ -6,8 +6,9 @@
 
         internal void SetMatchedEvent(EventWait currentWait)
         {
-            WaitingEvents.ForEach(wait=>wait.Status = WaitStatus.Skipped);
+            WaitingEvents.ForEach(wait => wait.Status = WaitStatus.Skipped);
             MatchedEvent = currentWait;
+            MatchedEvent.Status = WaitStatus.Completed;
             Status = WaitStatus.Completed;
         }
     }

@@ -15,9 +15,9 @@ namespace ResumableFunction.Abstraction
 
     public abstract partial class ResumableFunction<FunctionData>
     {
-        protected async Task<OneFunctionWait> Function(string eventIdentifier, Func<IAsyncEnumerable<Wait>> function, [CallerMemberName] string callerName = "")
+        protected async Task<FunctionWait> Function(string eventIdentifier, Func<IAsyncEnumerable<Wait>> function, [CallerMemberName] string callerName = "")
         {
-            var result = new OneFunctionWait(eventIdentifier, function)
+            var result = new FunctionWait(eventIdentifier, function)
             {
                 InitiatedByFunctionName = callerName,
                 IsNode = true,
@@ -52,7 +52,7 @@ namespace ResumableFunction.Abstraction
         {
             var result = new ManyFunctionsWait
             {
-                WaitingFunctions = new OneFunctionWait[subFunctions.Length],
+                WaitingFunctions = new List<FunctionWait>(subFunctions.Length),
                 EventIdentifier = eventIdentifier,
                 InitiatedByFunctionName = callerName,
                 IsNode = true

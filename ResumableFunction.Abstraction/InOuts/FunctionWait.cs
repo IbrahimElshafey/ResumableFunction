@@ -4,9 +4,9 @@ using System.Runtime.CompilerServices;
 
 namespace ResumableFunction.Abstraction.InOuts
 {
-    public sealed class OneFunctionWait : Wait
+    public sealed class FunctionWait : Wait
     {
-        public OneFunctionWait(string eventIdentifier, Func<IAsyncEnumerable<Wait>> function)
+        public FunctionWait(string eventIdentifier, Func<IAsyncEnumerable<Wait>> function)
         {
             EventIdentifier = eventIdentifier;
             FunctionName = function.Method.Name;

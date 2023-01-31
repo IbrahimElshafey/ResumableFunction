@@ -2,6 +2,6 @@
 {
     public class ManyFunctionsWait : Wait
     {
-        public List<OneFunctionWait> WaitingFunctions { get; set; }
+        public List<FunctionWait> WaitingFunctions { get; set; }
     }
 }
