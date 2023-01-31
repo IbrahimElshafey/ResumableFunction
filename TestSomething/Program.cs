@@ -37,13 +37,13 @@ namespace Test
             };
         static async Task Main(string[] args)
         {
-            //MatchFunctionTranslation();
+            MatchFunctionTranslation();
 
             //TestMatchTranslation();
             // using static System.Linq.Expressions.Expression
 
             //TestFunctionClassWrapper();
-            TestSetPropRewrite();
+            //TestSetPropRewrite();
 
             //SaveExpressionAsJson();
             //SaveExpressionAsBinary();
@@ -248,7 +248,7 @@ namespace Test
 
         private static void TestSetPropRewrite()
         {
-          
+
             var wait = new ProjectApproval().EventWait();
             var setPropRewrite = new RewriteSetDataExpression(wait).Result;
             wait.SetDataExpression = setPropRewrite;
@@ -267,17 +267,22 @@ namespace Test
 
         private static void MatchFunctionTranslation()
         {
-            //var managerApprovalEvent = new ManagerApprovalEvent
-            //{
-            //    ProjectId = 11,
-            //    PreviousApproval = new ManagerApprovalEvent { ProjectId = 11, Accepted = true, Rejected = false }
-            //};
+            var managerApprovalEvent = new ManagerApprovalEvent
+            {
+                ProjectId = 11,
+                PreviousApproval = new ManagerApprovalEvent { ProjectId = 11, Accepted = true, Rejected = false }
+            };
 
 
-            //var match1 = new ProjectApproval().Expression1();
-            //var rewriteMatch = new RewriteMatchExpression(Data, match1);
-            //var matchCompiled = rewriteMatch.Result.Compile();
-            //var result = matchCompiled.DynamicInvoke(Data, managerApprovalEvent);
+            var match1 = new ProjectApproval().Expression1();
+            var rewriteMatch = new RewriteMatchExpression(new EventWait<ManagerApprovalEvent>("ll")
+            {
+                CurrntFunction = Data,
+                EventData = managerApprovalEvent,
+                MatchExpression = match1
+            });
+            var matchCompiled = rewriteMatch.Result.Compile();
+            var result = matchCompiled.DynamicInvoke(Data, managerApprovalEvent);
         }
 
         private static void TestMatchTranslation()

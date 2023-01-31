@@ -209,7 +209,7 @@ namespace ResumableFunction.Abstraction.Samples
             result.InitiatedByFunctionName = nameof(Start);
             return result;
         }
-        internal Expression Expression1()
+        internal LambdaExpression Expression1()
         {
             Expression<Func<ManagerApprovalEvent, bool>> match1 =
                 (result) =>
