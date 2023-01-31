@@ -23,18 +23,18 @@ namespace ResumableFunction.Abstraction.InOuts
 
         private bool CheckIsDone()
         {
-            if(WhenCountExpression is null)
+            if (WhenCountExpression is null)
             {
                 var required = WaitingEvents.Count(x => x.IsOptional == false);
-                IsDone = required == 0;
+                Status = required == 0 ? WaitStatus.Completed : Status;
             }
             else
             {
                 var matchedCount = MatchedEvents.Count;
                 var matchCompiled = WhenCountExpression.Compile();
-                IsDone = matchCompiled(matchedCount);
+                Status = matchCompiled(matchedCount) ? WaitStatus.Completed : Status;
             }
-            return IsDone;
+            return Status == WaitStatus.Completed;
         }
     }
 }

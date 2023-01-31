@@ -3,6 +3,6 @@
     public sealed class AllFunctionsWait : ManyFunctionsWait
     {
        
-        public FunctionWait[] CompletedFunctions { get; set; }
+        public OneFunctionWait[] CompletedFunctions { get; set; }
     }
 }

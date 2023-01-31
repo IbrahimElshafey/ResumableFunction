@@ -2,6 +2,12 @@
 {
     public sealed class AnyFunctionWait : ManyFunctionsWait
     {
-        public FunctionWait MatchedFunction { get; set; }
+        public OneFunctionWait MatchedFunction { get; set; }
+        internal void SetMatchedFunction(EventWait currentWait)
+        {
+            WaitingFunctions.ForEach(wait => wait.Status = WaitStatus.Skipped);
+            MatchedEvent = currentWait;
+            Status = WaitStatus.Completed;
+        }
     }
 }

@@ -201,7 +201,7 @@ namespace ResumableFunction.Abstraction.Samples
                 Accepted = true,
                 Rejected = false
             };
-            result.InitiatedByFunction = nameof(Start);
+            result.InitiatedByFunctionName = nameof(Start);
             return result;
         }
         internal Expression Expression1()

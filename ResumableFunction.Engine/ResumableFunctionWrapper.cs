@@ -1,4 +1,5 @@
 ﻿using ResumableFunction.Abstraction;
+using ResumableFunction.Abstraction.Helpers;
 using ResumableFunction.Abstraction.InOuts;
 using ResumableFunction.Engine.InOuts;
 using System.Linq.Expressions;
@@ -70,7 +71,7 @@ namespace ResumableFunction.Engine
 
             if (functionRunner is null)
                 throw new Exception(
-                    $"Can't initiate runner `{_currentWait.InitiatedByFunction}` for {_currentWait.EventDataType.FullName}");
+                    $"Can't initiate runner `{_currentWait.InitiatedByFunctionName}` for {_currentWait.EventDataType.FullName}");
             SetActiveRunnerState(_currentWait.StateAfterWait);
             bool waitExist = await functionRunner.MoveNextAsync();
             //after function resumed data may be changed (for example user set some props)
@@ -89,7 +90,7 @@ namespace ResumableFunction.Engine
             else
             {
                 //if current Function runner name is the main function start
-                if (_currentWait.InitiatedByFunction == nameof(Start))
+                if (_currentWait.InitiatedByFunctionName == nameof(Start))
                 {
                     await OnFunctionEnd();
                     return new NextWaitResult(null, true, false);
@@ -100,7 +101,7 @@ namespace ResumableFunction.Engine
 
 
 
-        public void SetActiveRunnerState(int state)
+        internal void SetActiveRunnerState(int state)
         {
             if (_activeRunner != null || GetCurrentRunner() != null)
             {
@@ -112,7 +113,7 @@ namespace ResumableFunction.Engine
                 }
             }
         }
-        public int GetActiveRunnerState()
+        internal int GetActiveRunnerState()
         {
             if (_activeRunner != null || GetCurrentRunner() != null)
             {
@@ -159,7 +160,7 @@ namespace ResumableFunction.Engine
 
         private string CurrentRunnerName()
         {
-            return $"<{_currentWait.InitiatedByFunction}>";
+            return $"<{_currentWait.InitiatedByFunctionName}>";
         }
 
         //private int CurrentRunnerLastState()

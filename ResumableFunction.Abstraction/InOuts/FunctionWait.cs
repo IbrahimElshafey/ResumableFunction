@@ -1,19 +1,18 @@
 ﻿using System.Linq.Expressions;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 
 namespace ResumableFunction.Abstraction.InOuts
 {
-    public sealed class FunctionWait : Wait
+    public sealed class OneFunctionWait : Wait
     {
-        public FunctionWait(string eventIdentifier, Expression<Func<IAsyncEnumerable<Wait>>> function)
+        public OneFunctionWait(string eventIdentifier, Func<IAsyncEnumerable<Wait>> function)
         {
             EventIdentifier = eventIdentifier;
-            Function = function;
-            //InitiatedByFunction = callerName;
+            FunctionName = function.Method.Name;
         }
         public Guid? ParentFunctionGroupId { get; internal set; }
-        public string FunctionName { get; set; }
-        public Wait CurrentEvent { get; internal set; }
-        public Expression<Func<IAsyncEnumerable<Wait>>> Function { get; internal set; }
+        public Wait CurrentWait { get; internal set; }
+        public string FunctionName { get; internal set; }
     }
 }
