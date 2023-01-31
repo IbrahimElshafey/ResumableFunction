@@ -2,10 +2,10 @@
 {
     public abstract class ManyWaits : Wait
     {
-        public EventWait[] WaitingEvents { get; set; }
+        public EventWait[] WaitingEvents { get; internal set; }
     }
     public sealed class AnyEventWait : ManyWaits
     {
-        public EventWait MatchedEvent { get; set; }
+        public EventWait MatchedEvent { get; internal set; }
     }
 }

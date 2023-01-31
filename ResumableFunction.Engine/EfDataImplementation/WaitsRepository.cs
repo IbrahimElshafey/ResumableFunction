@@ -14,13 +14,13 @@ namespace ResumableFunction.Engine.EfDataImplementation
         public async Task AddWait(Wait eventWait)
         {
             eventWait.FunctionRuntimeInfo.FunctionWaits.Add(eventWait);
-            switch (eventWait)
-            {
-                case AllFunctionsWait allFunctionsWait:
-                    break;
-                case AnyFunctionWait anyFunctionWait:
-                    break;
-            }
+            //switch (eventWait)
+            //{
+            //    case AllFunctionsWait allFunctionsWait:
+            //        break;
+            //    case AnyFunctionWait anyFunctionWait:
+            //        break;
+            //}
         }
 
         public Task<List<EventWait>> GetMatchedWaits(PushedEvent pushedEvent)

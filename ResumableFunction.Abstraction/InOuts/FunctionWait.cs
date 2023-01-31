@@ -2,7 +2,7 @@
 {
     public sealed class FunctionWait : Wait
     {
-        public string FunctionName { get; set; }
+        public string FunctionName { get; internal set; }
         public Wait CurrentEvent { get; internal set; }
     }
 }

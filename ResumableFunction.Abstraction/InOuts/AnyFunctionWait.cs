@@ -2,6 +2,6 @@
 {
     public sealed class AnyFunctionWait : ManyFunctionsWait
     {
-        public FunctionWait MatchedFunction { get; set; }
+        public FunctionWait MatchedFunction { get; internal set; }
     }
 }
