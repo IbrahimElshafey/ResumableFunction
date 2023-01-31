@@ -5,8 +5,8 @@ namespace ResumableFunction.Abstraction.InOuts
     public class FunctionRuntimeInfo
     {
         public Guid FunctionId { get; internal set; }
-        public object Data { get; internal set; }
-        public Type DataType { get; internal set; }
+        //public object Data { get; internal set; }
+        //public Type DataType { get; internal set; }
 
         /// <summary>
         /// The class that contians the resumable functions

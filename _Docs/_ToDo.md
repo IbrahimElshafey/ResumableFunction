@@ -1,6 +1,6 @@
 # ToDo
 * ReplayWait implementation
-* Remove FunctionData prop
+
 * use unit of work pattern for one transaction save
 * Write Implementation for:
 	* Engine

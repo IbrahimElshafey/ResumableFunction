@@ -11,7 +11,7 @@ using ResumableFunction.Abstraction.InOuts;
 namespace ResumableFunction.Abstraction
 {
 
-    public abstract partial class ResumableFunction<FunctionData>
+    public abstract partial class ResumableFunctionInstance
     {
         //Must be a node with no parents
         protected Wait Replay<T>(string eventIdentifier = null, [CallerMemberName] string callerName = "") where T : class, IEventData, new()

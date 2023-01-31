@@ -11,7 +11,7 @@ using ResumableFunction.Abstraction.InOuts;
 namespace ResumableFunction.Abstraction
 {
 
-    public abstract partial class ResumableFunction<FunctionData>
+    public abstract partial class ResumableFunctionInstance
     {
         protected EventWait<T> WaitEvent<T>(string eventIdentifier, [CallerMemberName] string callerName = "") where T : class, IEventData, new()
         {

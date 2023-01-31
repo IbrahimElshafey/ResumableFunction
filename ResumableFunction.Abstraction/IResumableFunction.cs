@@ -4,7 +4,7 @@ namespace ResumableFunction.Abstraction
 {
     internal interface IResumableFunction<FunctionData>
     {
-        FunctionData Data { get; }
+        //FunctionData Data { get; }
         FunctionRuntimeInfo FunctionRuntimeInfo { get; }
         Task OnFunctionEnd();
 

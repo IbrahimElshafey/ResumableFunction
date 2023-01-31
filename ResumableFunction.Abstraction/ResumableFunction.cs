@@ -16,22 +16,21 @@ namespace ResumableFunction.Abstraction
     /// </summary>
     //Can i make this class not generic? we use generic for match and set property expressions only?
 
-    public abstract partial class ResumableFunction<FunctionData>
-        : IResumableFunction<FunctionData> where FunctionData : class, new()
+    public abstract partial class ResumableFunctionInstance
     {
-        public ResumableFunction()
+        public ResumableFunctionInstance()
         {
-            Data = new FunctionData();
+            //Data = new FunctionData();
             FunctionRuntimeInfo = new FunctionRuntimeInfo
             {
-                DataType = typeof(FunctionData),
+                //DataType = typeof(FunctionData),
                 FunctionId = Guid.NewGuid(),
                 InitiatedByClassType = GetType(),
-                Data = Data
+                //Data = Data
             };
         }
 
-        public FunctionData Data { get; set; }
+        //public FunctionData Data { get; set; }
         public FunctionRuntimeInfo FunctionRuntimeInfo { get; internal set; }
 
         public abstract IAsyncEnumerable<Wait> Start();

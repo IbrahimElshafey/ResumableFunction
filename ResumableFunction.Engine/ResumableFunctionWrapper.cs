@@ -15,7 +15,7 @@ namespace ResumableFunction.Engine
         {
             _currentWait = eventWait;
             var functionClassType = _currentWait.FunctionRuntimeInfo.InitiatedByClassType;
-            var isResumableFunctionClass = functionClassType.IsSubclassOfRawGeneric(typeof(ResumableFunction<>));
+            var isResumableFunctionClass = functionClassType.IsSubclassOf(typeof(ResumableFunctionInstance));
             if (isResumableFunctionClass is false)
                 throw new Exception("functionClassType must inherit ResumableFunction<>");
 
@@ -28,7 +28,6 @@ namespace ResumableFunction.Engine
             //    Data = Activator.CreateInstance(propType);
             //}
             FunctionRuntimeInfo = eventWait.FunctionRuntimeInfo;
-            Data = eventWait.FunctionRuntimeInfo.Data;
         }
 
         public async Task<NextWaitResult> BackToCaller(Wait functionWait)
@@ -39,11 +38,7 @@ namespace ResumableFunction.Engine
         }
 
 
-        public dynamic Data
-        {
-            get => FunctionClassInstance.Data;
-            internal set => FunctionClassInstance.Data = value;
-        }
+      
 
         public FunctionRuntimeInfo FunctionRuntimeInfo
         {
@@ -74,7 +69,7 @@ namespace ResumableFunction.Engine
             SetActiveRunnerState(_currentWait.StateAfterWait);
             bool waitExist = await functionRunner.MoveNextAsync();
             //after function resumed data may be changed (for example user set some props)
-            FunctionRuntimeInfo.Data = Data;
+            //FunctionRuntimeInfo.Data = Data;
             //update current runner state
             //if (FunctionRuntimeInfo.FunctionsStates.ContainsKey(_currentWait.InitiatedByFunction))
             //    FunctionRuntimeInfo.FunctionsStates[_currentWait.InitiatedByFunction] = GetActiveRunnerState();

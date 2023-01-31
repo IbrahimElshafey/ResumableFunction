@@ -13,7 +13,7 @@ using ResumableFunction.Abstraction.InOuts;
 namespace ResumableFunction.Abstraction
 {
 
-    public abstract partial class ResumableFunction<FunctionData>
+    public abstract partial class ResumableFunctionInstance
     {
         protected async Task<FunctionWait> Function(string eventIdentifier, Func<IAsyncEnumerable<Wait>> function, [CallerMemberName] string callerName = "")
         {

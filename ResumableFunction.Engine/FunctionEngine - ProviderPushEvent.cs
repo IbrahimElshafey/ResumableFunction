@@ -67,8 +67,8 @@ namespace ResumableFunction.Engine
         private static void SetData(EventWait currentWait, ResumableFunctionWrapper functionClass)
         {
             currentWait.SetData();
-            functionClass.Data = currentWait.FunctionRuntimeInfo.Data;
-            functionClass.FunctionRuntimeInfo.Data = functionClass.Data;
+            //functionClass.Data = currentWait.FunctionRuntimeInfo.Data;
+            //functionClass.FunctionRuntimeInfo.Data = functionClass.Data;
         }
 
         private async Task<bool> SubFunctionExit(Wait lastFunctionWait, ResumableFunctionWrapper functionClass)

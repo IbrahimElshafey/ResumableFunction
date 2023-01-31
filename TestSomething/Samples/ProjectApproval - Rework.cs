@@ -23,35 +23,35 @@ namespace ResumableFunction.Abstraction.Samples
         {
 
             await Task.Delay(100);
-            yield return WaitEvent<ProjectRequestedEvent>(ProjectSubmittedForReview).SetData(() => Data.Project);
+            yield return WaitEvent<ProjectRequestedEvent>(ProjectSubmittedForReview).SetData(() => Project);
 
-            await AskOwnerToApprove(Data.Project);
+            await AskOwnerToApprove(Project);
             yield return WaitEvent<ManagerApprovalEvent>("OwnerApproval")
-                .Match(result => result.ProjectId == Data.Project.Id)
-                .SetData(() => Data.OwnerApprovalResult);
-            if (Data.OwnerApprovalResult.Rejected)
+                .Match(result => result.ProjectId == Project.Id)
+                .SetData(() => OwnerApprovalResult);
+            if (OwnerApprovalResult.Rejected)
             {
-                await ProjectRejected(Data.Project, "Owner");
+                await ProjectRejected(Project, "Owner");
                 yield return Replay<ProjectRequestedEvent>();
             }
 
-            await AskSponsorToApprove(Data.Project);
+            await AskSponsorToApprove(Project);
             yield return WaitEvent<ManagerApprovalEvent>("SponsorApproval")
-                .Match(result => result.ProjectId == Data.Project.Id)
-                .SetData(() => Data.SponsorApprovalResult);
-            if (Data.SponsorApprovalResult.Rejected)
+                .Match(result => result.ProjectId == Project.Id)
+                .SetData(() => SponsorApprovalResult);
+            if (SponsorApprovalResult.Rejected)
             {
-                await ProjectRejected(Data.Project, "Sponsor");
+                await ProjectRejected(Project, "Sponsor");
                 yield return Replay("OwnerApproval");
             }
 
-            await AskManagerToApprove(Data.Project);
+            await AskManagerToApprove(Project);
             yield return WaitEvent<ManagerApprovalEvent>("ManagerApproval")
-                .Match(result => result.ProjectId == Data.Project.Id)
-                .SetData(() => Data.ManagerApprovalResult);
-            if (Data.ManagerApprovalResult.Rejected)
+                .Match(result => result.ProjectId == Project.Id)
+                .SetData(() => ManagerApprovalResult);
+            if (ManagerApprovalResult.Rejected)
             {
-                await ProjectRejected(Data.Project, "Manager");
+                await ProjectRejected(Project, "Manager");
                 yield return Replay("SponsorApproval");
             }
 

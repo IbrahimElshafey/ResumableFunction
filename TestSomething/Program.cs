@@ -29,8 +29,8 @@ namespace Test
 {
     public static partial class Program
     {
-        public static ProjectApprovalFunctionData Data =>
-            new ProjectApprovalFunctionData
+        public static ProjectApproval Data =>
+            new ProjectApproval
             {
                 Project = new ProjectRequestedEvent { Id = 11 },
                 ManagerApprovalResult = new ManagerApprovalEvent { ProjectId = 11, Accepted = true, Rejected = false }
@@ -59,13 +59,13 @@ namespace Test
             DynamicMethod dynamicMatch = new DynamicMethod(
                  "DynamicIsMatch",
                  typeof(bool),
-                 new[] { typeof(ProjectApprovalFunctionData), typeof(ManagerApprovalEvent) });
+                 new[] { typeof(ProjectApproval), typeof(ManagerApprovalEvent) });
             ILGenerator ilGenerator = dynamicMatch.GetILGenerator();
             wait.MatchExpression.CompileFastToIL(ilGenerator);
-            var dynamicInvoker = (Func<ProjectApprovalFunctionData, ManagerApprovalEvent, bool>)
-                dynamicMatch.CreateDelegate(typeof(Func<ProjectApprovalFunctionData, ManagerApprovalEvent, bool>));
+            var dynamicInvoker = (Func<ProjectApproval, ManagerApprovalEvent, bool>)
+                dynamicMatch.CreateDelegate(typeof(Func<ProjectApproval, ManagerApprovalEvent, bool>));
             //dynamicInvoker.GetMethodInfo().GetMethodBody().GetILAsByteArray();
-            var result1 = dynamicInvoker((ProjectApprovalFunctionData)wait.FunctionRuntimeInfo?.Data, wait.EventData);
+            var result1 = dynamicInvoker((ProjectApproval)wait.CurrntFunction, wait.EventData);
 
 
             //save method to disk
@@ -73,7 +73,7 @@ namespace Test
             DynamicMethod dynamicMatch2 = new DynamicMethod(
                "DynamicIsMatch2",
                typeof(bool),
-               new[] { typeof(ProjectApprovalFunctionData), typeof(ManagerApprovalEvent) });
+               new[] { typeof(ProjectApproval), typeof(ManagerApprovalEvent) });
             var newIlgenerator = Exposed.From(dynamicMatch2.GetILGenerator());
 
             newIlgenerator.m_ILStream = originalIlGnerator.m_ILStream;
@@ -100,9 +100,9 @@ namespace Test
             newIlgenerator.m_labelList = originalIlGnerator.m_labelList;
             newIlgenerator.m_localSignature = originalIlGnerator.m_localSignature;
             newIlgenerator.m_scope = originalIlGnerator.m_scope;
-            var dynamicInvoker2 = (Func<ProjectApprovalFunctionData, ManagerApprovalEvent, bool>)
-              dynamicMatch2.CreateDelegate(typeof(Func<ProjectApprovalFunctionData, ManagerApprovalEvent, bool>));
-            var result2 = dynamicInvoker2((ProjectApprovalFunctionData)wait.FunctionRuntimeInfo?.Data, wait.EventData);
+            var dynamicInvoker2 = (Func<ProjectApproval, ManagerApprovalEvent, bool>)
+              dynamicMatch2.CreateDelegate(typeof(Func<ProjectApproval, ManagerApprovalEvent, bool>));
+            var result2 = dynamicInvoker2((ProjectApproval)wait.CurrntFunction, wait.EventData);
             //TestBinarySaveOne(wait, dynamicMatch);
 
             //https://learn.microsoft.com/en-us/dotnet/framework/reflection-and-codedom/how-to-define-and-execute-dynamic-methods
@@ -145,7 +145,7 @@ namespace Test
             DynamicMethod dynamicMatch2 = new DynamicMethod(
                 "DynamicIsMatch2",
                 typeof(bool),
-                new[] { typeof(ProjectApprovalFunctionData), typeof(ManagerApprovalEvent) });
+                new[] { typeof(ProjectApproval), typeof(ManagerApprovalEvent) });
             var dynamicILInfo = dynamicMatch2.GetDynamicILInfo();
 
             dynamicILInfo.SetLocalSignature(signature);
@@ -185,9 +185,9 @@ namespace Test
             //Exposed.From(ilInfo).m_scope = il.m_scope;
             dynamicILInfo.SetCode(codeBytes, maxStackSize);
             var isMatch =
-                (Func<ProjectApprovalFunctionData, ManagerApprovalEvent, bool>)dynamicMatch2
-                .CreateDelegate(typeof(Func<ProjectApprovalFunctionData, ManagerApprovalEvent, bool>));
-            var result2 = isMatch((ProjectApprovalFunctionData)wait.FunctionRuntimeInfo?.Data, wait.EventData);
+                (Func<ProjectApproval, ManagerApprovalEvent, bool>)dynamicMatch2
+                .CreateDelegate(typeof(Func<ProjectApproval, ManagerApprovalEvent, bool>));
+            var result2 = isMatch((ProjectApproval)wait.CurrntFunction, wait.EventData);
 
 
             MethodBodyReader mr = new MethodBodyReader(codeBytes, isMatch.Method.Module);
@@ -260,8 +260,8 @@ namespace Test
             var wrapper = new ResumableFunctionWrapper(new ProjectApproval().EventWait());
             Console.WriteLine(wrapper.FunctionClassInstance);
             Console.WriteLine(wrapper.FunctionClassInstance.GetType());
-            Console.WriteLine(wrapper.Data);
-            Console.WriteLine(wrapper.Data.GetType());
+            //Console.WriteLine(wrapper.Data);
+            //Console.WriteLine(wrapper.Data.GetType());
             Console.WriteLine(wrapper.FunctionRuntimeInfo);
         }
 
