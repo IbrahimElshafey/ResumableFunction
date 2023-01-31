@@ -10,6 +10,9 @@ namespace ResumableFunction.Abstraction.InOuts
         }
         public Guid Id { get; private set; }
 
-        public FunctionRuntimeInfo FunctionRuntimeInfo { get; set; }
+        internal FunctionRuntimeInfo FunctionRuntimeInfo { get; set; }
+        public string EventIdentifier { get; internal set; }
+        public bool IsFirst { get; internal set; } = false;
+        public string InitiatedByFunction { get; internal set; }
     }
 }

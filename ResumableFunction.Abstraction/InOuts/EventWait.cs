@@ -7,16 +7,15 @@ namespace ResumableFunction.Abstraction.InOuts
     public abstract class EventWait : Wait
     {
         public Guid ParentGroupId { get; internal set;}
-        public string EventIdentifier { get; internal set;}
         public bool IsOptional { get; internal set;} = false;
-        public bool IsFirst { get; internal set;} = false;
+        
         public LambdaExpression MatchExpression { get; internal set;}
         public LambdaExpression SetDataExpression { get; internal set;}
 
         /// <summary>
         /// Resumable function or subfunction that request the event waiting.
         /// </summary>
-        public string InitiatedByFunction { get; internal set;}
+        
         public string EventProviderName { get; internal set;}
 
         /// <summary>

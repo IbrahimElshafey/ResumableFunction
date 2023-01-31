@@ -1,5 +1,6 @@
 ﻿using ResumableFunction.Abstraction.InOuts;
 using System.Linq.Expressions;
+using System.Text.RegularExpressions;
 
 namespace ResumableFunction.Abstraction.Samples
 {
@@ -29,9 +30,11 @@ namespace ResumableFunction.Abstraction.Samples
             Console.WriteLine(this.GetType());
             //yield return await Function(() => SubFunction());
             yield return await Functions(
-              () => SubFunction1(),
-              () => SubFunction2(),
-              () => SubFunction3());
+              "Wait All Functions to End", 
+              FunctionGroup(
+                () => SubFunction1(),
+                () => SubFunction2(),
+                () => SubFunction3()));
             //any class that inherit FunctionInstance<T> has the methods
             //WaitEvent,WaitFirstEvent in a collection,WaitEvents and SaveFunctionData
 
@@ -174,7 +177,7 @@ namespace ResumableFunction.Abstraction.Samples
                 .Match(result => result.ProjectId == Data.Project.Id && result.ProjectId == int.Parse("11"))
                 //.Match(result => result.ProjectId == Data.Project.Id)
                 .SetData(() => Data.OwnerApprovalResult);
-                //.SetData(() => Data.Approvals);
+            //.SetData(() => Data.Approvals);
             result.FunctionRuntimeInfo = new FunctionRuntimeInfo
             {
                 Data = new ProjectApprovalFunctionData
