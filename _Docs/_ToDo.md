@@ -1,5 +1,7 @@
 # ToDo
+* Test everything after remove Data prop
 * ReplayWait implementation
+
 * use unit of work pattern for one transaction save
 * Write Implementation for:
 	* Engine

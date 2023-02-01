@@ -19,7 +19,7 @@ namespace ResumableFunction.Engine
         public RewriteMatchExpression(EventWait wait)
         {
             _wait = wait;
-            _functionData = wait.FunctionRuntimeInfo.Data;
+            _functionData = wait.CurrntFunction;
             _dataParamter = Parameter(_functionData.GetType(), "functionData");
 
             var updatedBoy = (LambdaExpression)Visit(wait.MatchExpression);

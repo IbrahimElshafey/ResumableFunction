@@ -22,54 +22,54 @@ namespace ResumableFunction.Abstraction.Samples
         {
 
             await Task.Delay(100);
-            yield return WaitEvent<ProjectRequestedEvent>("ProjectRequested").SetData(() => Data.Project);
+            yield return WaitEvent<ProjectRequestedEvent>("ProjectRequested").SetData(() => Project);
 
-            yield return await Function("Function Name", () => SubFunction());
+            yield return await Function("Wait Function to end", SubFunction);
 
             yield return await Functions(
                 "Wait All Functions to End",
                 FunctionGroup(
-                    () => SubFunction(),
-                    () => SubFunction()));
+                    SubFunction,
+                    SubFunction));
 
             yield return await AnyFunction(
                 "Wait any function to end",
                 FunctionGroup(
-                    () => SubFunction(),
-                    () => SubFunction()));
+                    SubFunction,
+                    SubFunction));
 
             Console.WriteLine("All three approved");
         }
 
         private async IAsyncEnumerable<EventWait> SubFunction()
         {
-            await AskOwnerToApprove(Data.Project);
+            await AskOwnerToApprove(Project);
             yield return WaitEvent<ManagerApprovalEvent>("OwnerApproval")
-                .Match(result => result.ProjectId == Data.Project.Id)
-                .SetData(() => Data.OwnerApprovalResult);
-            if (Data.OwnerApprovalResult.Rejected)
+                .Match(result => result.ProjectId == Project.Id)
+                .SetData(() => OwnerApprovalResult);
+            if (OwnerApprovalResult.Rejected)
             {
-                await ProjectRejected(Data.Project, "Owner");
+                await ProjectRejected(Project, "Owner");
                 yield break;
             }
 
-            await AskSponsorToApprove(Data.Project);
+            await AskSponsorToApprove(Project);
             yield return WaitEvent<ManagerApprovalEvent>("SponsorApproval")
-                .Match(result => result.ProjectId == Data.Project.Id)
-                .SetData(() => Data.SponsorApprovalResult);
-            if (Data.SponsorApprovalResult.Rejected)
+                .Match(result => result.ProjectId == Project.Id)
+                .SetData(() => SponsorApprovalResult);
+            if (SponsorApprovalResult.Rejected)
             {
-                await ProjectRejected(Data.Project, "Sponsor");
+                await ProjectRejected(Project, "Sponsor");
                 yield break;
             }
 
-            await AskManagerToApprove(Data.Project);
+            await AskManagerToApprove(Project);
             yield return WaitEvent<ManagerApprovalEvent>("ManagerApproval")
-                .Match(result => result.ProjectId == Data.Project.Id)
-                .SetData(() => Data.ManagerApprovalResult);
-            if (Data.ManagerApprovalResult.Rejected)
+                .Match(result => result.ProjectId == Project.Id)
+                .SetData(() => ManagerApprovalResult);
+            if (ManagerApprovalResult.Rejected)
             {
-                await ProjectRejected(Data.Project, "Manager");
+                await ProjectRejected(Project, "Manager");
                 yield break;
             }
 

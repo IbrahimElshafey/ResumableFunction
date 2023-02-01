@@ -10,6 +10,7 @@ using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using ResumableFunction.Abstraction;
+using ResumableFunction.Abstraction.Helpers;
 using ResumableFunction.Abstraction.InOuts;
 using ResumableFunction.Engine.Abstraction;
 using ResumableFunction.Engine.InOuts;
@@ -63,7 +64,7 @@ namespace ResumableFunction.Engine
             foreach (var type in types)
             {
                 //find functions and call RegisterFunction
-                if (type.IsSubclassOfRawGeneric(typeof(ResumableFunction<>)))
+                if (type.IsSubclassOf(typeof(ResumableFunctionInstance)))
                     await _functionRepository.RegisterFunction(type);
                 //find event providers and call RegisterEventProvider
                 else if (typeof(IEventProviderHandler).IsAssignableFrom(type))

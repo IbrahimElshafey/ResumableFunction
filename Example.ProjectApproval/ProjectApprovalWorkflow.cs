@@ -4,26 +4,27 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Example.InOuts;
-using Example.ProjectApproval.InOuts;
 using ResumableFunction.Abstraction;
 using ResumableFunction.Abstraction.InOuts;
 
 namespace Example.ProjectApproval
 {
-    public class ProjectApprovalWorkflow : ResumableFunction<ProjectApprovalWorkflowData>
+    public class ProjectApprovalWorkflow : ResumableFunctionInstance
     {
+        public ProjectSumbitted ProjectSumbitted { get; internal set; }
+        public ManagerApprovalEvent ManagerApprovalEvent { get; internal set; }
         public override async IAsyncEnumerable<Wait> Start()
         {
             yield return
                 WaitEvent<ProjectSumbitted>(Constant.ProjectSumbittedEvent)
                 .Match(x => x.Project.Id > 0)
-                .SetData(() => Data.ProjectSumbitted);
+                .SetData(() => ProjectSumbitted);
 
-            await AskManagerApproval(Data.ProjectSumbitted.Project.Id);
+            await AskManagerApproval(ProjectSumbitted.Project.Id);
             yield return
                 WaitEvent<ManagerApprovalEvent>(Constant.ManagerApprovalEvent)
-                .Match(x => x.ProjectId == Data.ProjectSumbitted.Project.Id)
-                .SetData(() => Data.ManagerApprovalEvent);
+                .Match(x => x.ProjectId == ProjectSumbitted.Project.Id)
+                .SetData(() => ManagerApprovalEvent);
             Console.WriteLine("Done");
         }
 

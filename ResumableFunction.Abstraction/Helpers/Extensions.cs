@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ResumableFunction.Abstraction
+namespace ResumableFunction.Abstraction.Helpers
 {
     public static class Extensions
     {
-        public static bool IsSubclassOfRawGeneric(this Type toCheck,Type generic)
+        public static bool IsSubclassOfRawGeneric(this Type toCheck, Type generic)
         {
             while (toCheck != null && toCheck != typeof(object))
             {

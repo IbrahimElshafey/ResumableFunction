@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using ResumableFunction.Abstraction;
 using ResumableFunction.Abstraction.InOuts;
 using ResumableFunction.Engine.Abstraction;
 using ResumableFunction.Engine.EfDataImplementation;
@@ -55,7 +56,7 @@ namespace ResumableFunction.Engine
             {
                 propAccessStack.Push(currentNode.Member);
                 //is function data access 
-                if (currentNode.Member.Name == "Data" && currentNode.Type == functionDataType)
+                if (currentNode.NodeType == ExpressionType.Constant && currentNode.Type.IsSubclassOf(typeof(ResumableFunctionInstance)))
                     return true;
                 else if (currentNode.Expression?.NodeType == ExpressionType.MemberAccess)
                     return IsDataAccess((MemberExpression)currentNode.Expression);

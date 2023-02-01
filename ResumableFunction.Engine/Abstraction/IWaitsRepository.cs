@@ -5,6 +5,8 @@ namespace ResumableFunction.Engine.Abstraction
     public interface IWaitsRepository
     {
         Task AddWait(Wait eventWait);
+        Task<Wait> GetFunctionWait(Guid? functionWaitId);
+
         //Task AddWait(EventWait eventWait);
         //Task AddWait(AllEventsWait allEventsWait);
         //Task AddWait(AnyEventWait anyEventWait);
@@ -17,5 +19,6 @@ namespace ResumableFunction.Engine.Abstraction
         /// Load waits with its ParentFunctionInfo that include function data
         /// </summary>
         Task<List<EventWait>> GetMatchedWaits(PushedEvent pushedEvent);
+        Task<ManyWaits> GetWaitGroup(Guid? parentGroupId);
     }
 }

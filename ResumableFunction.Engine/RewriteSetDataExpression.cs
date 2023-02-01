@@ -15,8 +15,8 @@ namespace ResumableFunction.Engine
 
             var property = (PropertyInfo)me.Member;
 
-            var functionDataParam = Parameter(wait.FunctionRuntimeInfo.DataType, "functionData");
-            var dataPramterAccess = me.GetDataParamterAccess(functionDataParam, wait.FunctionRuntimeInfo.DataType);
+            var functionDataParam = Parameter(wait.CurrntFunction.GetType(), "functionData");
+            var dataPramterAccess = me.GetDataParamterAccess(functionDataParam, wait.CurrntFunction.GetType());
             if (dataPramterAccess.IsFunctionData && dataPramterAccess.NewExpression != null)
             {
                 var eventDataParam = Parameter(wait.EventDataType, "eventData");

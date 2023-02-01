@@ -6,24 +6,22 @@ namespace ResumableFunction.Abstraction.InOuts
 {
     public abstract class EventWait : Wait
     {
-        public Guid ParentGroupId { get; internal set;}
-        public bool IsOptional { get; internal set;} = false;
-        
-        public LambdaExpression MatchExpression { get; internal set;}
-        public LambdaExpression SetDataExpression { get; internal set;}
+        public Guid? ParentGroupId { get; internal set; }
+        public bool IsOptional { get; internal set; } = false;
 
-        /// <summary>
-        /// Resumable function or subfunction that request the event waiting.
-        /// </summary>
-        
-        public string EventProviderName { get; internal set;}
+        public LambdaExpression MatchExpression { get; internal set; }
+        public LambdaExpression SetDataExpression { get; internal set; }
+
+
+
+        public string EventProviderName { get; internal set; }
 
         /// <summary>
         /// Used by engine to desrialze response to this type
         /// </summary>
-        public Type EventDataType { get; internal set;}
+        public Type EventDataType { get; internal set; }
 
-        public dynamic EventData { get; internal set;}
+        public dynamic EventData { get; internal set; }
         public bool NeedFunctionData { get; internal set; }
 
         private static Delegate? _matchExpressionCompiled;
@@ -31,7 +29,7 @@ namespace ResumableFunction.Abstraction.InOuts
         {
             if (_matchExpressionCompiled is null)
                 _matchExpressionCompiled = MatchExpression.Compile();
-            return (bool)_matchExpressionCompiled.DynamicInvoke(FunctionRuntimeInfo?.Data, EventData);
+            return (bool)_matchExpressionCompiled.DynamicInvoke(CurrntFunction, EventData);
         }
 
         private static Delegate? _setPropExpressionCompiled;
@@ -39,7 +37,7 @@ namespace ResumableFunction.Abstraction.InOuts
         {
             if (_setPropExpressionCompiled is null)
                 _setPropExpressionCompiled = SetDataExpression.Compile();
-            _setPropExpressionCompiled.DynamicInvoke(FunctionRuntimeInfo?.Data, EventData);
+            _setPropExpressionCompiled.DynamicInvoke(CurrntFunction, EventData);
         }
     }
 
@@ -56,7 +54,7 @@ namespace ResumableFunction.Abstraction.InOuts
                 throw new NullReferenceException("EventProviderName can't be null.");
             base.EventData = instance;
             EventDataType = instance.GetType();
-            InitiatedByFunction = callerName;
+            InitiatedByFunctionName = callerName;
         }
 
 

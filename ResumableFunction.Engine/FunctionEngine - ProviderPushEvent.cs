@@ -20,39 +20,131 @@ namespace ResumableFunction.Engine
     public partial class FunctionEngine
     {
 
-        public async Task WhenProviderPushEvent(PushedEvent pushedEvent)
+        public async Task<bool> WhenProviderPushEvent(PushedEvent pushedEvent)
         {
             //engine search waits list with(ProviderName, EventType)
+            //matched waits contains Data from pushed event
+            //and FunctionRuntimeInfo loaded from database
             var matchedWaits = await _waitsRepository.GetMatchedWaits(pushedEvent);
-            foreach (var wait in matchedWaits)
+            foreach (var currentWait in matchedWaits)
             {
-                var functionClass = new ResumableFunctionWrapper(wait);
-                functionClass.UpdateDataWithEventData();
-                //get next event wait
-                var waitResult = await functionClass.GetNextWait();
-                await WaitRequested(waitResult, functionClass);
-                await _functionRepository.SaveFunctionState(wait.FunctionRuntimeInfo);
-                //* call EventProvider.UnSubscribeEvent(pushedEvent.EventData) if no other intances waits this type for the same provider
+                var functionClass = new ResumableFunctionWrapper(currentWait);
+                SetData(currentWait, functionClass);
+
+                if (IsSingleEvent(currentWait) || await IsGroupLastWait(currentWait))
+                {
+                    //get next event wait
+                    var nextWaitResult = await functionClass.GetNextWait();
+                    return await HandleNextWait(nextWaitResult, currentWait, functionClass);
+
+
+
+                    //* call EventProvider.UnSubscribeEvent(pushedEvent.EventData) if no other intances waits this type for the same provider
+                }
+                await _functionRepository.SaveFunctionState(currentWait.FunctionRuntimeInfo);
+
             }
+            return false;
+        }
+
+        private async Task<bool> HandleNextWait(NextWaitResult nextWaitResult, Wait currentWait, ResumableFunctionWrapper functionClass)
+        {
+            if (IsFinalExit(nextWaitResult))
+                return await _functionRepository.MoveFunctionToRecycleBin(functionClass.FunctionRuntimeInfo);
+            else if (IsSubFunctionExit(nextWaitResult))
+            {
+                return await SubFunctionExit(currentWait, functionClass);
+            }
+            else if (nextWaitResult.Result is not null)
+            {
+                nextWaitResult.Result.FunctionWaitId = currentWait.FunctionWaitId;
+                return await WaitRequest(nextWaitResult.Result, functionClass);
+            }
+            currentWait.Status = WaitStatus.Completed;
+            return false;
+        }
+
+        private static void SetData(EventWait currentWait, ResumableFunctionWrapper functionClass)
+        {
+            currentWait.SetData();
+            //functionClass.Data = currentWait.FunctionRuntimeInfo.Data;
+            //functionClass.FunctionRuntimeInfo.Data = functionClass.Data;
+        }
+
+        private async Task<bool> SubFunctionExit(Wait lastFunctionWait, ResumableFunctionWrapper functionClass)
+        {
+            var functionWait = await _waitsRepository.GetFunctionWait(lastFunctionWait.FunctionWaitId);
+            var backToCaller = false;
+            switch (functionWait)
+            {
+                //one sub function -> return to caller after function end
+                case FunctionWait oneFunctionWait:
+                    backToCaller = true;
+                    break;
+                //many sub functions -> wait function group to complete and return to caller
+                case AllFunctionsWait allFunctionsWait:
+                    allFunctionsWait.MoveToMatched(lastFunctionWait.FunctionWaitId);
+                    if (allFunctionsWait.Status == WaitStatus.Completed)
+                        backToCaller = true;
+                    break;
+                case AnyFunctionWait anyFunctionWait:
+                    anyFunctionWait.SetMatchedFunction(lastFunctionWait.FunctionWaitId);
+                    if (anyFunctionWait.Status == WaitStatus.Completed)
+                        backToCaller = true;
+                    break;
+            }
+
+            if (backToCaller)
+            {
+                var nextWaitResult = await functionClass.BackToCaller(functionWait);
+                return await HandleNextWait(nextWaitResult, lastFunctionWait, functionClass);
+            }
+
+            return true;
+        }
+
+        private bool IsFinalExit(NextWaitResult nextWait)
+        {
+            return nextWait.Result is null && nextWait.IsFinalExit;
+        }
+        private bool IsSubFunctionExit(NextWaitResult nextWait)
+        {
+            return nextWait.Result is null && nextWait.IsSubFunctionExit;
+        }
+
+        private async Task<bool> IsGroupLastWait(EventWait currentWait)
+        {
+            var group = await _waitsRepository.GetWaitGroup(currentWait.ParentGroupId);
+            switch (group)
+            {
+                case AllEventsWait allEventsWait:
+                    allEventsWait.MoveToMatched(currentWait);
+                    return allEventsWait.Status == WaitStatus.Completed;
+
+                case AnyEventWait anyEventWait:
+                    anyEventWait.SetMatchedEvent(currentWait); ;
+                    return true;
+            }
+            return false;
+        }
+
+        private bool IsSingleEvent(EventWait currentWait)
+        {
+            return currentWait.ParentGroupId is null;
+        }
+
+        private bool Validate(Wait nextWait)
+        {
+            return true;
         }
 
         /// <summary>
         /// Will execueted when a function instance run and ask for EventWaiting.
         /// </summary>
-        private async Task WaitRequested(NextWaitResult waitResult, ResumableFunctionWrapper functionClass)
+        private async Task<bool> WaitRequest(Wait newWait, ResumableFunctionWrapper functionClass)
         {
-            if (waitResult.Result is null && waitResult.IsFinalExit)
-            {
-                await _functionRepository.MoveFunctionToRecycleBin(functionClass.FunctionRuntimeInfo);
-                return;
-            }
-            if (waitResult.Result != null)
-                await WaitRequested(waitResult.Result, functionClass);
-        }
-
-        private async Task WaitRequested(Wait waitResult, ResumableFunctionWrapper functionClass)
-        {
-            switch (waitResult)
+            if (Validate(newWait) is false) return false;
+            switch (newWait)
             {
                 case EventWait eventWait:
                     await EventWaitRequested(eventWait, functionClass);
@@ -67,20 +159,21 @@ namespace ResumableFunction.Engine
                     await ManyFunctionsWaitRequested(manyFunctionsWait, functionClass);
                     break;
             }
+            return false;
         }
 
         private async Task ManyFunctionsWaitRequested(ManyFunctionsWait functionsWait, ResumableFunctionWrapper functionClass)
         {
-            foreach (var function in functionsWait.WaitingFunctions)
+            foreach (var functionWait in functionsWait.WaitingFunctions)
             {
-                await FunctionWaitRequested(function, functionClass);
+                await FunctionWaitRequested(functionWait, functionClass);
             }
             await _waitsRepository.AddWait(functionsWait);
         }
 
         private async Task FunctionWaitRequested(FunctionWait functionWait, ResumableFunctionWrapper functionClass)
         {
-            await WaitRequested(functionWait.CurrentEvent, functionClass);
+            await WaitRequest(functionWait.CurrentWait, functionClass);
             await _waitsRepository.AddWait(functionWait);
         }
 

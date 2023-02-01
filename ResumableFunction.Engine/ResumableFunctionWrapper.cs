@@ -1,4 +1,5 @@
 ﻿using ResumableFunction.Abstraction;
+using ResumableFunction.Abstraction.Helpers;
 using ResumableFunction.Abstraction.InOuts;
 using ResumableFunction.Engine.InOuts;
 using System.Linq.Expressions;
@@ -8,13 +9,13 @@ namespace ResumableFunction.Engine
 {
     public class ResumableFunctionWrapper : IResumableFunction<object>
     {
-        private readonly EventWait _currentWait;
+        private Wait _currentWait;
         private object _activeRunner;
         public ResumableFunctionWrapper(EventWait eventWait)
         {
             _currentWait = eventWait;
             var functionClassType = _currentWait.FunctionRuntimeInfo.InitiatedByClassType;
-            var isResumableFunctionClass = functionClassType.IsSubclassOfRawGeneric(typeof(ResumableFunction<>));
+            var isResumableFunctionClass = functionClassType.IsSubclassOf(typeof(ResumableFunctionInstance));
             if (isResumableFunctionClass is false)
                 throw new Exception("functionClassType must inherit ResumableFunction<>");
 
@@ -27,38 +28,33 @@ namespace ResumableFunction.Engine
             //    Data = Activator.CreateInstance(propType);
             //}
             FunctionRuntimeInfo = eventWait.FunctionRuntimeInfo;
-            Data = eventWait.FunctionRuntimeInfo.Data;
         }
 
-
-        public dynamic Data
+        public async Task<NextWaitResult> BackToCaller(Wait functionWait)
         {
-            get => FunctionClassInstance.Data;
-            private set => FunctionClassInstance.Data = value;
+            _currentWait = functionWait;
+            _activeRunner = null;
+            return await GetNextWait();
         }
+
+
+      
 
         public FunctionRuntimeInfo FunctionRuntimeInfo
         {
             get => FunctionClassInstance.FunctionState;
-            private set => FunctionClassInstance.FunctionState = value;
+            internal set => FunctionClassInstance.FunctionState = value;
         }
 
         public dynamic FunctionClassInstance { get; private set; }
+
 
         public Task OnFunctionEnd()
         {
             return FunctionClassInstance.OnFunctionEnd();
         }
 
-        /// <summary>
-        /// called by the engine after event received
-        /// </summary>
-        public void UpdateDataWithEventData()
-        {
-            _currentWait.SetData();
-            Data = _currentWait.FunctionRuntimeInfo.Data;
-            FunctionRuntimeInfo.Data = Data;
-        }
+
 
         /// <summary>
         /// called by the engine to resume function execution
@@ -69,26 +65,29 @@ namespace ResumableFunction.Engine
 
             if (functionRunner is null)
                 throw new Exception(
-                    $"Can't initiate runner `{_currentWait.InitiatedByFunction}` for {_currentWait.EventDataType.FullName}");
-            //SetActiveRunnerState(CurrentRunnerLastState());
+                    $"Can't initiate runner `{_currentWait.InitiatedByFunctionName}` for {_currentWait.FunctionRuntimeInfo.InitiatedByClassType.FullName}");
+            SetActiveRunnerState(_currentWait.StateAfterWait);
             bool waitExist = await functionRunner.MoveNextAsync();
             //after function resumed data may be changed (for example user set some props)
-            FunctionRuntimeInfo.Data = Data;
+            //FunctionRuntimeInfo.Data = Data;
             //update current runner state
-            if (FunctionRuntimeInfo.FunctionsStates.ContainsKey(_currentWait.InitiatedByFunction))
-                FunctionRuntimeInfo.FunctionsStates[_currentWait.InitiatedByFunction] = GetActiveRunnerState();
-            else
-                FunctionRuntimeInfo.FunctionsStates.Add(_currentWait.InitiatedByFunction, GetActiveRunnerState());
+            //if (FunctionRuntimeInfo.FunctionsStates.ContainsKey(_currentWait.InitiatedByFunction))
+            //    FunctionRuntimeInfo.FunctionsStates[_currentWait.InitiatedByFunction] = GetActiveRunnerState();
+            //else
+            //    FunctionRuntimeInfo.FunctionsStates.Add(_currentWait.InitiatedByFunction, GetActiveRunnerState());
 
             if (waitExist)
+            {
+                functionRunner.Current.StateAfterWait = GetActiveRunnerState();
                 return new NextWaitResult(functionRunner.Current, false, false);
+            }
             else
             {
                 //if current Function runner name is the main function start
-                if (_currentWait.InitiatedByFunction == nameof(Start))
+                if (_currentWait.InitiatedByFunctionName == nameof(Start))
                 {
                     await OnFunctionEnd();
-                    return new NextWaitResult(null, true, true);
+                    return new NextWaitResult(null, true, false);
                 }
                 return new NextWaitResult(null, false, true);
             }
@@ -96,7 +95,7 @@ namespace ResumableFunction.Engine
 
 
 
-        public void SetActiveRunnerState(int state)
+        internal void SetActiveRunnerState(int state)
         {
             if (_activeRunner != null || GetCurrentRunner() != null)
             {
@@ -108,7 +107,7 @@ namespace ResumableFunction.Engine
                 }
             }
         }
-        public int GetActiveRunnerState()
+        internal int GetActiveRunnerState()
         {
             if (_activeRunner != null || GetCurrentRunner() != null)
             {
@@ -125,12 +124,12 @@ namespace ResumableFunction.Engine
         {
             if (_activeRunner == null)
             {
-                var FunctionRunnerType = FunctionRuntimeInfo.InitiatedByClassType
+                var functionRunnerType = FunctionRuntimeInfo.InitiatedByClassType
                    .GetNestedTypes(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.SuppressChangeType)
                    .FirstOrDefault(x => x.Name.StartsWith(CurrentRunnerName()));
 
-                if (FunctionRunnerType == null) return null;
-                ConstructorInfo? ctor = FunctionRunnerType.GetConstructor(
+                if (functionRunnerType == null) return null;
+                ConstructorInfo? ctor = functionRunnerType.GetConstructor(
                    BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.CreateInstance,
                    new Type[] { typeof(int) });
 
@@ -139,7 +138,7 @@ namespace ResumableFunction.Engine
 
                 if (_activeRunner == null) return null;
                 //set parent class who call
-                var thisField = FunctionRunnerType.GetFields().FirstOrDefault(x => x.Name.EndsWith("__this"));
+                var thisField = functionRunnerType.GetFields().FirstOrDefault(x => x.Name.EndsWith("__this"));
                 //var thisField = FunctionRunnerType.GetField("<>4__this");
                 thisField?.SetValue(_activeRunner, FunctionClassInstance);
                 //var xx=thisField?.GetValue(_activeRunner);
@@ -155,15 +154,15 @@ namespace ResumableFunction.Engine
 
         private string CurrentRunnerName()
         {
-            return $"<{_currentWait.InitiatedByFunction}>";
+            return $"<{_currentWait.InitiatedByFunctionName}>";
         }
 
-        private int CurrentRunnerLastState()
-        {
-            int result = int.MinValue;
-            FunctionRuntimeInfo?.FunctionsStates.TryGetValue(_currentWait.InitiatedByFunction, out result);
-            return result;
-        }
+        //private int CurrentRunnerLastState()
+        //{
+        //    int result = int.MinValue;
+        //    FunctionRuntimeInfo?.FunctionsStates.TryGetValue(_currentWait.InitiatedByFunction, out result);
+        //    return result;
+        //}
 
         public IAsyncEnumerable<Wait> Start()
         {
