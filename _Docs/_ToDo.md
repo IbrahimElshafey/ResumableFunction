@@ -21,7 +21,7 @@
 * Self queuing for 
 	* Web API Provider failed requests
 	* Engine calls to providers
-* Implement provider for time based events
+	* Table for falied requests and service for play them
 
 * Automatic Generator for
 	* Event Classes
