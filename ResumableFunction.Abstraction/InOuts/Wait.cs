@@ -16,11 +16,19 @@ namespace ResumableFunction.Abstraction.InOuts
         /// Resumable function or subfunction that request the event waiting.
         /// </summary>
         public string InitiatedByFunctionName { get; internal set; }
-        internal int StateAfterWait { get; set; }
-        internal FunctionRuntimeInfo FunctionRuntimeInfo { get; set; }
-        internal ResumableFunctionInstance CurrntFunction { get; set; }
-        internal Guid? FunctionWaitId { get; set; }
-        internal bool IsNode { get; set; }
+        public int StateAfterWait { get; internal set; }
+        public FunctionRuntimeInfo FunctionRuntimeInfo { get; internal set; }
+        public ResumableFunctionInstance CurrntFunction { get; internal set; }
+        public Guid? ParentFunctionWaitId { get; internal set; }
+        public bool IsNode { get; internal set; }
+
+        public ReplayType? ReplayType { get; internal set;}
+    }
+
+    public enum ReplayType
+    {
+        ExecuteDontWait,
+        WaitNewEvent,
     }
 
 }

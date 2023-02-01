@@ -13,27 +13,32 @@ namespace ResumableFunction.Engine
     public class RewriteMatchExpression : ExpressionVisitor
     {
         private readonly EventWait _wait;
-        private readonly object _functionData;
         public LambdaExpression Result { get; private set; }
-        private readonly ParameterExpression _dataParamter;
+        private readonly ParameterExpression _functionInstanceArg;
         public RewriteMatchExpression(EventWait wait)
         {
             _wait = wait;
-            _functionData = wait.CurrntFunction;
-            _dataParamter = Parameter(_functionData.GetType(), "functionData");
+            _functionInstanceArg = Parameter(wait.CurrntFunction.GetType(), "functionInstance");
 
             var updatedBoy = (LambdaExpression)Visit(wait.MatchExpression);
             var functionType = typeof(Func<,,>)
-                .MakeGenericType(_functionData.GetType(), updatedBoy.Parameters[0].Type, typeof(bool));
-            Result = Lambda(functionType, updatedBoy.Body, _dataParamter, updatedBoy.Parameters[0]);
+                .MakeGenericType(wait.CurrntFunction.GetType(), updatedBoy.Parameters[0].Type, typeof(bool));
+            Result = Lambda(functionType, updatedBoy.Body, _functionInstanceArg, updatedBoy.Parameters[0]);
             //Result = (LambdaExpression)Visit(Result);
         }
 
 
+        //protected override Expression VisitConstant(ConstantExpression node)
+        //{
+        //    if (node.Type == _wait.CurrntFunction.GetType())
+        //        return _functionInstanceArg;
+        //    return base.VisitConstant(node);
+        //}
+
         protected override Expression VisitMember(MemberExpression node)
         {
             //replace [FunctionClass].Data.Prop with [_dataParamter.Prop] or constant value
-            var x = node.GetDataParamterAccess(_dataParamter, _functionData.GetType());
+            var x = node.GetDataParamterAccess(_functionInstanceArg);
             if (x.IsFunctionData)
             {
                 if (IsBasicType(node.Type))
@@ -53,9 +58,9 @@ namespace ResumableFunction.Engine
 
         private object GetValue(MemberExpression node)
         {
-            var getterLambda = Lambda(node, _dataParamter);
+            var getterLambda = Lambda(node, _functionInstanceArg);
             var getter = getterLambda.Compile();
-            return getter?.DynamicInvoke(_functionData);
+            return getter?.DynamicInvoke(_wait.CurrntFunction);
         }
     }
 

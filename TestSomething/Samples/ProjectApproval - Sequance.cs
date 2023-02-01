@@ -35,7 +35,7 @@ namespace ResumableFunction.Abstraction.Samples
             Console.WriteLine(this.GetType());
             //yield return await Function(() => SubFunction());
             yield return await Functions(
-              "Wait All Functions to End", 
+              "Wait All Functions to End",
               FunctionGroup(
                 () => SubFunction1(),
                 () => SubFunction2(),
@@ -179,23 +179,24 @@ namespace ResumableFunction.Abstraction.Samples
         {
             var result =
                 WaitEvent<ManagerApprovalEvent>("OwnerApproval_SubFunction")
-                .Match(result => result.ProjectId == Project.Id && result.ProjectId == int.Parse("11"))
-                //.Match(result => result.ProjectId == Project.Id)
+                  //.Match(result => result.ProjectId == Project.Id && result.ProjectId == int.Parse("11"))
+                  //.Match(result => result.ProjectId == Project.Id)
+                  .Match(result =>
+                            result.ProjectId > Math.Min(5, 10) &&
+                            result.PreviousApproval.Equals(ManagerApprovalResult) &&
+                            result.ProjectId == Project.Id)
                 .SetData(() => OwnerApprovalResult);
             //.SetData(() => Approvals);
+            Project = new ProjectRequestedEvent { Id = 11 };
+            SponsorApprovalResult = new ManagerApprovalEvent
+            {
+                ProjectId = 11,
+                Accepted = true,
+                Rejected = false
+            };
+            ManagerApprovalResult = SponsorApprovalResult;
             result.FunctionRuntimeInfo = new FunctionRuntimeInfo
             {
-                //Data = new ProjectApprovalFunctionData
-                //{
-                //    Project = new ProjectRequestedEvent { Id = 11 },
-                //    SponsorApprovalResult = new ManagerApprovalEvent
-                //    {
-                //        ProjectId = 11,
-                //        Accepted = true,
-                //        Rejected = false
-                //    }
-                //},
-                //DataType = typeof(ProjectApprovalFunctionData),
                 FunctionId = Guid.NewGuid(),
                 InitiatedByClassType = GetType(),
                 //FunctionsStates = new Dictionary<string, int> { { "Start", 1 } }
@@ -204,7 +205,8 @@ namespace ResumableFunction.Abstraction.Samples
             {
                 ProjectId = 11,
                 Accepted = true,
-                Rejected = false
+                Rejected = false,
+                PreviousApproval = SponsorApprovalResult,
             };
             result.InitiatedByFunctionName = nameof(Start);
             return result;

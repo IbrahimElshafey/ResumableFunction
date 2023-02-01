@@ -29,7 +29,7 @@ namespace Test
 {
     public static partial class Program
     {
-        public static ProjectApproval Data =>
+        public static ProjectApproval ProjectApprovalFunction =>
             new ProjectApproval
             {
                 Project = new ProjectRequestedEvent { Id = 11 },
@@ -37,10 +37,9 @@ namespace Test
             };
         static async Task Main(string[] args)
         {
-            MatchFunctionTranslation();
+            //MatchFunctionTranslation();
 
             //TestMatchTranslation();
-            // using static System.Linq.Expressions.Expression
 
             //TestFunctionClassWrapper();
             //TestSetPropRewrite();
@@ -249,10 +248,11 @@ namespace Test
         private static void TestSetPropRewrite()
         {
 
-            var wait = new ProjectApproval().EventWait();
+            var wait = ProjectApprovalFunction.EventWait();
+            wait.CurrntFunction = ProjectApprovalFunction;
             var setPropRewrite = new RewriteSetDataExpression(wait).Result;
             wait.SetDataExpression = setPropRewrite;
-            wait.SetData();
+            wait.UpdateFunctionData();
         }
 
         private static void TestFunctionClassWrapper()
@@ -262,7 +262,6 @@ namespace Test
             Console.WriteLine(wrapper.FunctionClassInstance.GetType());
             //Console.WriteLine(wrapper.Data);
             //Console.WriteLine(wrapper.Data.GetType());
-            Console.WriteLine(wrapper.FunctionRuntimeInfo);
         }
 
         private static void MatchFunctionTranslation()
@@ -275,37 +274,30 @@ namespace Test
 
 
             var match1 = new ProjectApproval().Expression1();
+            Expression<Func<ProjectApproval,ManagerApprovalEvent, bool>> expectedTranslation =
+                (functionInstance,result) =>
+                    result.ProjectId > Math.Min(5, 10) &&
+                    //result.PreviousApproval.Equals(ManagerApprovalResult) &&
+                    result.ProjectId == functionInstance.Project.Id;
             var rewriteMatch = new RewriteMatchExpression(new EventWait<ManagerApprovalEvent>("ll")
             {
-                CurrntFunction = Data,
+                CurrntFunction = ProjectApprovalFunction,
                 EventData = managerApprovalEvent,
                 MatchExpression = match1
             });
             var matchCompiled = rewriteMatch.Result.Compile();
-            var result = matchCompiled.DynamicInvoke(Data, managerApprovalEvent);
+            var result = matchCompiled.DynamicInvoke(ProjectApprovalFunction, managerApprovalEvent);
+
         }
 
         private static void TestMatchTranslation()
         {
-            var wait = new EventWait<ManagerApprovalEvent>("OwnerApproval")
-                                  .Match(result =>
-                                      result.ProjectId > Math.Min(5, 10) &&
-                                      result.PreviousApproval.Equals(Data.ManagerApprovalResult) &&
-                                      result.ProjectId == Data.Project.Id)
-                                  .SetData(() => Data.OwnerApprovalResult)
-                                  .SetOptional();
-            var newExpresssion =
-                new RewriteMatchExpression(wait).Result;
-            var matchCompiled = newExpresssion.Compile();
-            var pushedEvent = new PushedEvent();
-            pushedEvent["ProjectId"] = 11;
-            pushedEvent["PreviousApproval"] =
-                new ManagerApprovalEvent { ProjectId = 11, Accepted = true, Rejected = false };
 
-            //var isMatch =
-            //    wait.NeedFunctionDataForMatch ?
-            //    wait.IsMatch(Data, pushedEvent.ToObject(typeof(ManagerApprovalEvent))) :
-            //    wait.IsMatch(pushedEvent.ToObject(typeof(ManagerApprovalEvent)));
+            var wait = ProjectApprovalFunction.EventWait();
+            wait.CurrntFunction = ProjectApprovalFunction;
+            wait.MatchExpression =
+                new RewriteMatchExpression(wait).Result;
+            var isMatch = wait.IsMatch();
         }
 
         private static void LoadAssemblyTypes()

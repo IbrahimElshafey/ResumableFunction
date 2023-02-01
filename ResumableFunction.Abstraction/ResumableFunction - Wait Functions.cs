@@ -25,7 +25,7 @@ namespace ResumableFunction.Abstraction
             var asyncEnumerator = function().GetAsyncEnumerator();
             await asyncEnumerator.MoveNextAsync();
             var firstWait = asyncEnumerator.Current;
-            firstWait.FunctionWaitId = result.Id;
+            firstWait.ParentFunctionWaitId = result.Id;
             result.CurrentWait = firstWait;
             result.InitiatedByFunctionName = result.FunctionName;
             return result;
@@ -62,7 +62,7 @@ namespace ResumableFunction.Abstraction
                 var currentFunction = subFunctions[i];
                 var currentFuncResult = await Function(Constants.NoName, currentFunction, callerName);
                 currentFuncResult.IsNode = false;
-                currentFuncResult.CurrentWait.FunctionWaitId = result.Id;
+                currentFuncResult.CurrentWait.ParentFunctionWaitId = result.Id;
                 currentFuncResult.ParentFunctionGroupId = result.Id;
                 result.WaitingFunctions[i] = currentFuncResult;
             }

@@ -25,7 +25,11 @@ namespace Example.ProjectApproval
                 WaitEvent<ManagerApprovalEvent>(Constant.ManagerApprovalEvent)
                 .Match(x => x.ProjectId == ProjectSumbitted.Project.Id)
                 .SetData(() => ManagerApprovalEvent);
-            Console.WriteLine("Done");
+
+            if (ManagerApprovalEvent.Decision is true)
+                Console.WriteLine("Done");
+            else if (ManagerApprovalEvent.Decision is false)
+                yield return GoBackAfter<ProjectSumbitted>();
         }
 
         private async Task AskManagerApproval(int id)

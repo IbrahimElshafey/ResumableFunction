@@ -10,6 +10,6 @@ namespace Example.InOuts
         public string EventIdentifier { get; set; }
 
         public int ProjectId { get; set; }
-        public string Decision { get; set; }
+        public bool Decision { get; set; }
     }
 }

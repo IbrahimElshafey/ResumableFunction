@@ -32,7 +32,7 @@ namespace ResumableFunction.Abstraction.Samples
             if (OwnerApprovalResult.Rejected)
             {
                 await ProjectRejected(Project, "Owner");
-                yield return Replay<ProjectRequestedEvent>();
+                yield return GoBackAfter<ProjectRequestedEvent>();
             }
 
             await AskSponsorToApprove(Project);
@@ -42,7 +42,7 @@ namespace ResumableFunction.Abstraction.Samples
             if (SponsorApprovalResult.Rejected)
             {
                 await ProjectRejected(Project, "Sponsor");
-                yield return Replay("OwnerApproval");
+                yield return GoBackAfter("OwnerApproval");
             }
 
             await AskManagerToApprove(Project);
@@ -52,7 +52,7 @@ namespace ResumableFunction.Abstraction.Samples
             if (ManagerApprovalResult.Rejected)
             {
                 await ProjectRejected(Project, "Manager");
-                yield return Replay("SponsorApproval");
+                yield return GoBackAfter("SponsorApproval");
             }
 
             Console.WriteLine("All three approved");

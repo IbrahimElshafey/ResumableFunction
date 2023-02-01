@@ -13,24 +13,33 @@ namespace ResumableFunction.Abstraction
 
     public abstract partial class ResumableFunctionInstance
     {
-        //Must be a node with no parents
-        protected Wait Replay<T>(string eventIdentifier = null, [CallerMemberName] string callerName = "") where T : class, IEventData, new()
+        protected Wait GoBackAfter<T>(string eventIdentifier = null, [CallerMemberName] string callerName = "") where T : class, IEventData, new()
         {
-            var eventToReplay = FunctionRuntimeInfo.FunctionWaits
-                 .LastOrDefault(x =>
-                     x is EventWait ew &&
-                     (eventIdentifier == null || ew.EventIdentifier == eventIdentifier) &&
-                     ew.EventDataType == typeof(T) &&
-                     ew.IsNode &&
-                     x.InitiatedByFunctionName == callerName &&
-                     x.Status == WaitStatus.Completed);
-            if (eventToReplay is null)
-                throw new Exception($"Event replay failed, no old wait exist.");
-            eventToReplay.Status = WaitStatus.Waiting;
+            Wait eventToReplay = GetWait<T>(eventIdentifier, callerName);
+            eventToReplay.ReplayType = ReplayType.ExecuteDontWait;
+            return eventToReplay;
+        }
+        protected Wait GoBackTo<T>(string eventIdentifier = null, [CallerMemberName] string callerName = "") where T : class, IEventData, new()
+        {
+            Wait eventToReplay = GetWait<T>(eventIdentifier, callerName);
+            eventToReplay.ReplayType = ReplayType.WaitNewEvent;
             return eventToReplay;
         }
 
-        protected Wait Replay(string eventIdentifier = "", [CallerMemberName] string callerName = "")
+        protected Wait GoBackAfter(string eventIdentifier, [CallerMemberName] string callerName = "")
+        {
+            Wait eventToReplay = GetWait(eventIdentifier, callerName);
+            eventToReplay.ReplayType = ReplayType.ExecuteDontWait;
+            return eventToReplay;
+        }
+        protected Wait GoBackTo(string eventIdentifier, [CallerMemberName] string callerName = "")
+        {
+            Wait eventToReplay = GetWait(eventIdentifier, callerName);
+            eventToReplay.ReplayType = ReplayType.WaitNewEvent;
+            return eventToReplay;
+        }
+
+        private Wait GetWait(string eventIdentifier, string callerName)
         {
             var eventToReplay = FunctionRuntimeInfo.FunctionWaits
                  .Last(x =>
@@ -39,8 +48,22 @@ namespace ResumableFunction.Abstraction
                  x.InitiatedByFunctionName == callerName &&
                  x.Status == WaitStatus.Completed);
             if (eventToReplay is null)
-                throw new Exception($"Event replay failed, no old wait exist.");
-            eventToReplay.Status = WaitStatus.Waiting;
+                throw new Exception($"Event go back failed, no old wait exist.");
+            return eventToReplay;
+        }
+
+        private Wait GetWait<T>(string eventIdentifier, string callerName) where T : class, IEventData, new()
+        {
+            var eventToReplay = FunctionRuntimeInfo.FunctionWaits
+                 .LastOrDefault(x =>
+                     x is EventWait ew &&
+                     (eventIdentifier == null || ew.EventIdentifier == eventIdentifier) &&
+                     ew.EventDataType == typeof(T) &&
+                     ew.IsNode &&
+                     x.InitiatedByFunctionName == callerName &&//go back to event in same function
+                     x.Status == WaitStatus.Completed);
+            if (eventToReplay is null)
+                throw new Exception($"Event go back failed, no old wait exist.");
             return eventToReplay;
         }
     }

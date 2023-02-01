@@ -33,7 +33,7 @@ namespace ResumableFunction.Abstraction.InOuts
         }
 
         private static Delegate? _setPropExpressionCompiled;
-        public void SetData()
+        public void UpdateFunctionData()
         {
             if (_setPropExpressionCompiled is null)
                 _setPropExpressionCompiled = SetDataExpression.Compile();

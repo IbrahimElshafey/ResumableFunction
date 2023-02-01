@@ -7,10 +7,10 @@ using System.Reflection;
 
 namespace ResumableFunction.Engine
 {
-    public class ResumableFunctionWrapper : IResumableFunction<object>
+    public class ResumableFunctionWrapper : IResumableFunction
     {
         private Wait _currentWait;
-        private object _activeRunner;
+        private object? _activeRunner;
         public ResumableFunctionWrapper(EventWait eventWait)
         {
             _currentWait = eventWait;
@@ -19,15 +19,11 @@ namespace ResumableFunction.Engine
             if (isResumableFunctionClass is false)
                 throw new Exception("functionClassType must inherit ResumableFunction<>");
 
-            FunctionClassInstance = Activator.CreateInstance(functionClassType);
+            FunctionClassInstance = (ResumableFunctionInstance)Activator.CreateInstance(functionClassType);
             if (FunctionClassInstance is null)
-                throw new Exception($"Can't create instance of `{functionClassType}` with .ctor()"); ;
-            //if (FunctionClassInstance.Data == null)
-            //{
-            //    var propType = functionClassType.GetProperty("Data").PropertyType;
-            //    Data = Activator.CreateInstance(propType);
-            //}
-            FunctionRuntimeInfo = eventWait.FunctionRuntimeInfo;
+                throw new Exception($"Can't create instance of `{functionClassType}` with .ctor()");
+
+            FunctionClassInstance.FunctionRuntimeInfo = eventWait.FunctionRuntimeInfo;
         }
 
         public async Task<NextWaitResult> BackToCaller(Wait functionWait)
@@ -38,23 +34,19 @@ namespace ResumableFunction.Engine
         }
 
 
-      
+
+        public ResumableFunctionInstance FunctionClassInstance { get; internal set; }
 
         public FunctionRuntimeInfo FunctionRuntimeInfo
         {
-            get => FunctionClassInstance.FunctionState;
-            internal set => FunctionClassInstance.FunctionState = value;
+            get => FunctionClassInstance.FunctionRuntimeInfo;
+            private set => FunctionClassInstance.FunctionRuntimeInfo = value;
         }
-
-        public dynamic FunctionClassInstance { get; private set; }
-
 
         public Task OnFunctionEnd()
         {
             return FunctionClassInstance.OnFunctionEnd();
         }
-
-
 
         /// <summary>
         /// called by the engine to resume function execution
@@ -124,7 +116,7 @@ namespace ResumableFunction.Engine
         {
             if (_activeRunner == null)
             {
-                var functionRunnerType = FunctionRuntimeInfo.InitiatedByClassType
+                var functionRunnerType = _currentWait.FunctionRuntimeInfo.InitiatedByClassType
                    .GetNestedTypes(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.SuppressChangeType)
                    .FirstOrDefault(x => x.Name.StartsWith(CurrentRunnerName()));
 

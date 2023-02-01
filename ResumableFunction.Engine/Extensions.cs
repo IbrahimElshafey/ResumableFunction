@@ -26,7 +26,7 @@ namespace ResumableFunction.Engine
             return JsonSerializer.Deserialize<T>(json);
         }
 
-        public static object ToObject(this PushedEvent element,Type toConvertTo)
+        public static object ToObject(this PushedEvent element, Type toConvertTo)
         {
             var json = JsonSerializer.Serialize(element);
             return JsonSerializer.Deserialize(json, toConvertTo, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
@@ -34,15 +34,13 @@ namespace ResumableFunction.Engine
 
         public static (bool IsFunctionData, MemberExpression? NewExpression) GetDataParamterAccess(
             this MemberExpression node,
-            ParameterExpression dataParamter,
-            Type functionDataType)
+            ParameterExpression functionInstanceArg)
         {
             var propAccessStack = new Stack<MemberInfo>();
             var isFunctionData = IsDataAccess(node);
             if (isFunctionData)
             {
-                propAccessStack.Pop();
-                var newAccess = MakeMemberAccess(dataParamter, propAccessStack.Pop());
+                var newAccess = MakeMemberAccess(functionInstanceArg, propAccessStack.Pop());
                 for (int i = 0; i < propAccessStack.Count; i++)
                 {
                     var currentProp = propAccessStack.Pop();
@@ -55,11 +53,14 @@ namespace ResumableFunction.Engine
             bool IsDataAccess(MemberExpression currentNode)
             {
                 propAccessStack.Push(currentNode.Member);
+                var subNode = currentNode.Expression;
+                if (subNode == null) return false;
                 //is function data access 
-                if (currentNode.NodeType == ExpressionType.Constant && currentNode.Type.IsSubclassOf(typeof(ResumableFunctionInstance)))
+                var isFunctionDataAccess = subNode.NodeType == ExpressionType.Constant && subNode.Type == functionInstanceArg.Type;
+                if (isFunctionDataAccess)
                     return true;
-                else if (currentNode.Expression?.NodeType == ExpressionType.MemberAccess)
-                    return IsDataAccess((MemberExpression)currentNode.Expression);
+                else if (subNode.NodeType == ExpressionType.MemberAccess)
+                    return IsDataAccess((MemberExpression)subNode);
                 return false;
             }
         }

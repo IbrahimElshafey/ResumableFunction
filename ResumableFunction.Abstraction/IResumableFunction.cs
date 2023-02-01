@@ -2,12 +2,10 @@
 
 namespace ResumableFunction.Abstraction
 {
-    internal interface IResumableFunction<FunctionData>
+    internal interface IResumableFunction
     {
-        //FunctionData Data { get; }
         FunctionRuntimeInfo FunctionRuntimeInfo { get; }
         Task OnFunctionEnd();
-
         IAsyncEnumerable<Wait> Start();
     }
 }
