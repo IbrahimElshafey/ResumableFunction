@@ -64,7 +64,7 @@ namespace ResumableFunction.Engine
             return false;
         }
 
-        
+
 
         private async Task<bool> SubFunctionExit(Wait lastFunctionWait, ResumableFunctionWrapper functionClass)
         {
@@ -139,7 +139,8 @@ namespace ResumableFunction.Engine
         /// </summary>
         private async Task<bool> GenericWaitRequested(Wait newWait)
         {
-            //todo:handle replayed waits
+            if (newWait.ReplayType != null)
+                return await ReplayWait(newWait);
             if (Validate(newWait) is false) return false;
             switch (newWait)
             {
@@ -157,6 +158,11 @@ namespace ResumableFunction.Engine
                     break;
             }
             return false;
+        }
+
+        private async Task<bool> ReplayWait(Wait newWait)
+        {
+            return true;
         }
 
         private async Task ManyFunctionsWaitRequested(ManyFunctionsWait functionsWait)
