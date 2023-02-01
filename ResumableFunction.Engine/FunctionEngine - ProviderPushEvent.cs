@@ -63,7 +63,10 @@ namespace ResumableFunction.Engine
             {
                 //this may cause and error in case of 
                 nextWaitResult.Result.ParentFunctionWaitId = currentWait.ParentFunctionWaitId;
-                return await GenericWaitRequested(nextWaitResult.Result);
+                if (nextWaitResult.Result.ReplayType != null)
+                    return await ReplayWait(nextWaitResult.Result);
+                else
+                    return await GenericWaitRequested(nextWaitResult.Result);
             }
             currentWait.Status = WaitStatus.Completed;
             return false;
@@ -144,8 +147,7 @@ namespace ResumableFunction.Engine
         /// </summary>
         private async Task<bool> GenericWaitRequested(Wait newWait)
         {
-            if (newWait.ReplayType != null)
-                return await ReplayWait(newWait);
+            newWait.Status = WaitStatus.Waiting;
             if (Validate(newWait) is false) return false;
             switch (newWait)
             {
@@ -165,25 +167,38 @@ namespace ResumableFunction.Engine
             return false;
         }
 
-        private async Task<bool> ReplayWait(Wait newWait)
+        private async Task<bool> ReplayWait(Wait oldCompletedWait)
         {
-            switch (newWait.ReplayType)
+            switch (oldCompletedWait.ReplayType)
             {
                 case ReplayType.ExecuteDontWait:
-                    await HandlePushedEvent(newWait);
+                    await Replay(oldCompletedWait);
                     break;
-                case ReplayType.WaitNewEvent:
+                case ReplayType.WaitSameEventAgain:
+                    //oldCompletedWait.ReplayType = null;
+                    await GenericWaitRequested(oldCompletedWait);
                     break;
                 default:
-                    break;
+                    throw new Exception("ReplayWait exception.");
             }
             return true;
+        }
+
+        private async Task Replay(Wait oldCompletedWait)
+        {
+            var functionClass = new ResumableFunctionWrapper(oldCompletedWait)
+            {
+                FunctionClassInstance = oldCompletedWait.CurrntFunction
+            };
+            var nextWaitResult = await functionClass.GetNextWait();
+            await HandleNextWait(nextWaitResult, oldCompletedWait, functionClass);
         }
 
         private async Task ManyFunctionsWaitRequested(ManyFunctionsWait functionsWait)
         {
             foreach (var functionWait in functionsWait.WaitingFunctions)
             {
+                functionsWait.Status = WaitStatus.Waiting;
                 await FunctionWaitRequested(functionWait);
             }
             await _waitsRepository.AddWait(functionsWait);
@@ -191,7 +206,10 @@ namespace ResumableFunction.Engine
 
         private async Task FunctionWaitRequested(FunctionWait functionWait)
         {
-            await GenericWaitRequested(functionWait.CurrentWait);
+            if (functionWait.CurrentWait.ReplayType != null)
+                await ReplayWait(functionWait.CurrentWait);
+            else
+                await GenericWaitRequested(functionWait.CurrentWait);
             await _waitsRepository.AddWait(functionWait);
         }
 
@@ -199,6 +217,7 @@ namespace ResumableFunction.Engine
         {
             foreach (var eventWait in manyWaits.WaitingEvents)
             {
+                eventWait.Status = WaitStatus.Waiting;
                 await SingleWaitRequested(eventWait);
             }
             await _waitsRepository.AddWait(manyWaits);

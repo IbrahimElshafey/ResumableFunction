@@ -13,6 +13,7 @@ namespace ResumableFunction.Engine.EfDataImplementation
     {
         public async Task AddWait(Wait eventWait)
         {
+            //if alerady exist don't add it
             eventWait.FunctionRuntimeInfo.FunctionWaits.Add(eventWait);
             //switch (eventWait)
             //{

@@ -11,7 +11,7 @@ namespace ResumableFunction.Engine
     {
         private Wait _currentWait;
         private object? _activeRunner;
-        public ResumableFunctionWrapper(EventWait eventWait)
+        public ResumableFunctionWrapper(Wait eventWait)
         {
             _currentWait = eventWait;
             var functionClassType = _currentWait.FunctionRuntimeInfo.InitiatedByClassType;

@@ -22,7 +22,7 @@ namespace ResumableFunction.Abstraction
         protected Wait GoBackTo<T>(string eventIdentifier = null, [CallerMemberName] string callerName = "") where T : class, IEventData, new()
         {
             Wait eventToReplay = GetWait<T>(eventIdentifier, callerName);
-            eventToReplay.ReplayType = ReplayType.WaitNewEvent;
+            eventToReplay.ReplayType = ReplayType.WaitSameEventAgain;
             return eventToReplay;
         }
 
@@ -35,7 +35,7 @@ namespace ResumableFunction.Abstraction
         protected Wait GoBackTo(string eventIdentifier, [CallerMemberName] string callerName = "")
         {
             Wait eventToReplay = GetWait(eventIdentifier, callerName);
-            eventToReplay.ReplayType = ReplayType.WaitNewEvent;
+            eventToReplay.ReplayType = ReplayType.WaitSameEventAgain;
             return eventToReplay;
         }
 

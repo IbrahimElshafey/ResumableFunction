@@ -1,13 +1,26 @@
 # ToDo
-* Test everything after remove Data prop
-* ReplayWait implementation
+* Write Implementation for:
+	* Database Presist
+	* Use unit of work pattern for one transaction save
+* Test Engine Scenarios
+	* Seqeunce
+	* Wait all
+	* Wait any
+	* Wait function
+	* Wait many functions
+	* Wait any function
+	* ReplayWait Go back [to] and go back [after] for types:
+		* One Event Node
+		* All event Wait
+		* Any Event Wait
+		* function
+		* many functions
+		* any function 
+
+
 * Self queuing for 
 	* Web API Provider failed requests
 	* Engine calls to providers
-* Use unit of work pattern for one transaction save
-* Write Implementation for:
-	* Engine
-	* Database Presist
 * Implement provider for time based events
 
 * Automatic Generator for
