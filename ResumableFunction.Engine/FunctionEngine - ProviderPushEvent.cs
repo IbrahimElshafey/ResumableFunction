@@ -28,21 +28,26 @@ namespace ResumableFunction.Engine
             var matchedWaits = await _waitsRepository.GetMatchedWaits(pushedEvent);
             foreach (var currentWait in matchedWaits)
             {
-                var functionClass = new ResumableFunctionWrapper(currentWait);
-                currentWait.UpdateFunctionData();
-                functionClass.FunctionClassInstance = currentWait.CurrntFunction;
-
-                if (IsSingleEvent(currentWait) || await IsGroupLastWait(currentWait))
-                {
-                    //get next event wait
-                    var nextWaitResult = await functionClass.GetNextWait();
-                    return await HandleNextWait(nextWaitResult, currentWait, functionClass);
-                    //todo:* call EventProvider.UnSubscribeEvent(pushedEvent.EventData) if no other intances waits this type for the same provider
-                }
+                await HandlePushedEvent(currentWait);
                 await _functionRepository.SaveFunctionState(currentWait.FunctionRuntimeInfo);
 
             }
             return false;
+        }
+
+        private async Task HandlePushedEvent(EventWait currentWait)
+        {
+            var functionClass = new ResumableFunctionWrapper(currentWait);
+            currentWait.UpdateFunctionData();
+            functionClass.FunctionClassInstance = currentWait.CurrntFunction;
+
+            if (IsSingleEvent(currentWait) || await IsGroupLastWait(currentWait))
+            {
+                //get next event wait
+                var nextWaitResult = await functionClass.GetNextWait();
+                await HandleNextWait(nextWaitResult, currentWait, functionClass);
+                //todo:* call EventProvider.UnSubscribeEvent(pushedEvent.EventData) if no other intances waits this type for the same provider
+            }
         }
 
         private async Task<bool> HandleNextWait(NextWaitResult nextWaitResult, Wait currentWait, ResumableFunctionWrapper functionClass)
@@ -162,6 +167,16 @@ namespace ResumableFunction.Engine
 
         private async Task<bool> ReplayWait(Wait newWait)
         {
+            switch (newWait.ReplayType)
+            {
+                case ReplayType.ExecuteDontWait:
+                    await HandlePushedEvent(newWait);
+                    break;
+                case ReplayType.WaitNewEvent:
+                    break;
+                default:
+                    break;
+            }
             return true;
         }
 
