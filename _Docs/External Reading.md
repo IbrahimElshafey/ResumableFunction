@@ -88,3 +88,10 @@ Note that .NET Core supports only a single application domain.
 
 # assemblies-load-in-dotnet
 * https://michaelscodingspot.com/assemblies-load-in-dotnet/
+
+# EF Core multiple database support
+* https://blog.jetbrains.com/dotnet/2022/08/24/entity-framework-core-and-multiple-database-providers/
+
+
+# Hangfire
+* https://code-maze.com/hangfire-with-asp-net-core/

@@ -1,7 +1,12 @@
 # ToDo
 * Write Implementation for:
 	* Database Presist
+		* Sql Server
+		* Sqlite
 	* Use unit of work pattern for one transaction save
+* Use hangfire to 
+	* Queue pushed event calls
+	* Implement provider for time based events
 * Test Engine Scenarios
 	* Seqeunce
 	* Wait all
@@ -23,6 +28,7 @@
 	* Engine calls to providers
 	* Table for falied requests and service for play them
 
+
 * Automatic Generator for
 	* Event Classes
 	* Flurl Interfaces
@@ -34,13 +40,11 @@
 * Add Log
 * Add Resumable Function History
 * Add event provider that monitor network requests
-* Add UI project to monitor and control function
+* Add UI project to monitor and control functions
 
-* Find alternative for App domains to be able to 
-	* load/unload assembiles at runtime 
-	* separate errors and process control 
 
-* Maintain list of start event
+
+* Maintain list of start events
 
 
 =======
