@@ -1,12 +1,10 @@
 # ToDo
 * Write Implementation for:
 	* Database Presist
-		* Sql Server
-		* Sqlite
 		* Repositories
-	* Use unit of work pattern for one transaction save
+		* Use unit of work pattern for one transaction save
 * Use hangfire to 
-	* Queue pushed event calls
+	* Queue pushed events requests [Fire and forget]
 	* Implement provider for time based events
 * Test Engine Scenarios
 	* Seqeunce
