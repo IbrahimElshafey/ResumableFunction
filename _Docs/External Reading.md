@@ -89,8 +89,12 @@ Note that .NET Core supports only a single application domain.
 # assemblies-load-in-dotnet
 * https://michaelscodingspot.com/assemblies-load-in-dotnet/
 
-# EF Core multiple database support
-* https://blog.jetbrains.com/dotnet/2022/08/24/entity-framework-core-and-multiple-database-providers/
+# EF Core
+* [Multiple Providers]https://blog.jetbrains.com/dotnet/2022/08/24/entity-framework-core-and-multiple-database-providers/
+* [Tools Commands] https://learn.microsoft.com/en-us/ef/core/cli/powershell
+* [Using a Separate Migrations Project] https://learn.microsoft.com/en-us/ef/core/managing-schemas/migrations/projects?tabs=dotnet-core-cli
+* [Converters] https://learn.microsoft.com/en-us/ef/core/modeling/value-conversions?tabs=data-annotations
+* [EF 7 Features] https://learn.microsoft.com/en-us/ef/core/what-is-new/ef-core-7.0/whatsnew#json-columns
 
 
 # Hangfire

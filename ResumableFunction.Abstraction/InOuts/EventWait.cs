@@ -4,7 +4,7 @@ using System.Runtime.CompilerServices;
 
 namespace ResumableFunction.Abstraction.InOuts
 {
-    public abstract class EventWait : Wait
+    public class EventWait : Wait
     {
         public Guid? ParentGroupId { get; internal set; }
         public bool IsOptional { get; internal set; } = false;

@@ -19,6 +19,8 @@ namespace ResumableFunction.Abstraction.InOuts
         public string InitiatedByFunctionName { get; internal set; }
         public int StateAfterWait { get; internal set; }
         public FunctionRuntimeInfo FunctionRuntimeInfo { get; internal set; }
+
+        [NotMapped]
         public ResumableFunctionInstance CurrntFunction { get; internal set; }
         public Guid? ParentFunctionWaitId { get; internal set; }
         public bool IsNode { get; internal set; }

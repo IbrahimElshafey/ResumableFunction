@@ -28,9 +28,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Example.ProjectApproval", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Aq.ExpressionJsonSerializer", "Aq.ExpressionJsonSerializer\Aq.ExpressionJsonSerializer.csproj", "{F6FD2AAC-7409-48A1-80C5-112CCAF4FA1A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ResumableFunction.Engine.Data.SqlServer", "ResumableFunction.Engine.Data.SqlServer\ResumableFunction.Engine.Data.SqlServer.csproj", "{CD3FC42E-8F0A-4CEB-9B1A-0309FE7DC175}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ResumableFunction.Engine.Data.SqlServer", "ResumableFunction.Engine.Data.SqlServer\ResumableFunction.Engine.Data.SqlServer.csproj", "{CD3FC42E-8F0A-4CEB-9B1A-0309FE7DC175}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ResumableFunction.Engine.Data.Sqlite", "ResumableFunction.Engine.Data.Sqlite\ResumableFunction.Engine.Data.Sqlite.csproj", "{D4CC295C-FF62-4426-ADDB-94B65CC21100}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ResumableFunction.Engine.Data.Sqlite", "ResumableFunction.Engine.Data.Sqlite\ResumableFunction.Engine.Data.Sqlite.csproj", "{D4CC295C-FF62-4426-ADDB-94B65CC21100}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Engine", "Engine", "{AE05BD23-5957-4AEC-A533-AA151FDD7BCF}"
 EndProject
@@ -38,7 +38,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ExternalProject", "External
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "EventProviders", "EventProviders", "{EBE4363D-B9E4-49E5-938C-D15D31CD9A43}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Database", "Database", "{3C64D0DE-5803-46BC-8478-F32642D0E261}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DatabaseMigrations", "DatabaseMigrations", "{3C64D0DE-5803-46BC-8478-F32642D0E261}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

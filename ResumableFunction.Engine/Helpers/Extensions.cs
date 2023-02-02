@@ -3,11 +3,12 @@ using ResumableFunction.Abstraction;
 using ResumableFunction.Abstraction.InOuts;
 using ResumableFunction.Engine.Abstraction;
 using ResumableFunction.Engine.EfDataImplementation;
+using System.Data.SqlTypes;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text.Json;
 using static System.Linq.Expressions.Expression;
-namespace ResumableFunction.Engine
+namespace ResumableFunction.Engine.Helpers
 {
     public static class Extensions
     {

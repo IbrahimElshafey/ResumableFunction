@@ -3,6 +3,7 @@
 	* Database Presist
 		* Sql Server
 		* Sqlite
+		* Repositories
 	* Use unit of work pattern for one transaction save
 * Use hangfire to 
 	* Queue pushed event calls

@@ -44,7 +44,7 @@ namespace Test
             //TestFunctionClassWrapper();
             //TestSetPropRewrite();
 
-            //SaveExpressionAsJson();
+            SaveExpressionAsJson();
             //SaveExpressionAsBinary();
             //Program2.Main1();
 
