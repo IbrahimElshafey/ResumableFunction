@@ -6,7 +6,7 @@ namespace ResumableFunction.Abstraction.InOuts
     public sealed class AllEventsWait : ManyWaits
     {
         public List<EventWait> MatchedEvents { get; internal set; } = new List<EventWait>();
-        public Expression<Func<int, bool>> WhenCountExpression { get; internal set; }
+        public LambdaExpression WhenCountExpression { get; internal set; }
 
         public AllEventsWait WhenMatchedCount(Expression<Func<int, bool>> matchCountFilter)
         {
@@ -31,7 +31,7 @@ namespace ResumableFunction.Abstraction.InOuts
             else
             {
                 var matchedCount = MatchedEvents.Count;
-                var matchCompiled = WhenCountExpression.Compile();
+                var matchCompiled = (Func<int, bool>)WhenCountExpression.Compile();
                 Status = matchCompiled(matchedCount) ? WaitStatus.Completed : Status;
             }
             return Status == WaitStatus.Completed;

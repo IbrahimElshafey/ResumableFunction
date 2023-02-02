@@ -63,7 +63,7 @@ namespace ResumableFunction.Engine
         private async Task<bool> SubFunctionExit(Wait lastFunctionWait, ResumableFunctionWrapper functionClass)
         {
             //lastFunctionWait =  last function wait before exsit
-            var parentFunctionWait = await _waitsRepository.GetFunctionWait(lastFunctionWait.ParentFunctionWaitId);
+            var parentFunctionWait = await _waitsRepository.GetParentFunctionWait(lastFunctionWait.ParentFunctionWaitId);
             var backToCaller = false;
             switch (parentFunctionWait)
             {

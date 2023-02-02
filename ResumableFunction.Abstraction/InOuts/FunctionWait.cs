@@ -6,6 +6,10 @@ namespace ResumableFunction.Abstraction.InOuts
 {
     public sealed class FunctionWait : Wait
     {
+        public FunctionWait():base()
+        {
+
+        }
         public FunctionWait(string eventIdentifier, Func<IAsyncEnumerable<Wait>> function)
         {
             EventIdentifier = eventIdentifier;

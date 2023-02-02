@@ -2,67 +2,75 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ResumableFunction.Engine.EfDataImplementation;
 
 #nullable disable
 
-namespace ResumableFunction.Engine.Data.Sqlite.Migrations
+namespace ResumableFunction.Engine.Data.SqlServer.Migrations
 {
     [DbContext(typeof(EngineDataContext))]
-    partial class EngineDataContextModelSnapshot : ModelSnapshot
+    [Migration("20230202104040_Add Function Folder Table")]
+    partial class AddFunctionFolderTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "7.0.2");
+            modelBuilder
+                .HasAnnotation("ProductVersion", "7.0.2")
+                .HasAnnotation("Relational:MaxIdentifierLength", 128);
+
+            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
             modelBuilder.Entity("ResumableFunction.Abstraction.InOuts.FunctionRuntimeInfo", b =>
                 {
                     b.Property<Guid>("FunctionId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("InitiatedByClassType")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("FunctionId");
 
-                    b.ToTable("FunctionInfos");
+                    b.ToTable("FunctionRuntimeInfos", (string)null);
                 });
 
             modelBuilder.Entity("ResumableFunction.Abstraction.InOuts.Wait", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("EventIdentifier")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid?>("FunctionRuntimeInfoFunctionId")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("InitiatedByFunctionName")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsFirst")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("bit");
 
                     b.Property<bool>("IsNode")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("bit");
 
                     b.Property<Guid?>("ParentFunctionWaitId")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<int?>("ReplayType")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("int");
 
                     b.Property<int>("StateAfterWait")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("int");
 
                     b.Property<int>("Status")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -73,12 +81,61 @@ namespace ResumableFunction.Engine.Data.Sqlite.Migrations
                     b.UseTptMappingStrategy();
                 });
 
+            modelBuilder.Entity("ResumableFunction.Engine.InOuts.FunctionFolder", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("LastScanDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Path")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("FunctionFolders");
+                });
+
+            modelBuilder.Entity("ResumableFunction.Engine.InOuts.TypeInfo", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("EventProviderType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("FunctionFolderId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("FunctionFolderId1")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FunctionFolderId");
+
+                    b.HasIndex("FunctionFolderId1");
+
+                    b.ToTable("TypeInfo");
+                });
+
             modelBuilder.Entity("ResumableFunction.Abstraction.InOuts.AllEventsWait", b =>
                 {
                     b.HasBaseType("ResumableFunction.Abstraction.InOuts.Wait");
 
                     b.Property<string>("WhenCountExpression")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.ToTable("AllEventsWaits", (string)null);
                 });
@@ -95,7 +152,7 @@ namespace ResumableFunction.Engine.Data.Sqlite.Migrations
                     b.HasBaseType("ResumableFunction.Abstraction.InOuts.Wait");
 
                     b.Property<Guid?>("MatchedEventId")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasIndex("MatchedEventId");
 
@@ -107,7 +164,7 @@ namespace ResumableFunction.Engine.Data.Sqlite.Migrations
                     b.HasBaseType("ResumableFunction.Abstraction.InOuts.Wait");
 
                     b.Property<Guid?>("MatchedFunctionId")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasIndex("MatchedFunctionId");
 
@@ -119,37 +176,37 @@ namespace ResumableFunction.Engine.Data.Sqlite.Migrations
                     b.HasBaseType("ResumableFunction.Abstraction.InOuts.Wait");
 
                     b.Property<Guid?>("AllEventsWaitId")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid?>("AllEventsWaitId1")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid?>("AnyEventWaitId")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("EventData")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("EventDataType")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("EventProviderName")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsOptional")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("bit");
 
                     b.Property<string>("MatchExpression")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("NeedFunctionData")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("bit");
 
                     b.Property<Guid?>("ParentGroupId")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("SetDataExpression")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasIndex("AllEventsWaitId");
 
@@ -165,22 +222,22 @@ namespace ResumableFunction.Engine.Data.Sqlite.Migrations
                     b.HasBaseType("ResumableFunction.Abstraction.InOuts.Wait");
 
                     b.Property<Guid?>("AllFunctionsWaitId")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid?>("AllFunctionsWaitId1")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid?>("AnyFunctionWaitId")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid?>("CurrentWaitId")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("FunctionName")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid?>("ParentFunctionGroupId")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasIndex("AllFunctionsWaitId");
 
@@ -200,6 +257,17 @@ namespace ResumableFunction.Engine.Data.Sqlite.Migrations
                         .HasForeignKey("FunctionRuntimeInfoFunctionId");
 
                     b.Navigation("FunctionRuntimeInfo");
+                });
+
+            modelBuilder.Entity("ResumableFunction.Engine.InOuts.TypeInfo", b =>
+                {
+                    b.HasOne("ResumableFunction.Engine.InOuts.FunctionFolder", null)
+                        .WithMany("EventProviderTypes")
+                        .HasForeignKey("FunctionFolderId");
+
+                    b.HasOne("ResumableFunction.Engine.InOuts.FunctionFolder", null)
+                        .WithMany("FunctionInfos")
+                        .HasForeignKey("FunctionFolderId1");
                 });
 
             modelBuilder.Entity("ResumableFunction.Abstraction.InOuts.AllEventsWait", b =>
@@ -301,6 +369,13 @@ namespace ResumableFunction.Engine.Data.Sqlite.Migrations
             modelBuilder.Entity("ResumableFunction.Abstraction.InOuts.FunctionRuntimeInfo", b =>
                 {
                     b.Navigation("FunctionWaits");
+                });
+
+            modelBuilder.Entity("ResumableFunction.Engine.InOuts.FunctionFolder", b =>
+                {
+                    b.Navigation("EventProviderTypes");
+
+                    b.Navigation("FunctionInfos");
                 });
 
             modelBuilder.Entity("ResumableFunction.Abstraction.InOuts.AllEventsWait", b =>

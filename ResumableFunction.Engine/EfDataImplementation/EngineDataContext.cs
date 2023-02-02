@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using ResumableFunction.Abstraction.InOuts;
 using ResumableFunction.Engine.Helpers;
+using ResumableFunction.Engine.InOuts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,11 +19,30 @@ namespace ResumableFunction.Engine.EfDataImplementation
         {
         }
 
-        public DbSet<FunctionRuntimeInfo> FunctionInfos { get; set; }
-        public DbSet<EventWait> ActiveWaits { get; set; }
+        public DbSet<FunctionRuntimeInfo> FunctionRuntimeInfos { get; set; }
+        public DbSet<Wait> Waits { get; set; }
+        public DbSet<EventWait> EventWaits { get; set; }
+        public DbSet<AllEventsWait> AllEventsWaits { get; set; }
+        public DbSet<AnyEventWait> AnyEventWaits { get; set; }
+        public DbSet<FunctionWait> FunctionWaits { get; set; }
+        public DbSet<AllFunctionsWait> AllFunctionsWaits { get; set; }
+        public DbSet<AnyFunctionWait> AnyFunctionWait { get; set; }
+        public DbSet<FunctionFolder> FunctionFolders { get; set; }
+        public DbSet<TypeInfo> EventProviderInfos { get; set; }
+        public DbSet<TypeInfo> FunctionInfos { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<Wait>().ToTable("Waits");
+            modelBuilder.Entity<EventWait>().ToTable("EventWaits");
+            modelBuilder.Entity<AllEventsWait>().ToTable("AllEventsWaits");
+            modelBuilder.Entity<AnyEventWait>().ToTable("AnyEventWaits");
+            modelBuilder.Entity<FunctionWait>().ToTable("FunctionWaits");
+            modelBuilder.Entity<AllFunctionsWait>().ToTable("AllFunctionsWaits");
+            modelBuilder.Entity<AnyFunctionWait>().ToTable("AnyFunctionWaits");
+            modelBuilder.Entity<FunctionRuntimeInfo>().ToTable("FunctionRuntimeInfos");
+            
+            
             modelBuilder.Entity<EventWait>()
                 .Property(x => x.EventData)
                 .HasConversion<ObjectToJsonConverter>();

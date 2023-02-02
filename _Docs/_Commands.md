@@ -7,5 +7,8 @@ Add-Migration -Context "EngineDataContext" -Name "Initial" -Project ResumableFun
 # Update DataBase
 Update-Database -Context "EngineDataContext"
 
+#Remove-Migration 
+Remove-Migration -Project ResumableFunction.Engine.Data.SqlServer -Verbose
+
 # Commands Page
 https://learn.microsoft.com/en-us/ef/core/cli/powershell

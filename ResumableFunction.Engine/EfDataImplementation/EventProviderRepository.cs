@@ -10,11 +10,6 @@ namespace ResumableFunction.Engine.EfDataImplementation
             throw new NotImplementedException();
         }
 
-        public Task<bool> RegsiterEventProvider(IEventProviderHandler eventProvider)
-        {
-            throw new NotImplementedException();
-        }
-
         public Task<bool> RegsiterEventProvider(Type eventProvider)
         {
             throw new NotImplementedException();

@@ -24,7 +24,7 @@ namespace ResumableFunction.Engine.EfDataImplementation
             //}
         }
 
-        public Task<Wait> GetFunctionWait(Guid? functionWaitId)
+        public Task<Wait> GetParentFunctionWait(Guid? functionWaitId)
         {
             throw new NotImplementedException();
         }

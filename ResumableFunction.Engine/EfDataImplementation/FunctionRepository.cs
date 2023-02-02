@@ -10,21 +10,6 @@ namespace ResumableFunction.Engine.EfDataImplementation
             throw new NotImplementedException();
         }
 
-        public Task<object> GetFunctionData(Guid instanceId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<int> GetFunctionState(Guid functionId, string initiatedByFunction)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<bool> IsFunctionRegistred(Type functionType)
-        {
-            throw new NotImplementedException();
-        }
-
         public Task MoveFunctionToRecycleBin(FunctionRuntimeInfo functionRuntimeInfo)
         {
             throw new NotImplementedException();

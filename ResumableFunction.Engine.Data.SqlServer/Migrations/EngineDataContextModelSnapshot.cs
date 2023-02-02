@@ -33,7 +33,7 @@ namespace ResumableFunction.Engine.Data.SqlServer.Migrations
 
                     b.HasKey("FunctionId");
 
-                    b.ToTable("FunctionInfos");
+                    b.ToTable("FunctionRuntimeInfos", (string)null);
                 });
 
             modelBuilder.Entity("ResumableFunction.Abstraction.InOuts.Wait", b =>
@@ -41,10 +41,6 @@ namespace ResumableFunction.Engine.Data.SqlServer.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Discriminator")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("EventIdentifier")
                         .HasColumnType("nvarchar(max)");
@@ -77,16 +73,113 @@ namespace ResumableFunction.Engine.Data.SqlServer.Migrations
 
                     b.HasIndex("FunctionRuntimeInfoFunctionId");
 
-                    b.ToTable("Wait");
+                    b.ToTable("Waits", (string)null);
 
-                    b.HasDiscriminator<string>("Discriminator").HasValue("Wait");
+                    b.UseTptMappingStrategy();
+                });
 
-                    b.UseTphMappingStrategy();
+            modelBuilder.Entity("ResumableFunction.Engine.InOuts.FunctionFolder", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("LastScanDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Path")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("FunctionFolders");
+                });
+
+            modelBuilder.Entity("ResumableFunction.Engine.InOuts.TypeInfo", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int?>("FunctionFolderId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("FunctionFolderId1")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FunctionFolderId");
+
+                    b.HasIndex("FunctionFolderId1");
+
+                    b.ToTable("TypeInfo");
+                });
+
+            modelBuilder.Entity("ResumableFunction.Abstraction.InOuts.AllEventsWait", b =>
+                {
+                    b.HasBaseType("ResumableFunction.Abstraction.InOuts.Wait");
+
+                    b.Property<string>("WhenCountExpression")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.ToTable("AllEventsWaits", (string)null);
+                });
+
+            modelBuilder.Entity("ResumableFunction.Abstraction.InOuts.AllFunctionsWait", b =>
+                {
+                    b.HasBaseType("ResumableFunction.Abstraction.InOuts.Wait");
+
+                    b.ToTable("AllFunctionsWaits", (string)null);
+                });
+
+            modelBuilder.Entity("ResumableFunction.Abstraction.InOuts.AnyEventWait", b =>
+                {
+                    b.HasBaseType("ResumableFunction.Abstraction.InOuts.Wait");
+
+                    b.Property<Guid?>("MatchedEventId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasIndex("MatchedEventId");
+
+                    b.ToTable("AnyEventWaits", (string)null);
+                });
+
+            modelBuilder.Entity("ResumableFunction.Abstraction.InOuts.AnyFunctionWait", b =>
+                {
+                    b.HasBaseType("ResumableFunction.Abstraction.InOuts.Wait");
+
+                    b.Property<Guid?>("MatchedFunctionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasIndex("MatchedFunctionId");
+
+                    b.ToTable("AnyFunctionWaits", (string)null);
                 });
 
             modelBuilder.Entity("ResumableFunction.Abstraction.InOuts.EventWait", b =>
                 {
                     b.HasBaseType("ResumableFunction.Abstraction.InOuts.Wait");
+
+                    b.Property<Guid?>("AllEventsWaitId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("AllEventsWaitId1")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("AnyEventWaitId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("EventData")
                         .HasColumnType("nvarchar(max)");
@@ -112,7 +205,46 @@ namespace ResumableFunction.Engine.Data.SqlServer.Migrations
                     b.Property<string>("SetDataExpression")
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasDiscriminator().HasValue("EventWait");
+                    b.HasIndex("AllEventsWaitId");
+
+                    b.HasIndex("AllEventsWaitId1");
+
+                    b.HasIndex("AnyEventWaitId");
+
+                    b.ToTable("EventWaits", (string)null);
+                });
+
+            modelBuilder.Entity("ResumableFunction.Abstraction.InOuts.FunctionWait", b =>
+                {
+                    b.HasBaseType("ResumableFunction.Abstraction.InOuts.Wait");
+
+                    b.Property<Guid?>("AllFunctionsWaitId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("AllFunctionsWaitId1")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("AnyFunctionWaitId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("CurrentWaitId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("FunctionName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("ParentFunctionGroupId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasIndex("AllFunctionsWaitId");
+
+                    b.HasIndex("AllFunctionsWaitId1");
+
+                    b.HasIndex("AnyFunctionWaitId");
+
+                    b.HasIndex("CurrentWaitId");
+
+                    b.ToTable("FunctionWaits", (string)null);
                 });
 
             modelBuilder.Entity("ResumableFunction.Abstraction.InOuts.Wait", b =>
@@ -124,9 +256,147 @@ namespace ResumableFunction.Engine.Data.SqlServer.Migrations
                     b.Navigation("FunctionRuntimeInfo");
                 });
 
+            modelBuilder.Entity("ResumableFunction.Engine.InOuts.TypeInfo", b =>
+                {
+                    b.HasOne("ResumableFunction.Engine.InOuts.FunctionFolder", null)
+                        .WithMany("EventProviderTypes")
+                        .HasForeignKey("FunctionFolderId");
+
+                    b.HasOne("ResumableFunction.Engine.InOuts.FunctionFolder", null)
+                        .WithMany("FunctionInfos")
+                        .HasForeignKey("FunctionFolderId1");
+                });
+
+            modelBuilder.Entity("ResumableFunction.Abstraction.InOuts.AllEventsWait", b =>
+                {
+                    b.HasOne("ResumableFunction.Abstraction.InOuts.Wait", null)
+                        .WithOne()
+                        .HasForeignKey("ResumableFunction.Abstraction.InOuts.AllEventsWait", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("ResumableFunction.Abstraction.InOuts.AllFunctionsWait", b =>
+                {
+                    b.HasOne("ResumableFunction.Abstraction.InOuts.Wait", null)
+                        .WithOne()
+                        .HasForeignKey("ResumableFunction.Abstraction.InOuts.AllFunctionsWait", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("ResumableFunction.Abstraction.InOuts.AnyEventWait", b =>
+                {
+                    b.HasOne("ResumableFunction.Abstraction.InOuts.Wait", null)
+                        .WithOne()
+                        .HasForeignKey("ResumableFunction.Abstraction.InOuts.AnyEventWait", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ResumableFunction.Abstraction.InOuts.EventWait", "MatchedEvent")
+                        .WithMany()
+                        .HasForeignKey("MatchedEventId");
+
+                    b.Navigation("MatchedEvent");
+                });
+
+            modelBuilder.Entity("ResumableFunction.Abstraction.InOuts.AnyFunctionWait", b =>
+                {
+                    b.HasOne("ResumableFunction.Abstraction.InOuts.Wait", null)
+                        .WithOne()
+                        .HasForeignKey("ResumableFunction.Abstraction.InOuts.AnyFunctionWait", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ResumableFunction.Abstraction.InOuts.FunctionWait", "MatchedFunction")
+                        .WithMany()
+                        .HasForeignKey("MatchedFunctionId");
+
+                    b.Navigation("MatchedFunction");
+                });
+
+            modelBuilder.Entity("ResumableFunction.Abstraction.InOuts.EventWait", b =>
+                {
+                    b.HasOne("ResumableFunction.Abstraction.InOuts.AllEventsWait", null)
+                        .WithMany("MatchedEvents")
+                        .HasForeignKey("AllEventsWaitId");
+
+                    b.HasOne("ResumableFunction.Abstraction.InOuts.AllEventsWait", null)
+                        .WithMany("WaitingEvents")
+                        .HasForeignKey("AllEventsWaitId1");
+
+                    b.HasOne("ResumableFunction.Abstraction.InOuts.AnyEventWait", null)
+                        .WithMany("WaitingEvents")
+                        .HasForeignKey("AnyEventWaitId");
+
+                    b.HasOne("ResumableFunction.Abstraction.InOuts.Wait", null)
+                        .WithOne()
+                        .HasForeignKey("ResumableFunction.Abstraction.InOuts.EventWait", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("ResumableFunction.Abstraction.InOuts.FunctionWait", b =>
+                {
+                    b.HasOne("ResumableFunction.Abstraction.InOuts.AllFunctionsWait", null)
+                        .WithMany("CompletedFunctions")
+                        .HasForeignKey("AllFunctionsWaitId");
+
+                    b.HasOne("ResumableFunction.Abstraction.InOuts.AllFunctionsWait", null)
+                        .WithMany("WaitingFunctions")
+                        .HasForeignKey("AllFunctionsWaitId1");
+
+                    b.HasOne("ResumableFunction.Abstraction.InOuts.AnyFunctionWait", null)
+                        .WithMany("WaitingFunctions")
+                        .HasForeignKey("AnyFunctionWaitId");
+
+                    b.HasOne("ResumableFunction.Abstraction.InOuts.Wait", "CurrentWait")
+                        .WithMany()
+                        .HasForeignKey("CurrentWaitId");
+
+                    b.HasOne("ResumableFunction.Abstraction.InOuts.Wait", null)
+                        .WithOne()
+                        .HasForeignKey("ResumableFunction.Abstraction.InOuts.FunctionWait", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CurrentWait");
+                });
+
             modelBuilder.Entity("ResumableFunction.Abstraction.InOuts.FunctionRuntimeInfo", b =>
                 {
                     b.Navigation("FunctionWaits");
+                });
+
+            modelBuilder.Entity("ResumableFunction.Engine.InOuts.FunctionFolder", b =>
+                {
+                    b.Navigation("EventProviderTypes");
+
+                    b.Navigation("FunctionInfos");
+                });
+
+            modelBuilder.Entity("ResumableFunction.Abstraction.InOuts.AllEventsWait", b =>
+                {
+                    b.Navigation("MatchedEvents");
+
+                    b.Navigation("WaitingEvents");
+                });
+
+            modelBuilder.Entity("ResumableFunction.Abstraction.InOuts.AllFunctionsWait", b =>
+                {
+                    b.Navigation("CompletedFunctions");
+
+                    b.Navigation("WaitingFunctions");
+                });
+
+            modelBuilder.Entity("ResumableFunction.Abstraction.InOuts.AnyEventWait", b =>
+                {
+                    b.Navigation("WaitingEvents");
+                });
+
+            modelBuilder.Entity("ResumableFunction.Abstraction.InOuts.AnyFunctionWait", b =>
+                {
+                    b.Navigation("WaitingFunctions");
                 });
 #pragma warning restore 612, 618
         }
