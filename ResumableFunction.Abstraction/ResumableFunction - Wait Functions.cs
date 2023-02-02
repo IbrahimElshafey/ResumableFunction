@@ -28,6 +28,7 @@ namespace ResumableFunction.Abstraction
             firstWait.ParentFunctionWaitId = result.Id;
             result.CurrentWait = firstWait;
             result.InitiatedByFunctionName = result.FunctionName;
+            SetCommonProps(result);
             return result;
         }
 
@@ -35,7 +36,7 @@ namespace ResumableFunction.Abstraction
             (string eventIdentifier, Func<IAsyncEnumerable<Wait>>[] subFunctions, [CallerMemberName] string callerName = "")
         {
             return
-                  (AllFunctionsWait)await ManyFunctions(eventIdentifier, subFunctions, callerName);
+                  (await ManyFunctions(eventIdentifier, subFunctions, callerName)).ToAllFunctionsWait();
         }
 
 
@@ -45,7 +46,7 @@ namespace ResumableFunction.Abstraction
             (string eventIdentifier, Func<IAsyncEnumerable<Wait>>[] subFunctions, [CallerMemberName] string callerName = "")
         {
             return
-                (AnyFunctionWait)await ManyFunctions(eventIdentifier, subFunctions, callerName);
+                (await ManyFunctions(eventIdentifier, subFunctions, callerName)).ToAnyFunctionWait();
         }
 
         private async Task<ManyFunctionsWait> ManyFunctions(string eventIdentifier, Func<IAsyncEnumerable<Wait>>[] subFunctions, string callerName)
@@ -66,7 +67,7 @@ namespace ResumableFunction.Abstraction
                 currentFuncResult.ParentFunctionGroupId = result.Id;
                 result.WaitingFunctions[i] = currentFuncResult;
             }
-
+            SetCommonProps(result);
             return result;
         }
     }

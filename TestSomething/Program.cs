@@ -37,6 +37,8 @@ namespace Test
             };
         static async Task Main(string[] args)
         {
+            var child = new ManyFunctionsWait();
+            var castedToParent = (AllFunctionsWait)child;
             //MatchFunctionTranslation();
 
             //TestMatchTranslation();

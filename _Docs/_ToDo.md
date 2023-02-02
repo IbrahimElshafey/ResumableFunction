@@ -1,6 +1,8 @@
 # ToDo
+* Validate wait types
 * Write Implementation for:
 	* Database Presist
+		* Pass DbContext to Repositories
 		* Repositories
 		* Use unit of work pattern for one transaction save
 * Use hangfire to 

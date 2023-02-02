@@ -3,17 +3,41 @@ using ResumableFunction.Abstraction;
 using ResumableFunction.Abstraction.InOuts;
 using ResumableFunction.Engine.Abstraction;
 using ResumableFunction.Engine.EfDataImplementation;
+using ResumableFunction.Engine.InOuts;
 using System.Data.SqlTypes;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text.Json;
 using static System.Linq.Expressions.Expression;
+using Microsoft.EntityFrameworkCore;
 namespace ResumableFunction.Engine.Helpers
 {
     public static class Extensions
     {
-        public static void AddFunctionEngine(this IServiceCollection services)
+        public static void AddFunctionEngine(this IMvcBuilder mvcBuilder, EngineSettings settings)
         {
+            mvcBuilder.AddApplicationPart(typeof(EventReceiverController).Assembly).AddControllersAsServices();
+            var services = mvcBuilder.Services;
+            services.AddDbContext<EngineDataContext>(options =>
+            {
+                var config = settings;
+                if (config.ProviderName.ToLower().Equals("sqlite"))
+                {
+                    options.UseSqlite(
+                        config.SqliteConnection!,
+                        //x => x.MigrationsAssembly(typeof(SqliteMarker).Assembly.GetName().Name)
+                        x => x.MigrationsAssembly("ResumableFunction.Engine.Data.Sqlite")
+                    );
+                }
+                if (config.ProviderName.ToLower().Equals("sqlserver"))
+                {
+                    options.UseSqlServer(
+                        config.SqlServerConnection!,
+                        x => x.MigrationsAssembly("ResumableFunction.Engine.Data.SqlServer")
+                    );
+                }
+            });
+
             services.AddScoped<IWaitsRepository, WaitsRepository>();
             services.AddScoped<IFunctionRepository, FunctionRepository>();
             services.AddScoped<IEventProviderRepository, EventProviderRepository>();

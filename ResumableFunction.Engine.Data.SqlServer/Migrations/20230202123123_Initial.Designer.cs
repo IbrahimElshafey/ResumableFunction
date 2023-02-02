@@ -12,8 +12,8 @@ using ResumableFunction.Engine.EfDataImplementation;
 namespace ResumableFunction.Engine.Data.SqlServer.Migrations
 {
     [DbContext(typeof(EngineDataContext))]
-    [Migration("20230202104040_Add Function Folder Table")]
-    partial class AddFunctionFolderTable
+    [Migration("20230202123123_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -30,6 +30,9 @@ namespace ResumableFunction.Engine.Data.SqlServer.Migrations
                     b.Property<Guid>("FunctionId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("FunctionState")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("InitiatedByClassType")
                         .HasColumnType("nvarchar(max)");
@@ -107,10 +110,6 @@ namespace ResumableFunction.Engine.Data.SqlServer.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("EventProviderType")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int?>("FunctionFolderId")
                         .HasColumnType("int");
 
@@ -121,13 +120,17 @@ namespace ResumableFunction.Engine.Data.SqlServer.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("FunctionFolderId");
 
                     b.HasIndex("FunctionFolderId1");
 
-                    b.ToTable("TypeInfo");
+                    b.ToTable("TypeInfos", (string)null);
                 });
 
             modelBuilder.Entity("ResumableFunction.Abstraction.InOuts.AllEventsWait", b =>

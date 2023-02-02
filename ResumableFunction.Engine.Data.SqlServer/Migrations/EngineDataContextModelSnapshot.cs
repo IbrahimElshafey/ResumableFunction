@@ -28,6 +28,9 @@ namespace ResumableFunction.Engine.Data.SqlServer.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("FunctionState")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("InitiatedByClassType")
                         .HasColumnType("nvarchar(max)");
 
@@ -124,7 +127,7 @@ namespace ResumableFunction.Engine.Data.SqlServer.Migrations
 
                     b.HasIndex("FunctionFolderId1");
 
-                    b.ToTable("TypeInfo");
+                    b.ToTable("TypeInfos", (string)null);
                 });
 
             modelBuilder.Entity("ResumableFunction.Abstraction.InOuts.AllEventsWait", b =>

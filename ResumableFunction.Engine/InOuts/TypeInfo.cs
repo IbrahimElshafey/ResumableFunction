@@ -6,9 +6,10 @@ using System.Threading.Tasks;
 
 namespace ResumableFunction.Engine.InOuts
 {
-    public class TypeInformation
+    public class TypeInfo
     {
+        public Guid Id { get; set; }
         public string Name { get; set; }
-        public string AssemblyPath { get; set; }
+        public Type Type { get; set; }
     }
 }

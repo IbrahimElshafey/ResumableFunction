@@ -53,7 +53,7 @@ namespace ResumableFunction.Abstraction
             return result;
         }
 
-        private void SetCommonProps(EventWait eventWaiting)
+        private void SetCommonProps(Wait eventWaiting)
         {
             eventWaiting.FunctionRuntimeInfo = FunctionRuntimeInfo;
         }

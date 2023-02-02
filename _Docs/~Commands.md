@@ -1,6 +1,7 @@
 # Migration Commands
-Add-Migration -Context "EngineDataContext" -Name "Initial" -Project ResumableFunction.Engine.Data.Sqlite -Verbose
 Add-Migration -Context "EngineDataContext" -Name "Initial" -Project ResumableFunction.Engine.Data.SqlServer -Verbose
+Add-Migration -Context "EngineDataContext" -Name "Initial" -Project ResumableFunction.Engine.Data.Sqlite -Verbose
+
 
 # Force Migration
 

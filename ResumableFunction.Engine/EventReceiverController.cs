@@ -5,7 +5,7 @@ using System.Dynamic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace ResumableFunction.Engine.Service.Controllers
+namespace ResumableFunction.Engine
 {
     [ApiController]
     [Route("[controller]")]

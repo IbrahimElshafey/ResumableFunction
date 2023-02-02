@@ -26,13 +26,13 @@ namespace ResumableFunction.Engine.EfDataImplementation
         public DbSet<AnyEventWait> AnyEventWaits { get; set; }
         public DbSet<FunctionWait> FunctionWaits { get; set; }
         public DbSet<AllFunctionsWait> AllFunctionsWaits { get; set; }
-        public DbSet<AnyFunctionWait> AnyFunctionWait { get; set; }
+        public DbSet<AnyFunctionWait> AnyFunctionWaits { get; set; }
         public DbSet<FunctionFolder> FunctionFolders { get; set; }
-        public DbSet<TypeInfo> EventProviderInfos { get; set; }
-        public DbSet<TypeInfo> FunctionInfos { get; set; }
+        public DbSet<TypeInfo> TypeInfos { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<FunctionRuntimeInfo>().ToTable("FunctionRuntimeInfos");
             modelBuilder.Entity<Wait>().ToTable("Waits");
             modelBuilder.Entity<EventWait>().ToTable("EventWaits");
             modelBuilder.Entity<AllEventsWait>().ToTable("AllEventsWaits");
@@ -40,7 +40,8 @@ namespace ResumableFunction.Engine.EfDataImplementation
             modelBuilder.Entity<FunctionWait>().ToTable("FunctionWaits");
             modelBuilder.Entity<AllFunctionsWait>().ToTable("AllFunctionsWaits");
             modelBuilder.Entity<AnyFunctionWait>().ToTable("AnyFunctionWaits");
-            modelBuilder.Entity<FunctionRuntimeInfo>().ToTable("FunctionRuntimeInfos");
+            modelBuilder.Entity<TypeInfo>().ToTable("TypeInfos");
+           
             
             
             modelBuilder.Entity<EventWait>()
@@ -49,7 +50,11 @@ namespace ResumableFunction.Engine.EfDataImplementation
 
             modelBuilder.Entity<FunctionRuntimeInfo>()
                .HasKey(x => x.FunctionId);
-            base.OnModelCreating(modelBuilder);
+            modelBuilder.Entity<FunctionRuntimeInfo>()
+                .Property(x => x.FunctionState)
+                .HasConversion<ObjectToJsonConverter>();
+
+             base.OnModelCreating(modelBuilder);
         }
 
         protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
@@ -64,27 +69,5 @@ namespace ResumableFunction.Engine.EfDataImplementation
                 .Properties<Type>()
                 .HaveConversion<TypeToStringConverter>();
         }
-
-        //public static async Task InitializeAsync(EngineDataContext db)
-        //{
-        //    await db.Database.MigrateAsync();
-
-        //    // already seeded
-        //    if (db.Vehicles.Any())
-        //        return;
-
-        //    // sample data will be different due
-        //    // to the nature of generating data
-        //    var fake = new Faker<Vehicle>()
-        //        .Rules((f, v) => v.VehicleIdentificationNumber = f.Vehicle.Vin())
-        //        .Rules((f, v) => v.Model = f.Vehicle.Model())
-        //        .Rules((f, v) => v.Type = f.Vehicle.Type())
-        //        .Rules((f, v) => v.Fuel = f.Vehicle.Fuel());
-
-        //    var vehicles = fake.Generate(100);
-
-        //    db.Vehicles.AddRange(vehicles);
-        //    await db.SaveChangesAsync();
-        //}
     }
 }

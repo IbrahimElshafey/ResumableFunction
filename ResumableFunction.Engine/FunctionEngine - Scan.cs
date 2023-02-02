@@ -1,20 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Reflection;
+﻿using System.Reflection;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Text.Json;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using ResumableFunction.Abstraction;
-using ResumableFunction.Abstraction.Helpers;
-using ResumableFunction.Abstraction.InOuts;
 using ResumableFunction.Engine.Abstraction;
+using ResumableFunction.Engine.EfDataImplementation;
 using ResumableFunction.Engine.InOuts;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace ResumableFunction.Engine
 {
@@ -25,24 +15,32 @@ namespace ResumableFunction.Engine
         private readonly IEventProviderRepository _eventProviderRepository;
         private readonly IFunctionFolderRepository _functionFolderRepository;
         private readonly EngineSettings _settings;
+        private readonly EngineDataContext _context;
 
         public FunctionEngine(
             IWaitsRepository waitsRepository,
             IFunctionRepository functionRepository,
             IEventProviderRepository eventProviderRepository,
             IFunctionFolderRepository functionFolderRepository,
-            IOptions<EngineSettings> engineSettings)
+            IOptions<EngineSettings> engineSettings,
+            EngineDataContext dbContext)
         {
             _waitsRepository = waitsRepository;
             _functionRepository = functionRepository;
             _eventProviderRepository = eventProviderRepository;
             _functionFolderRepository = functionFolderRepository;
             _settings = engineSettings.Value;
+            _context = dbContext;
         }
 
         public async Task ScanFunctionsFolder()
         {
             var functionFolders = await _functionFolderRepository.GetFunctionFolders();
+            await ScanEachFolder(functionFolders);
+        }
+
+        internal async Task ScanEachFolder(List<FunctionFolder> functionFolders)
+        {
             foreach (var folder in functionFolders)
             {
                 //check if folder DLLs need to be scan
@@ -65,10 +63,29 @@ namespace ResumableFunction.Engine
             {
                 //find functions and call RegisterFunction
                 if (type.IsSubclassOf(typeof(ResumableFunctionInstance)))
-                    await _functionRepository.RegisterFunction(type);
-                //find event providers and call RegisterEventProvider
-                else if (typeof(IEventProviderHandler).IsAssignableFrom(type))
-                    await _eventProviderRepository.RegsiterEventProvider(type);
+                    if (await _functionRepository.RegisterFunction(type))
+                    {
+                        //create new instance and add strart it
+                        var instance = (ResumableFunctionInstance)Activator.CreateInstance(type);
+                        if (instance != null)
+                        {
+                            var runner = instance.Start().GetAsyncEnumerator();
+                            if (await runner.MoveNextAsync())
+                            {
+                                var firstWait = runner.Current;
+                                await GenericWaitRequested(firstWait);
+                            }
+                            else
+                            {
+                                //Log no waits exist for function type x
+                            }
+
+                        }
+                        //add first wait to waits list
+                    }
+                    //find event providers and call RegisterEventProvider
+                    else if (typeof(IEventProviderHandler).IsAssignableFrom(type))
+                        await _eventProviderRepository.RegsiterEventProvider(type);
             }
         }
 
@@ -101,6 +118,6 @@ namespace ResumableFunction.Engine
             return functionFolder.NeedScanDlls?.Any() ?? false;
         }
 
-        
+
     }
 }

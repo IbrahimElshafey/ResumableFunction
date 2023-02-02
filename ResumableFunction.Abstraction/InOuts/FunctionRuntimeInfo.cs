@@ -11,6 +11,9 @@ namespace ResumableFunction.Abstraction.InOuts
         /// </summary>
         public Type InitiatedByClassType { get; internal set; }
 
+        //has the state serialzed
+        public object FunctionState { get; internal set; }
+
         public List<Wait> FunctionWaits { get; internal set; } = new List<Wait>();
     }
 }
