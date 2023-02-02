@@ -23,12 +23,15 @@ namespace ResumableFunction.Engine.Data.Sqlite.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("FunctionState")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("InitiatedByClassType")
                         .HasColumnType("TEXT");
 
                     b.HasKey("FunctionId");
 
-                    b.ToTable("FunctionInfos");
+                    b.ToTable("FunctionRuntimeInfos", (string)null);
                 });
 
             modelBuilder.Entity("ResumableFunction.Abstraction.InOuts.Wait", b =>
@@ -71,6 +74,53 @@ namespace ResumableFunction.Engine.Data.Sqlite.Migrations
                     b.ToTable("Waits", (string)null);
 
                     b.UseTptMappingStrategy();
+                });
+
+            modelBuilder.Entity("ResumableFunction.Engine.InOuts.FunctionFolder", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("LastScanDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Path")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("FunctionFolders");
+                });
+
+            modelBuilder.Entity("ResumableFunction.Engine.InOuts.TypeInfo", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int?>("FunctionFolderId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("FunctionFolderId1")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FunctionFolderId");
+
+                    b.HasIndex("FunctionFolderId1");
+
+                    b.ToTable("TypeInfos", (string)null);
                 });
 
             modelBuilder.Entity("ResumableFunction.Abstraction.InOuts.AllEventsWait", b =>
@@ -202,6 +252,17 @@ namespace ResumableFunction.Engine.Data.Sqlite.Migrations
                     b.Navigation("FunctionRuntimeInfo");
                 });
 
+            modelBuilder.Entity("ResumableFunction.Engine.InOuts.TypeInfo", b =>
+                {
+                    b.HasOne("ResumableFunction.Engine.InOuts.FunctionFolder", null)
+                        .WithMany("EventProviderTypes")
+                        .HasForeignKey("FunctionFolderId");
+
+                    b.HasOne("ResumableFunction.Engine.InOuts.FunctionFolder", null)
+                        .WithMany("FunctionInfos")
+                        .HasForeignKey("FunctionFolderId1");
+                });
+
             modelBuilder.Entity("ResumableFunction.Abstraction.InOuts.AllEventsWait", b =>
                 {
                     b.HasOne("ResumableFunction.Abstraction.InOuts.Wait", null)
@@ -301,6 +362,13 @@ namespace ResumableFunction.Engine.Data.Sqlite.Migrations
             modelBuilder.Entity("ResumableFunction.Abstraction.InOuts.FunctionRuntimeInfo", b =>
                 {
                     b.Navigation("FunctionWaits");
+                });
+
+            modelBuilder.Entity("ResumableFunction.Engine.InOuts.FunctionFolder", b =>
+                {
+                    b.Navigation("EventProviderTypes");
+
+                    b.Navigation("FunctionInfos");
                 });
 
             modelBuilder.Entity("ResumableFunction.Abstraction.InOuts.AllEventsWait", b =>

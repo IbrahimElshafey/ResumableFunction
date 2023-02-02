@@ -6,68 +6,87 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ResumableFunction.Engine.Data.Sqlite.Migrations
 {
     /// <inheritdoc />
-    public partial class AddWaitTypes : Migration
+    public partial class Initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropForeignKey(
-                name: "FK_Wait_FunctionInfos_FunctionRuntimeInfoFunctionId",
-                table: "Wait");
+            migrationBuilder.CreateTable(
+                name: "FunctionFolders",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Path = table.Column<string>(type: "TEXT", nullable: false),
+                    LastScanDate = table.Column<DateTime>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_FunctionFolders", x => x.Id);
+                });
 
-            migrationBuilder.DropPrimaryKey(
-                name: "PK_Wait",
-                table: "Wait");
+            migrationBuilder.CreateTable(
+                name: "FunctionRuntimeInfos",
+                columns: table => new
+                {
+                    FunctionId = table.Column<Guid>(type: "TEXT", nullable: false),
+                    InitiatedByClassType = table.Column<string>(type: "TEXT", nullable: true),
+                    FunctionState = table.Column<string>(type: "TEXT", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_FunctionRuntimeInfos", x => x.FunctionId);
+                });
 
-            migrationBuilder.DropColumn(
-                name: "Discriminator",
-                table: "Wait");
+            migrationBuilder.CreateTable(
+                name: "TypeInfos",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Name = table.Column<string>(type: "TEXT", nullable: false),
+                    Type = table.Column<string>(type: "TEXT", nullable: false),
+                    FunctionFolderId = table.Column<int>(type: "INTEGER", nullable: true),
+                    FunctionFolderId1 = table.Column<int>(type: "INTEGER", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TypeInfos", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_TypeInfos_FunctionFolders_FunctionFolderId",
+                        column: x => x.FunctionFolderId,
+                        principalTable: "FunctionFolders",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_TypeInfos_FunctionFolders_FunctionFolderId1",
+                        column: x => x.FunctionFolderId1,
+                        principalTable: "FunctionFolders",
+                        principalColumn: "Id");
+                });
 
-            migrationBuilder.DropColumn(
-                name: "EventData",
-                table: "Wait");
-
-            migrationBuilder.DropColumn(
-                name: "EventDataType",
-                table: "Wait");
-
-            migrationBuilder.DropColumn(
-                name: "EventProviderName",
-                table: "Wait");
-
-            migrationBuilder.DropColumn(
-                name: "IsOptional",
-                table: "Wait");
-
-            migrationBuilder.DropColumn(
-                name: "MatchExpression",
-                table: "Wait");
-
-            migrationBuilder.DropColumn(
-                name: "NeedFunctionData",
-                table: "Wait");
-
-            migrationBuilder.DropColumn(
-                name: "ParentGroupId",
-                table: "Wait");
-
-            migrationBuilder.DropColumn(
-                name: "SetDataExpression",
-                table: "Wait");
-
-            migrationBuilder.RenameTable(
-                name: "Wait",
-                newName: "Waits");
-
-            migrationBuilder.RenameIndex(
-                name: "IX_Wait_FunctionRuntimeInfoFunctionId",
-                table: "Waits",
-                newName: "IX_Waits_FunctionRuntimeInfoFunctionId");
-
-            migrationBuilder.AddPrimaryKey(
-                name: "PK_Waits",
-                table: "Waits",
-                column: "Id");
+            migrationBuilder.CreateTable(
+                name: "Waits",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Status = table.Column<int>(type: "INTEGER", nullable: false),
+                    EventIdentifier = table.Column<string>(type: "TEXT", nullable: true),
+                    IsFirst = table.Column<bool>(type: "INTEGER", nullable: false),
+                    InitiatedByFunctionName = table.Column<string>(type: "TEXT", nullable: true),
+                    StateAfterWait = table.Column<int>(type: "INTEGER", nullable: false),
+                    FunctionRuntimeInfoFunctionId = table.Column<Guid>(type: "TEXT", nullable: true),
+                    ParentFunctionWaitId = table.Column<Guid>(type: "TEXT", nullable: true),
+                    IsNode = table.Column<bool>(type: "INTEGER", nullable: false),
+                    ReplayType = table.Column<int>(type: "INTEGER", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Waits", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Waits_FunctionRuntimeInfos_FunctionRuntimeInfoFunctionId",
+                        column: x => x.FunctionRuntimeInfoFunctionId,
+                        principalTable: "FunctionRuntimeInfos",
+                        principalColumn: "FunctionId");
+                });
 
             migrationBuilder.CreateTable(
                 name: "AllEventsWaits",
@@ -271,12 +290,20 @@ namespace ResumableFunction.Engine.Data.Sqlite.Migrations
                 table: "FunctionWaits",
                 column: "CurrentWaitId");
 
-            migrationBuilder.AddForeignKey(
-                name: "FK_Waits_FunctionInfos_FunctionRuntimeInfoFunctionId",
+            migrationBuilder.CreateIndex(
+                name: "IX_TypeInfos_FunctionFolderId",
+                table: "TypeInfos",
+                column: "FunctionFolderId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TypeInfos_FunctionFolderId1",
+                table: "TypeInfos",
+                column: "FunctionFolderId1");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Waits_FunctionRuntimeInfoFunctionId",
                 table: "Waits",
-                column: "FunctionRuntimeInfoFunctionId",
-                principalTable: "FunctionInfos",
-                principalColumn: "FunctionId");
+                column: "FunctionRuntimeInfoFunctionId");
 
             migrationBuilder.AddForeignKey(
                 name: "FK_AnyEventWaits_EventWaits_MatchedEventId",
@@ -297,8 +324,32 @@ namespace ResumableFunction.Engine.Data.Sqlite.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(
-                name: "FK_Waits_FunctionInfos_FunctionRuntimeInfoFunctionId",
-                table: "Waits");
+                name: "FK_AllEventsWaits_Waits_Id",
+                table: "AllEventsWaits");
+
+            migrationBuilder.DropForeignKey(
+                name: "FK_AllFunctionsWaits_Waits_Id",
+                table: "AllFunctionsWaits");
+
+            migrationBuilder.DropForeignKey(
+                name: "FK_AnyEventWaits_Waits_Id",
+                table: "AnyEventWaits");
+
+            migrationBuilder.DropForeignKey(
+                name: "FK_AnyFunctionWaits_Waits_Id",
+                table: "AnyFunctionWaits");
+
+            migrationBuilder.DropForeignKey(
+                name: "FK_EventWaits_Waits_Id",
+                table: "EventWaits");
+
+            migrationBuilder.DropForeignKey(
+                name: "FK_FunctionWaits_Waits_CurrentWaitId",
+                table: "FunctionWaits");
+
+            migrationBuilder.DropForeignKey(
+                name: "FK_FunctionWaits_Waits_Id",
+                table: "FunctionWaits");
 
             migrationBuilder.DropForeignKey(
                 name: "FK_AnyEventWaits_EventWaits_MatchedEventId",
@@ -307,6 +358,18 @@ namespace ResumableFunction.Engine.Data.Sqlite.Migrations
             migrationBuilder.DropForeignKey(
                 name: "FK_AnyFunctionWaits_FunctionWaits_MatchedFunctionId",
                 table: "AnyFunctionWaits");
+
+            migrationBuilder.DropTable(
+                name: "TypeInfos");
+
+            migrationBuilder.DropTable(
+                name: "FunctionFolders");
+
+            migrationBuilder.DropTable(
+                name: "Waits");
+
+            migrationBuilder.DropTable(
+                name: "FunctionRuntimeInfos");
 
             migrationBuilder.DropTable(
                 name: "EventWaits");
@@ -325,86 +388,6 @@ namespace ResumableFunction.Engine.Data.Sqlite.Migrations
 
             migrationBuilder.DropTable(
                 name: "AnyFunctionWaits");
-
-            migrationBuilder.DropPrimaryKey(
-                name: "PK_Waits",
-                table: "Waits");
-
-            migrationBuilder.RenameTable(
-                name: "Waits",
-                newName: "Wait");
-
-            migrationBuilder.RenameIndex(
-                name: "IX_Waits_FunctionRuntimeInfoFunctionId",
-                table: "Wait",
-                newName: "IX_Wait_FunctionRuntimeInfoFunctionId");
-
-            migrationBuilder.AddColumn<string>(
-                name: "Discriminator",
-                table: "Wait",
-                type: "TEXT",
-                nullable: false,
-                defaultValue: "");
-
-            migrationBuilder.AddColumn<string>(
-                name: "EventData",
-                table: "Wait",
-                type: "TEXT",
-                nullable: true);
-
-            migrationBuilder.AddColumn<string>(
-                name: "EventDataType",
-                table: "Wait",
-                type: "TEXT",
-                nullable: true);
-
-            migrationBuilder.AddColumn<string>(
-                name: "EventProviderName",
-                table: "Wait",
-                type: "TEXT",
-                nullable: true);
-
-            migrationBuilder.AddColumn<bool>(
-                name: "IsOptional",
-                table: "Wait",
-                type: "INTEGER",
-                nullable: true);
-
-            migrationBuilder.AddColumn<string>(
-                name: "MatchExpression",
-                table: "Wait",
-                type: "TEXT",
-                nullable: true);
-
-            migrationBuilder.AddColumn<bool>(
-                name: "NeedFunctionData",
-                table: "Wait",
-                type: "INTEGER",
-                nullable: true);
-
-            migrationBuilder.AddColumn<Guid>(
-                name: "ParentGroupId",
-                table: "Wait",
-                type: "TEXT",
-                nullable: true);
-
-            migrationBuilder.AddColumn<string>(
-                name: "SetDataExpression",
-                table: "Wait",
-                type: "TEXT",
-                nullable: true);
-
-            migrationBuilder.AddPrimaryKey(
-                name: "PK_Wait",
-                table: "Wait",
-                column: "Id");
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_Wait_FunctionInfos_FunctionRuntimeInfoFunctionId",
-                table: "Wait",
-                column: "FunctionRuntimeInfoFunctionId",
-                principalTable: "FunctionInfos",
-                principalColumn: "FunctionId");
         }
     }
 }
