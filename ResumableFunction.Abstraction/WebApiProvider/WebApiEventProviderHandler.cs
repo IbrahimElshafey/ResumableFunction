@@ -23,26 +23,58 @@ namespace ResumableFunction.Abstraction.WebApiProvider
 
         public async Task Start()
         {
-            var remoteProviderName = await _client.GetProviderName();
-            if (remoteProviderName != EventProviderName)
-                throw new Exception($"The RemoteProviderName and it's client must use the same event provider name.");
-            await _client.Start();
+            try
+            {
+                var remoteProviderName = await _client.GetProviderName();
+                if (remoteProviderName != EventProviderName)
+                    throw new Exception($"The RemoteProviderName and it's client must use the same event provider name.");
+                await _client.Start();
+            }
+            catch (Exception)
+            {
+
+            }
         }
+           
 
         public async Task Stop()
         {
-            await _client.Stop();
+            try
+            {
+                await _client.Stop();
+            }
+            catch (Exception)
+            {
+
+            }
+            
         }
 
         public async Task<bool> SubscribeToEvent(IEventData eventData)
         {
+            try
+            {
+                return await _client.SubscribeToApiAction(eventData.EventIdentifier);
+            }
+            catch (Exception)
+            {
+                return false;
+            }
             //revisit
-            return await _client.SubscribeToApiAction(eventData.EventIdentifier);
+            
         }
 
         public async Task<bool> UnSubscribeEvent(IEventData eventData)
         {
-            return await _client.UnsubscribeApiAction(eventData.EventIdentifier);
+            try
+            {
+                return await _client.UnsubscribeApiAction(eventData.EventIdentifier);
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+            
         }
     }
 }

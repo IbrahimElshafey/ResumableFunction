@@ -44,7 +44,7 @@ namespace ResumableFunction.Engine
             {
                 if (IsBasicType(node.Type))
                     return Constant(GetValue(x.NewExpression), node.Type);
-                _wait.NeedFunctionData = true;
+                _wait.NeedFunctionDataForMatch = true;
                 return x.NewExpression;
             }
             return base.VisitMember(node);

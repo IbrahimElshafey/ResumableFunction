@@ -14,9 +14,12 @@ namespace ResumableFunction.Engine.Helpers
             return JsonConvert.DeserializeObject(json);
         }
 
-        private static string ObjectToJson(object o)
+        private static string ObjectToJson(object obj)
         {
-            return JsonConvert.SerializeObject(o);
+            return JsonConvert.SerializeObject(obj, new JsonSerializerSettings()
+            {
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+            });
         }
     }
 }

@@ -23,5 +23,11 @@ namespace ResumableFunction.Engine
         {
             await _engine.WhenProviderPushEvent(pushEvent);
         }
+
+        [HttpGet(nameof(ScanFunctionsFolders))]
+        public async Task ScanFunctionsFolders()
+        {
+            await _engine.ScanFunctionsFolders();
+        }
     }
 }

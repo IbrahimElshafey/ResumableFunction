@@ -18,12 +18,14 @@ namespace ResumableFunction.Abstraction
 
     public abstract partial class ResumableFunctionInstance : IResumableFunction
     {
+        internal string Name => GetType().FullName;
         public ResumableFunctionInstance()
         {
             FunctionRuntimeInfo = new FunctionRuntimeInfo
             {
                 FunctionId = Guid.NewGuid(),
                 InitiatedByClassType = GetType(),
+                FunctionState = this,
             };
         }
 

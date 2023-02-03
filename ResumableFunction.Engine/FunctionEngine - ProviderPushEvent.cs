@@ -15,7 +15,8 @@ namespace ResumableFunction.Engine
             foreach (var currentWait in matchedWaits)
             {
                 await HandlePushedEvent(currentWait);
-                await _functionRepository.SaveFunctionState(currentWait.FunctionRuntimeInfo);
+                //await _functionRepository.SaveFunctionState(currentWait.FunctionRuntimeInfo);
+                await _context.SaveChangesAsync();
 
             }
             return false;
@@ -23,17 +24,22 @@ namespace ResumableFunction.Engine
 
         private async Task HandlePushedEvent(EventWait currentWait)
         {
-            var functionClass = new ResumableFunctionWrapper(currentWait);
+            var functionClass = new ResumableFunctionWrapper(currentWait)
+            {
+                FunctionClassInstance = currentWait.CurrntFunction
+            };
             currentWait.UpdateFunctionData();
-            functionClass.FunctionClassInstance = currentWait.CurrntFunction;
 
             if (IsSingleEvent(currentWait) || await IsGroupLastWait(currentWait))
             {
                 //get next event wait
                 var nextWaitResult = await functionClass.GetNextWait();
                 await HandleNextWait(nextWaitResult, currentWait, functionClass);
-                //todo:* call EventProvider.UnSubscribeEvent(pushedEvent.EventData) if no other intances waits this type for the same provider
+                await _waitsRepository.DuplicateWaitIfFirst(currentWait);
+
             }
+
+            currentWait.FunctionRuntimeInfo.FunctionState = functionClass.FunctionClassInstance;
         }
 
         private async Task<bool> HandleNextWait(NextWaitResult nextWaitResult, Wait currentWait, ResumableFunctionWrapper functionClass)
@@ -217,7 +223,7 @@ namespace ResumableFunction.Engine
             // * Find event provider handler or load it.
             var eventProviderHandler = await _eventProviderRepository.GetByName(eventWait.EventProviderName);
             // * Start event provider if not started 
-            await eventProviderHandler.Start();
+            eventProviderHandler.Start();
             // * Call SubscribeToEvent with current paylaod type (eventWaiting.EventData)
             await eventProviderHandler.SubscribeToEvent(eventWait.EventData);
             // * Save event to IActiveEventsRepository 

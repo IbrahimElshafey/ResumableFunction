@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ResumableFunction.Engine.InOuts
 {
-    public class TypeInfo
+    public class TypeInformation
     {
         public Guid Id { get; set; }
         public string Name { get; set; }

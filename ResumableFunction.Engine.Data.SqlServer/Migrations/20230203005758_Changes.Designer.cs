@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ResumableFunction.Engine.EfDataImplementation;
 
@@ -11,9 +12,11 @@ using ResumableFunction.Engine.EfDataImplementation;
 namespace ResumableFunction.Engine.Data.SqlServer.Migrations
 {
     [DbContext(typeof(EngineDataContext))]
-    partial class EngineDataContextModelSnapshot : ModelSnapshot
+    [Migration("20230203005758_Changes")]
+    partial class Changes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -99,14 +102,6 @@ namespace ResumableFunction.Engine.Data.SqlServer.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("FunctionFolders");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 97,
-                            LastScanDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Path = "C:\\Users\\Ibrahim\\source\\repos\\WorkflowInCode.ConsoleTest\\Example.ProjectApproval\\bin\\Debug\\net7.0"
-                        });
                 });
 
             modelBuilder.Entity("ResumableFunction.Engine.InOuts.TypeInformation", b =>

@@ -1,7 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using ResumableFunction.Abstraction;
 using ResumableFunction.Abstraction.InOuts;
 using ResumableFunction.Engine.Abstraction;
+using ResumableFunction.Engine.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,11 +19,10 @@ namespace ResumableFunction.Engine.EfDataImplementation
         {
         }
 
-        public async Task AddWait(Wait eventWait)
+        public Task AddWait(Wait waitToAdd)
         {
             //if alerady exist don't add it
-            eventWait.FunctionRuntimeInfo.FunctionWaits.Add(eventWait);
-            switch (eventWait)
+            switch (waitToAdd)
             {
                 case EventWait wait:
                     _context.EventWaits.Add(wait);
@@ -41,25 +43,132 @@ namespace ResumableFunction.Engine.EfDataImplementation
                     _context.AnyFunctionWaits.Add(wait);
                     break;
             }
+            waitToAdd.FunctionRuntimeInfo.FunctionWaits.Add(waitToAdd);
+            return Task.CompletedTask;
         }
 
-        public Task<Wait> GetParentFunctionWait(Guid? functionWaitId)
+        public async Task<Wait> GetParentFunctionWait(Guid? functionWaitId)
         {
-            throw new NotImplementedException();
+            var waitFuncs = new Func<Task<Wait?>>[]
+            {
+                async() =>
+                    await _context.FunctionWaits.FindAsync(functionWaitId),
+                async() =>
+                    await _context.AllFunctionsWaits
+                        .Include(x => x.WaitingFunctions)
+                        .Include(x => x.CompletedFunctions)
+                        .FirstOrDefaultAsync(x => x.Id == functionWaitId),
+                async() =>
+                    await _context.AnyFunctionWaits
+                        .Include(x => x.WaitingFunctions)
+                        //.Include(x => x.MatchedFunction)
+                        .FirstOrDefaultAsync(x => x.Id == functionWaitId),
+
+
+            };
+            foreach (var func in waitFuncs)
+            {
+                var wait = await func();
+                if (wait is not null)
+                    return wait;
+            }
+            return null!;
         }
 
         public async Task<List<EventWait>> GetMatchedWaits(PushedEvent pushedEvent)
         {
-
-            var matchedWaits = new List<EventWait>();
-            //pass payload to match expression
+            var matchedWaits =
+                await _context.EventWaits
+                .Include(x => x.FunctionRuntimeInfo)
+                .Where(x =>
+                    x.EventProviderName == pushedEvent.EventProviderName &&
+                    x.EventIdentifier == pushedEvent.EventIdentifier)
+                .ToListAsync();
+            foreach (var wait in matchedWaits)
+            {
+                wait.EventData = pushedEvent.ToObject(wait.EventDataType);
+            }
             matchedWaits = matchedWaits.Where(x => x.IsMatch()).ToList();
             return matchedWaits;
         }
 
-        public Task<ManyWaits> GetWaitGroup(Guid? parentGroupId)
+        public async Task<ManyWaits> GetWaitGroup(Guid? parentGroupId)
         {
-            throw new NotImplementedException();
+            var waitFuncs = new Func<Task<ManyWaits?>>[]
+            {
+                async() =>
+                    await _context.AllEventsWaits
+                    .Include(x=>x.WaitingEvents)
+                    .Include(x=>x.MatchedEvents)
+                    .FirstOrDefaultAsync(x => x.Id ==parentGroupId),
+                 async() =>
+                    await _context.AnyEventWaits
+                    .Include(x=>x.WaitingEvents)
+                    //.Include(x=>x.MatchedEvent)
+                    .FirstOrDefaultAsync(x => x.Id ==parentGroupId),
+
+
+            };
+            foreach (var func in waitFuncs)
+            {
+                var wait = await func();
+                if (wait is not null)
+                    return wait;
+            }
+            return null!;
         }
+
+        public async Task DuplicateWaitIfFirst(EventWait currentWait)
+        {
+            if (currentWait.IsFirst)
+                DuplicateEventWait(currentWait);
+            else if (currentWait.ParentGroupId is not null)
+            {
+                var waitGroup = await GetWaitGroup(currentWait.ParentGroupId);
+                if (waitGroup.IsFirst)
+                    DuplicateWaitGroup(waitGroup);
+            }
+            else if (currentWait.ParentFunctionWaitId is not null)
+            {
+                var functionWait = await GetParentFunctionWait(currentWait.ParentFunctionWaitId);
+                if (functionWait.IsFirst)
+                    DuplicateFunctionWait(functionWait);
+            }
+
+            void DuplicateEventWait(EventWait eventWait)
+            {
+                var result = new EventWait
+                {
+                    Status = WaitStatus.Waiting,
+                    MatchExpression = eventWait.MatchExpression,
+                    SetDataExpression = eventWait.SetDataExpression,
+                    InitiatedByFunctionName = eventWait.InitiatedByFunctionName,
+                    EventDataType = eventWait.EventDataType,
+                    EventIdentifier = eventWait.EventIdentifier,
+                    EventProviderName = eventWait.EventProviderName,
+                    FunctionRuntimeInfo = new FunctionRuntimeInfo
+                    {
+                        FunctionId = Guid.NewGuid(),
+                        InitiatedByClassType = eventWait.FunctionRuntimeInfo.InitiatedByClassType
+                    },
+                    IsFirst = true,
+                    IsNode = eventWait.IsNode,
+                    IsOptional = eventWait.IsOptional,
+                    ReplayType = eventWait.ReplayType,
+                    NeedFunctionDataForMatch = eventWait.NeedFunctionDataForMatch,
+                    StateAfterWait = eventWait.StateAfterWait,
+                };
+                _context.EventWaits.Add(result);
+            }
+            void DuplicateWaitGroup(ManyWaits waitGroup)
+            {
+
+            }
+            void DuplicateFunctionWait(Wait functionWait)
+            {
+            }
+        }
+
+
     }
 }

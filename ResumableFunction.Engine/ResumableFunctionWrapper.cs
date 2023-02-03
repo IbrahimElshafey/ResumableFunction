@@ -26,6 +26,11 @@ namespace ResumableFunction.Engine
             FunctionClassInstance.FunctionRuntimeInfo = eventWait.FunctionRuntimeInfo;
         }
 
+        public ResumableFunctionWrapper(ResumableFunctionInstance instance)
+        {
+            FunctionClassInstance = instance;
+        }
+
         public async Task<NextWaitResult> BackToCaller(Wait functionWait)
         {
             _currentWait = functionWait;
@@ -112,11 +117,11 @@ namespace ResumableFunction.Engine
             return int.MinValue;
         }
 
-        private IAsyncEnumerator<Wait>? GetCurrentRunner()
+        internal IAsyncEnumerator<Wait>? GetCurrentRunner()
         {
             if (_activeRunner == null)
             {
-                var functionRunnerType = _currentWait.FunctionRuntimeInfo.InitiatedByClassType
+                var functionRunnerType = FunctionClassInstance.GetType()
                    .GetNestedTypes(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.SuppressChangeType)
                    .FirstOrDefault(x => x.Name.StartsWith(CurrentRunnerName()));
 
@@ -146,7 +151,9 @@ namespace ResumableFunction.Engine
 
         private string CurrentRunnerName()
         {
-            return $"<{_currentWait.InitiatedByFunctionName}>";
+            return _currentWait == null ?
+                $"<{nameof(Start)}>" : 
+                $"<{_currentWait.InitiatedByFunctionName}>";
         }
 
         //private int CurrentRunnerLastState()

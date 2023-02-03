@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using Newtonsoft.Json.Linq;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 namespace ResumableFunction.Abstraction.InOuts
 {
@@ -21,7 +22,23 @@ namespace ResumableFunction.Abstraction.InOuts
         public FunctionRuntimeInfo FunctionRuntimeInfo { get; internal set; }
 
         [NotMapped]
-        public ResumableFunctionInstance CurrntFunction { get; internal set; }
+        public ResumableFunctionInstance CurrntFunction
+        {
+            get
+            {
+                if (FunctionRuntimeInfo is not null)
+                    if (FunctionRuntimeInfo.FunctionState is JObject stateAsJson)
+                    {
+                        var result = (ResumableFunctionInstance)stateAsJson.ToObject(FunctionRuntimeInfo.InitiatedByClassType);
+                        FunctionRuntimeInfo.FunctionState = result;
+                        return result;
+                    }
+                    else if (FunctionRuntimeInfo.FunctionState is ResumableFunctionInstance funcInstance)
+                        return funcInstance;
+                return null;
+            }
+        }
+
         public Guid? ParentFunctionWaitId { get; internal set; }
         public bool IsNode { get; internal set; }
 

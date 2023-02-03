@@ -1,10 +1,12 @@
 # ToDo
-* Validate wait types
+* Match expression null handle
+* Duplicate start event
+* MoveFunctionToRecycleBin
 * Write Implementation for:
-	* Database Presist
-		* Pass DbContext to Repositories
 		* Repositories
-		* Use unit of work pattern for one transaction save
+
+* Validate wait types
+
 * Use hangfire to 
 	* Queue pushed events requests [Fire and forget]
 	* Implement provider for time based events
@@ -45,7 +47,7 @@
 
 
 
-* Maintain list of start events
+
 
 
 =======

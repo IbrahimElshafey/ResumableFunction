@@ -22,7 +22,9 @@ namespace ResumableFunction.Abstraction.InOuts
         public Type EventDataType { get; internal set; }
 
         public dynamic EventData { get; internal set; }
-        public bool NeedFunctionData { get; internal set; }
+
+        //todo:to be used later for enhancements
+        public bool NeedFunctionDataForMatch { get; internal set; }
 
         private static Delegate? _matchExpressionCompiled;
         public bool IsMatch()

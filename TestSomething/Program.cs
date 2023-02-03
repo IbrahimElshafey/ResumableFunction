@@ -37,8 +37,7 @@ namespace Test
             };
         static async Task Main(string[] args)
         {
-            var child = new ManyFunctionsWait();
-            var castedToParent = (AllFunctionsWait)child;
+            var x = ProjectApprovalFunction.Name;
             //MatchFunctionTranslation();
 
             //TestMatchTranslation();
@@ -253,7 +252,7 @@ namespace Test
         {
 
             var wait = ProjectApprovalFunction.EventWait();
-            wait.CurrntFunction = ProjectApprovalFunction;
+            //wait.CurrntFunction = ProjectApprovalFunction;
             var setPropRewrite = new RewriteSetDataExpression(wait).Result;
             wait.SetDataExpression = setPropRewrite;
             wait.UpdateFunctionData();
@@ -285,7 +284,7 @@ namespace Test
                     result.ProjectId == functionInstance.Project.Id;
             var rewriteMatch = new RewriteMatchExpression(new EventWait<ManagerApprovalEvent>("ll")
             {
-                CurrntFunction = ProjectApprovalFunction,
+                //CurrntFunction = ProjectApprovalFunction,
                 EventData = managerApprovalEvent,
                 MatchExpression = match1
             });
@@ -298,7 +297,7 @@ namespace Test
         {
 
             var wait = ProjectApprovalFunction.EventWait();
-            wait.CurrntFunction = ProjectApprovalFunction;
+            //wait.CurrntFunction = ProjectApprovalFunction;
             wait.MatchExpression =
                 new RewriteMatchExpression(wait).Result;
             var isMatch = wait.IsMatch();

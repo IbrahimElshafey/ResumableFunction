@@ -92,9 +92,17 @@ namespace ResumableFunction.Engine.Data.Sqlite.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("FunctionFolders");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 97,
+                            LastScanDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Path = "C:\\Users\\Ibrahim\\source\\repos\\WorkflowInCode.ConsoleTest\\Example.ProjectApproval\\bin\\Debug\\net7.0"
+                        });
                 });
 
-            modelBuilder.Entity("ResumableFunction.Engine.InOuts.TypeInfo", b =>
+            modelBuilder.Entity("ResumableFunction.Engine.InOuts.TypeInformation", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -120,7 +128,7 @@ namespace ResumableFunction.Engine.Data.Sqlite.Migrations
 
                     b.HasIndex("FunctionFolderId1");
 
-                    b.ToTable("TypeInfos", (string)null);
+                    b.ToTable("TypeInfos");
                 });
 
             modelBuilder.Entity("ResumableFunction.Abstraction.InOuts.AllEventsWait", b =>
@@ -192,7 +200,7 @@ namespace ResumableFunction.Engine.Data.Sqlite.Migrations
                     b.Property<string>("MatchExpression")
                         .HasColumnType("TEXT");
 
-                    b.Property<bool>("NeedFunctionData")
+                    b.Property<bool>("NeedFunctionDataForMatch")
                         .HasColumnType("INTEGER");
 
                     b.Property<Guid?>("ParentGroupId")
@@ -252,7 +260,7 @@ namespace ResumableFunction.Engine.Data.Sqlite.Migrations
                     b.Navigation("FunctionRuntimeInfo");
                 });
 
-            modelBuilder.Entity("ResumableFunction.Engine.InOuts.TypeInfo", b =>
+            modelBuilder.Entity("ResumableFunction.Engine.InOuts.TypeInformation", b =>
                 {
                     b.HasOne("ResumableFunction.Engine.InOuts.FunctionFolder", null)
                         .WithMany("EventProviderTypes")

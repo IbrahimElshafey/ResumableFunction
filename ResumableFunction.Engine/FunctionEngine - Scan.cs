@@ -33,10 +33,11 @@ namespace ResumableFunction.Engine
             _context = dbContext;
         }
 
-        public async Task ScanFunctionsFolder()
+        public async Task ScanFunctionsFolders()
         {
-            var functionFolders = await _functionFolderRepository.GetFunctionFolders();
-            await ScanEachFolder(functionFolders);
+            await ScanEachFolder(
+                await _functionFolderRepository.GetFunctionFolders()
+                );
         }
 
         internal async Task ScanEachFolder(List<FunctionFolder> functionFolders)
@@ -51,71 +52,86 @@ namespace ResumableFunction.Engine
                     var dllPath = Path.Combine(folder.Path, dllName);
                     //check if assembly use the same .net version
                     //get types in assembly without loading and register them
-                    await RegisterTypes(GetTypes(dllPath));
-
+                    await RegisterTypes(GetTypes(dllPath), folder);
                 }
             }
         }
 
-        private async Task RegisterTypes(Type[] types)
+        private async Task RegisterTypes(Type[] types, FunctionFolder folder)
         {
+            var functionTypes = new List<Type>();
+            var eventProviderTypes = new List<Type>();
             foreach (var type in types)
             {
                 //find functions and call RegisterFunction
                 if (type.IsSubclassOf(typeof(ResumableFunctionInstance)))
-                    if (await _functionRepository.RegisterFunction(type))
-                    {
-                        //create new instance and add strart it
-                        var instance = (ResumableFunctionInstance)Activator.CreateInstance(type);
-                        if (instance != null)
-                        {
-                            var runner = instance.Start().GetAsyncEnumerator();
-                            if (await runner.MoveNextAsync())
-                            {
-                                var firstWait = runner.Current;
-                                await GenericWaitRequested(firstWait);
-                            }
-                            else
-                            {
-                                //Log no waits exist for function type x
-                            }
-
-                        }
-                        //add first wait to waits list
-                    }
-                    //find event providers and call RegisterEventProvider
-                    else if (typeof(IEventProviderHandler).IsAssignableFrom(type))
-                        await _eventProviderRepository.RegsiterEventProvider(type);
+                    functionTypes.Add(type);
+                   
+                //find event providers and call RegisterEventProvider
+                else if (typeof(IEventProviderHandler).IsAssignableFrom(type))
+                    eventProviderTypes.Add(type);
+                    
             }
+            foreach (var eventProviderType in eventProviderTypes)
+            {
+                await _eventProviderRepository.RegsiterEventProvider(eventProviderType, folder);
+            }
+            foreach (var functionType in functionTypes)    
+            {
+                await RegisterResumableFunction(folder, functionType);
+            }
+            await _context.SaveChangesAsync();
         }
 
+        private async Task RegisterResumableFunction(FunctionFolder folder, Type type)
+        {
+            var instance = (ResumableFunctionInstance)Activator.CreateInstance(type)!;
+            if (instance != null && await _functionRepository.RegisterFunction(instance, folder))
+            {
+                var functionClass = new ResumableFunctionWrapper(instance);
+                var runner = functionClass.GetCurrentRunner();
+                if (runner != null && await runner.MoveNextAsync())
+                {
+                    var firstWait = runner.Current;
+                    firstWait.IsFirst = true;
+                    firstWait.StateAfterWait = functionClass.GetActiveRunnerState();
+                    await GenericWaitRequested(firstWait);
+                }
+                else
+                {
+                    //Log no waits exist for function type x
+                }
+            }
+        }
         private Type[] GetTypes(string assemblyPath)
         {
 
-            string[] runtimeDlls = Directory.GetFiles(RuntimeEnvironment.GetRuntimeDirectory(), "*.dll");
-            var resolver = new PathAssemblyResolver(new List<string>(runtimeDlls) { assemblyPath });
+            //string[] runtimeDlls = Directory.GetFiles(RuntimeEnvironment.GetRuntimeDirectory(), "*.dll");
+            //var resolver = new PathAssemblyResolver(new List<string>(runtimeDlls) { assemblyPath });
 
-            using (var metadataContext = new MetadataLoadContext(resolver))
-            {
-                Assembly assembly = metadataContext.LoadFromAssemblyPath(assemblyPath);
-                return assembly.GetTypes();
-            }
+            //_metadataContext = new MetadataLoadContext(resolver);
+            Assembly assembly = Assembly.LoadFile(assemblyPath);
+            return assembly.GetTypes();
         }
 
         private bool FolderNeedScan(FunctionFolder functionFolder)
         {
-            var result = new FunctionFolder();
             //exclude "ResumableFunction.Abstraction"
-            var dlls = Directory
-                .GetFiles(functionFolder.Path, "*.dll")
-                .Except(new[] { "ResumableFunction.Abstraction.dll" })
-                .Select(x => new FileInfo(x));
-            foreach (var dll in dlls)
+            if (Directory.Exists(functionFolder.Path))
             {
-                if (dll.LastWriteTime > functionFolder.LastScanDate)
-                    functionFolder.NeedScanDlls.Add(dll.Name);
+                var dlls = Directory
+                .GetFiles(functionFolder.Path, "*.dll")
+                .Where(dllPath => !dllPath.EndsWith("ResumableFunction.Abstraction.dll"))
+                .Select(x => new FileInfo(x))
+                .ToList();
+                foreach (var dll in dlls)
+                {
+                    if (dll.LastWriteTime > functionFolder.LastScanDate)
+                        functionFolder.NeedScanDlls.Add(dll.Name);
+                }
+                return functionFolder.NeedScanDlls?.Any() ?? false;
             }
-            return functionFolder.NeedScanDlls?.Any() ?? false;
+            return false;
         }
 
 

@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -28,7 +29,7 @@ namespace ResumableFunction.Engine.EfDataImplementation
         public DbSet<AllFunctionsWait> AllFunctionsWaits { get; set; }
         public DbSet<AnyFunctionWait> AnyFunctionWaits { get; set; }
         public DbSet<FunctionFolder> FunctionFolders { get; set; }
-        public DbSet<TypeInfo> TypeInfos { get; set; }
+        public DbSet<TypeInformation> TypeInfos { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -40,10 +41,13 @@ namespace ResumableFunction.Engine.EfDataImplementation
             modelBuilder.Entity<FunctionWait>().ToTable("FunctionWaits");
             modelBuilder.Entity<AllFunctionsWait>().ToTable("AllFunctionsWaits");
             modelBuilder.Entity<AnyFunctionWait>().ToTable("AnyFunctionWaits");
-            modelBuilder.Entity<TypeInfo>().ToTable("TypeInfos");
-           
-            
-            
+
+
+            modelBuilder.Entity<FunctionFolder>().HasData(
+                _functionFolders.Select(x => new FunctionFolder { Id = x.Length, Path = x }).ToArray());
+
+
+
             modelBuilder.Entity<EventWait>()
                 .Property(x => x.EventData)
                 .HasConversion<ObjectToJsonConverter>();
@@ -54,7 +58,7 @@ namespace ResumableFunction.Engine.EfDataImplementation
                 .Property(x => x.FunctionState)
                 .HasConversion<ObjectToJsonConverter>();
 
-             base.OnModelCreating(modelBuilder);
+            base.OnModelCreating(modelBuilder);
         }
 
         protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
@@ -69,5 +73,9 @@ namespace ResumableFunction.Engine.EfDataImplementation
                 .Properties<Type>()
                 .HaveConversion<TypeToStringConverter>();
         }
+
+        private string[] _functionFolders = new string[] {
+            @"C:\Users\Ibrahim\source\repos\WorkflowInCode.ConsoleTest\Example.ProjectApproval\bin\Debug\net7.0"};
+
     }
 }

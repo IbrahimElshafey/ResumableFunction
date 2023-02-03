@@ -11,8 +11,7 @@ namespace ResumableFunction.Engine.Abstraction
 {
     public interface IFunctionRepository
     {
-        Task<bool> RegisterFunction(Type functionType);
-        Task<bool> SaveFunctionState(FunctionRuntimeInfo functionRuntimeInfo);
+        Task<bool> RegisterFunction(ResumableFunctionInstance function, FunctionFolder folder);
         Task<bool> MoveFunctionToRecycleBin(FunctionRuntimeInfo functionRuntimeInfo);
     }
 }

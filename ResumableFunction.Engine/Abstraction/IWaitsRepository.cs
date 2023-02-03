@@ -12,5 +12,6 @@ namespace ResumableFunction.Engine.Abstraction
         /// </summary>
         Task<List<EventWait>> GetMatchedWaits(PushedEvent pushedEvent);
         Task<ManyWaits> GetWaitGroup(Guid? parentGroupId);
+        Task DuplicateWaitIfFirst(EventWait currentWait);
     }
 }

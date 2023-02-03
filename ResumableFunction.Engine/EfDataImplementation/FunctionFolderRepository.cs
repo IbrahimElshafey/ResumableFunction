@@ -1,13 +1,18 @@
-﻿using ResumableFunction.Engine.Abstraction;
+﻿using Microsoft.EntityFrameworkCore;
+using ResumableFunction.Engine.Abstraction;
 using ResumableFunction.Engine.InOuts;
 
 namespace ResumableFunction.Engine.EfDataImplementation
 {
-    public class FunctionFolderRepository : IFunctionFolderRepository
+    internal class FunctionFolderRepository :RepositoryBase, IFunctionFolderRepository
     {
-        public Task<List<FunctionFolder>> GetFunctionFolders()
+        public FunctionFolderRepository(EngineDataContext dbContext) : base(dbContext)
         {
-            throw new NotImplementedException();
+        }
+
+        public async Task<List<FunctionFolder>> GetFunctionFolders()
+        {
+            return await _context.FunctionFolders.ToListAsync();
         }
     }
 }
