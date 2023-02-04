@@ -9,10 +9,10 @@ namespace ResumableFunction.Abstraction.InOuts
     {
         public Wait()
         {
-            Id = Guid.NewGuid();
+            //Id = Guid.NewGuid();
         }
         [Key]
-        public Guid Id { get; private set; }
+        public int Id { get; private set; }
         public WaitStatus Status { get; internal set; }
         public string EventIdentifier { get; internal set; }
         public bool IsFirst { get; internal set; } = false;
@@ -24,7 +24,7 @@ namespace ResumableFunction.Abstraction.InOuts
         public FunctionRuntimeInfo FunctionRuntimeInfo { get; internal set; }
         
         [ForeignKey(nameof(FunctionRuntimeInfo))]
-        public Guid FunctionId { get; internal set; }
+        public int FunctionId { get; internal set; }
 
         [NotMapped]
         public ResumableFunctionInstance CurrntFunction
@@ -47,60 +47,14 @@ namespace ResumableFunction.Abstraction.InOuts
         public Wait ParentFunctionWait { get; internal set; }
 
         [ForeignKey(nameof(ParentFunctionWait))]
-        public Guid? ParentFunctionWaitId { get; internal set; }
+        public int? ParentFunctionWaitId { get; internal set; }
 
         public bool IsNode { get; internal set; }
 
         public ReplayType? ReplayType { get; internal set; }
         public WaitType WaitType { get; internal set; }
-        //internal Wait UpdateForReplay()
-        //{
-        //    Wait result = null;
-        //    switch (this)
-        //    {
-        //        case EventWait eventWait:
-        //            result = eventWait;
-        //            break;
-        //        case AllEventsWait allEventsWait:
-        //            if(allEventsWait.MatchedEvents?.Any() is true)
-        //                allEventsWait.WaitingEvents.AddRange(allEventsWait.MatchedEvents);
-        //            allEventsWait.WaitingEvents.ForEach(x=>x.Status)
-        //            result = allEventsWait;
-        //            break;
-        //        case AnyEventWait anyEventWait:
-        //            result = anyEventWait;
-        //            break;
-        //        case FunctionWait functionWait:
-        //            result = functionWait;
-        //            break;
-        //        case AllFunctionsWait allFunctionsWait:
-        //            result = allFunctionsWait;
-        //            break;
-        //        case AnyFunctionWait anyFunctionWait:
-        //            result = anyFunctionWait;
-        //            break;
-        //    }
-        //    result.Status = WaitStatus.Waiting;
-        //    return result;
-        //}
 
 
-    }
-
-    public enum ReplayType
-    {
-        ExecuteDontWait,
-        WaitSameEventAgain,
-    }
-
-    public enum WaitType
-    {
-        EventWait,
-        AllEventsWait,
-        AnyEventWait,
-        FunctionWait,
-        AllFunctionsWait,
-        AnyFunctionWait,
     }
 
 }

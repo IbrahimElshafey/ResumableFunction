@@ -43,7 +43,6 @@ public class ApiCallEvent : Dictionary<string, object>
     internal void AddResult(object? value, bool flatObject)
     {
         if (value == null) return;
-        Add(ResultKey, value);
         if (flatObject)
             if (IsSimple(value))
                 Add("Result", value);

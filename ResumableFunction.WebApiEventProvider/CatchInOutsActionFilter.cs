@@ -75,7 +75,7 @@ namespace ResumableFunction.Abstraction.WebApiEventProvider
             if (await eventsData.IsStarted() is false)
                 return false;
 
-            var classEnabled = AttributeIsEnable(context.Controller.GetType());
+            var classEnabled = AttributeIsEnable(context.Controller.GetType()) != false;
             if (context.ActionDescriptor is ControllerActionDescriptor controllerActionDescriptor)
             {
                 var methodEnabled = AttributeIsEnable(controllerActionDescriptor.MethodInfo);
@@ -93,7 +93,7 @@ namespace ResumableFunction.Abstraction.WebApiEventProvider
                         a =>
                         a.GetType().Equals(typeof(EnableEventProviderAttribute)) ||
                         a.GetType().Equals(typeof(DisableEventProviderAttribute))
-                    , config.FlatObject)?.Equals(new EnableEventProviderAttribute());
+                        )?.Equals(new EnableEventProviderAttribute());
             }
         }
 

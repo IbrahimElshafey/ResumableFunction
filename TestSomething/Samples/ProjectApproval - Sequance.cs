@@ -197,7 +197,7 @@ namespace ResumableFunction.Abstraction.Samples
             ManagerApprovalResult = SponsorApprovalResult;
             result.FunctionRuntimeInfo = new FunctionRuntimeInfo
             {
-                FunctionId = Guid.NewGuid(),
+                //FunctionId = Guid.NewGuid(),
                 InitiatedByClassType = GetType(),
                 //FunctionsStates = new Dictionary<string, int> { { "Start", 1 } }
             };

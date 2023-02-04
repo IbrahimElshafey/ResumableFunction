@@ -19,7 +19,7 @@ namespace ResumableFunction.Abstraction.InOuts
         public Wait ParentFunctionGroup { get; internal set; }
         
         [ForeignKey(nameof(ParentFunctionGroup))]
-        public Guid? ParentFunctionGroupId { get; internal set; }
+        public int? ParentFunctionGroupId { get; internal set; }
         public Wait CurrentWait { get; internal set; }
         public string FunctionName { get; internal set; }
     }

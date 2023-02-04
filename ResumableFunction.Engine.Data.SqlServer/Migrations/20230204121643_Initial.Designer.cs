@@ -12,7 +12,7 @@ using ResumableFunction.Engine.EfDataImplementation;
 namespace ResumableFunction.Engine.Data.SqlServer.Migrations
 {
     [DbContext(typeof(EngineDataContext))]
-    [Migration("20230204113036_Initial")]
+    [Migration("20230204121643_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -27,9 +27,11 @@ namespace ResumableFunction.Engine.Data.SqlServer.Migrations
 
             modelBuilder.Entity("ResumableFunction.Abstraction.InOuts.FunctionRuntimeInfo", b =>
                 {
-                    b.Property<Guid>("FunctionId")
+                    b.Property<int>("FunctionId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("FunctionId"));
 
                     b.Property<string>("FunctionState")
                         .HasColumnType("nvarchar(max)");
@@ -44,9 +46,11 @@ namespace ResumableFunction.Engine.Data.SqlServer.Migrations
 
             modelBuilder.Entity("ResumableFunction.Abstraction.InOuts.Wait", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Discriminator")
                         .IsRequired()
@@ -55,8 +59,8 @@ namespace ResumableFunction.Engine.Data.SqlServer.Migrations
                     b.Property<string>("EventIdentifier")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("FunctionId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("FunctionId")
+                        .HasColumnType("int");
 
                     b.Property<string>("InitiatedByFunctionName")
                         .HasColumnType("nvarchar(max)");
@@ -67,8 +71,8 @@ namespace ResumableFunction.Engine.Data.SqlServer.Migrations
                     b.Property<bool>("IsNode")
                         .HasColumnType("bit");
 
-                    b.Property<Guid?>("ParentFunctionWaitId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int?>("ParentFunctionWaitId")
+                        .HasColumnType("int");
 
                     b.Property<int?>("ReplayType")
                         .HasColumnType("int");
@@ -168,11 +172,11 @@ namespace ResumableFunction.Engine.Data.SqlServer.Migrations
                     b.Property<bool>("IsOptional")
                         .HasColumnType("bit");
 
-                    b.Property<Guid?>("ManyEventsWaitId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int?>("ManyEventsWaitId")
+                        .HasColumnType("int");
 
-                    b.Property<Guid?>("ManyEventsWaitId1")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int?>("ManyEventsWaitId1")
+                        .HasColumnType("int");
 
                     b.Property<string>("MatchExpression")
                         .HasColumnType("nvarchar(max)");
@@ -180,8 +184,8 @@ namespace ResumableFunction.Engine.Data.SqlServer.Migrations
                     b.Property<bool>("NeedFunctionDataForMatch")
                         .HasColumnType("bit");
 
-                    b.Property<Guid?>("ParentGroupId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int?>("ParentGroupId")
+                        .HasColumnType("int");
 
                     b.Property<string>("SetDataExpression")
                         .HasColumnType("nvarchar(max)");
@@ -199,20 +203,20 @@ namespace ResumableFunction.Engine.Data.SqlServer.Migrations
                 {
                     b.HasBaseType("ResumableFunction.Abstraction.InOuts.Wait");
 
-                    b.Property<Guid?>("CurrentWaitId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int?>("CurrentWaitId")
+                        .HasColumnType("int");
 
                     b.Property<string>("FunctionName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid?>("ManyFunctionsWaitId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int?>("ManyFunctionsWaitId")
+                        .HasColumnType("int");
 
-                    b.Property<Guid?>("ManyFunctionsWaitId1")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int?>("ManyFunctionsWaitId1")
+                        .HasColumnType("int");
 
-                    b.Property<Guid?>("ParentFunctionGroupId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int?>("ParentFunctionGroupId")
+                        .HasColumnType("int");
 
                     b.HasIndex("CurrentWaitId");
 

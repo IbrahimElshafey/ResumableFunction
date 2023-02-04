@@ -23,7 +23,7 @@ namespace ResumableFunction.Abstraction
         {
             FunctionRuntimeInfo = new FunctionRuntimeInfo
             {
-                FunctionId = Guid.NewGuid(),
+                //FunctionId = Guid.NewGuid(),
                 InitiatedByClassType = GetType(),
                 FunctionState = this,
             };

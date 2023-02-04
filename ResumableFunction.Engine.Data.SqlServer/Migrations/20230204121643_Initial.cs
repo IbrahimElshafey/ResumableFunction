@@ -29,7 +29,8 @@ namespace ResumableFunction.Engine.Data.SqlServer.Migrations
                 name: "FunctionRuntimeInfos",
                 columns: table => new
                 {
-                    FunctionId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    FunctionId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     InitiatedByClassType = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     FunctionState = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
@@ -67,19 +68,20 @@ namespace ResumableFunction.Engine.Data.SqlServer.Migrations
                 name: "Waits",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     Status = table.Column<int>(type: "int", nullable: false),
                     EventIdentifier = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     IsFirst = table.Column<bool>(type: "bit", nullable: false),
                     InitiatedByFunctionName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     StateAfterWait = table.Column<int>(type: "int", nullable: false),
-                    FunctionId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ParentFunctionWaitId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    FunctionId = table.Column<int>(type: "int", nullable: false),
+                    ParentFunctionWaitId = table.Column<int>(type: "int", nullable: true),
                     IsNode = table.Column<bool>(type: "bit", nullable: false),
                     ReplayType = table.Column<int>(type: "int", nullable: true),
                     WaitType = table.Column<int>(type: "int", nullable: false),
                     Discriminator = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ParentGroupId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    ParentGroupId = table.Column<int>(type: "int", nullable: true),
                     IsOptional = table.Column<bool>(type: "bit", nullable: true),
                     MatchExpression = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     SetDataExpression = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -87,13 +89,13 @@ namespace ResumableFunction.Engine.Data.SqlServer.Migrations
                     EventDataType = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     EventData = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     NeedFunctionDataForMatch = table.Column<bool>(type: "bit", nullable: true),
-                    ManyEventsWaitId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    ManyEventsWaitId1 = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    ParentFunctionGroupId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    CurrentWaitId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    ManyEventsWaitId = table.Column<int>(type: "int", nullable: true),
+                    ManyEventsWaitId1 = table.Column<int>(type: "int", nullable: true),
+                    ParentFunctionGroupId = table.Column<int>(type: "int", nullable: true),
+                    CurrentWaitId = table.Column<int>(type: "int", nullable: true),
                     FunctionName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ManyFunctionsWaitId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    ManyFunctionsWaitId1 = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    ManyFunctionsWaitId = table.Column<int>(type: "int", nullable: true),
+                    ManyFunctionsWaitId1 = table.Column<int>(type: "int", nullable: true),
                     WhenCountExpression = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>

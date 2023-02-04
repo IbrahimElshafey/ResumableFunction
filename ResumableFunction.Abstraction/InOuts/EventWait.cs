@@ -9,7 +9,7 @@ namespace ResumableFunction.Abstraction.InOuts
         public Wait ParentWaitsGroup { get; internal set; }
 
         [ForeignKey(nameof(ParentWaitsGroup))]
-        public Guid? ParentGroupId { get; internal set; }
+        public int? ParentGroupId { get; internal set; }
 
         public bool IsOptional { get; internal set; } = false;
 

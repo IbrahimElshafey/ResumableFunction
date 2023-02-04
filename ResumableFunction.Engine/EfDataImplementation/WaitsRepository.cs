@@ -48,7 +48,7 @@ namespace ResumableFunction.Engine.EfDataImplementation
             return Task.CompletedTask;
         }
 
-        public async Task<Wait> GetParentFunctionWait(Guid? functionWaitId)
+        public async Task<Wait> GetParentFunctionWait(int? functionWaitId)
         {
             var result = await _context.FunctionWaits.FindAsync(functionWaitId);
             if (result == null)
@@ -78,7 +78,7 @@ namespace ResumableFunction.Engine.EfDataImplementation
             return matchedWaits;
         }
 
-        public async Task<ManyEventsWait> GetWaitGroup(Guid? parentGroupId)
+        public async Task<ManyEventsWait> GetWaitGroup(int? parentGroupId)
         {
             var result = await _context.ManyEventsWaits
                         .Include(x => x.WaitingEvents)
@@ -116,7 +116,7 @@ namespace ResumableFunction.Engine.EfDataImplementation
                     EventProviderName = eventWait.EventProviderName,
                     FunctionRuntimeInfo = new FunctionRuntimeInfo
                     {
-                        FunctionId = Guid.NewGuid(),
+                        //FunctionId = Guid.NewGuid(),
                         InitiatedByClassType = eventWait.FunctionRuntimeInfo.InitiatedByClassType
                     },
                     IsFirst = true,
@@ -136,7 +136,6 @@ namespace ResumableFunction.Engine.EfDataImplementation
             {
             }
         }
-
 
     }
 }
