@@ -63,20 +63,37 @@ namespace ResumableFunction.Engine.EfDataImplementation
 
         public async Task<List<EventWait>> GetMatchedWaits(PushedEvent pushedEvent)
         {
-            var matchedWaits =
+            var matchedWaits = new List<EventWait>();
+            var databaseWaits =
                 await _context.EventWaits
-                .Include(x => x.FunctionRuntimeInfo)
+                //.Include(x => x.FunctionRuntimeInfo)
                 .Where(x =>
                     x.EventProviderName == pushedEvent.EventProviderName &&
                     x.EventIdentifier == pushedEvent.EventIdentifier)
                 .ToListAsync();
-            foreach (var wait in matchedWaits)
+            foreach (var wait in databaseWaits)
             {
                 wait.EventData = pushedEvent.ToObject(wait.EventDataType);
+                if (!wait.NeedFunctionDataForMatch && wait.IsMatch())
+                {
+                    await LoadWaitFunctionInfo(wait);
+                    matchedWaits.Add(wait);
+                }
+                else if (wait.NeedFunctionDataForMatch)
+                {
+                    await LoadWaitFunctionInfo(wait);
+                    if (wait.IsMatch())
+                        matchedWaits.Add(wait);
+                }
             }
-            matchedWaits = matchedWaits.Where(x => x.IsMatch()).ToList();
             return matchedWaits;
+            async Task LoadWaitFunctionInfo(EventWait wait)
+            {
+                await _context.Entry(wait).Reference(b => b.FunctionRuntimeInfo).LoadAsync();
+            }
         }
+
+
 
         public async Task<ManyEventsWait> GetWaitGroup(int? parentGroupId)
         {

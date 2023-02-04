@@ -6,6 +6,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Reflection.Metadata.Ecma335;
 using System.Runtime.CompilerServices;
+using Newtonsoft.Json;
 using ResumableFunction.Abstraction.InOuts;
 
 namespace ResumableFunction.Abstraction
@@ -30,6 +31,7 @@ namespace ResumableFunction.Abstraction
         }
 
         //public FunctionData Data { get; set; }
+        [JsonIgnore]
         public FunctionRuntimeInfo FunctionRuntimeInfo { get; internal set; }
 
         public abstract IAsyncEnumerable<Wait> Start();
