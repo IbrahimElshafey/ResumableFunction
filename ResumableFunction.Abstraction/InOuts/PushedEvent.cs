@@ -25,6 +25,7 @@ namespace ResumableFunction.Abstraction.InOuts
                     return (string)this["eventProviderName"];
                 return null;
             }
+            
         }
         public string EventIdentifier
         {
@@ -37,6 +38,5 @@ namespace ResumableFunction.Abstraction.InOuts
                 return null;
             }
         }
-
     }
 }

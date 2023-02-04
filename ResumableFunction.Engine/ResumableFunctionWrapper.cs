@@ -19,7 +19,14 @@ namespace ResumableFunction.Engine
             if (isResumableFunctionClass is false)
                 throw new Exception("functionClassType must inherit ResumableFunction<>");
 
-            FunctionClassInstance = (ResumableFunctionInstance)Activator.CreateInstance(functionClassType);
+            if (eventWait.FunctionRuntimeInfo.FunctionState != null)
+                FunctionClassInstance = eventWait.CurrntFunction;
+            else
+            {
+                eventWait.FunctionRuntimeInfo.FunctionState = Activator.CreateInstance(functionClassType);
+                FunctionClassInstance = (ResumableFunctionInstance)eventWait.FunctionRuntimeInfo.FunctionState;
+            }
+
             if (FunctionClassInstance is null)
                 throw new Exception($"Can't create instance of `{functionClassType}` with .ctor()");
 
@@ -45,7 +52,7 @@ namespace ResumableFunction.Engine
         public FunctionRuntimeInfo FunctionRuntimeInfo
         {
             get => FunctionClassInstance.FunctionRuntimeInfo;
-            private set => FunctionClassInstance.FunctionRuntimeInfo = value;
+            internal set => FunctionClassInstance.FunctionRuntimeInfo = value;
         }
 
         public Task OnFunctionEnd()
@@ -152,7 +159,7 @@ namespace ResumableFunction.Engine
         private string CurrentRunnerName()
         {
             return _currentWait == null ?
-                $"<{nameof(Start)}>" : 
+                $"<{nameof(Start)}>" :
                 $"<{_currentWait.InitiatedByFunctionName}>";
         }
 

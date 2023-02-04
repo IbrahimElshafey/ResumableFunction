@@ -7,7 +7,7 @@ namespace Example.InOuts
     {
         public string EventProviderName => Constant.EventProviderName;
 
-        public string EventIdentifier { get; set; }
+        public string EventIdentifier => Constant.ManagerApprovalEvent;
 
         public int ProjectId { get; set; }
         public bool Decision { get; set; }

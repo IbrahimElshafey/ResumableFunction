@@ -69,7 +69,7 @@ namespace ResumableFunction.Engine.Helpers
             if (isFunctionData)
             {
                 var newAccess = MakeMemberAccess(functionInstanceArg, propAccessStack.Pop());
-                for (int i = 0; i < propAccessStack.Count; i++)
+                while (propAccessStack.Count > 0)
                 {
                     var currentProp = propAccessStack.Pop();
                     newAccess = MakeMemberAccess(newAccess, currentProp);
@@ -95,7 +95,7 @@ namespace ResumableFunction.Engine.Helpers
 
         private static Assembly _currentFunctionAssembly;
         public static Assembly GetCurrentFunctionAssembly() => _currentFunctionAssembly;
-        public static void SetCurrentFunctionAssembly(Assembly assembly) 
-            => _currentFunctionAssembly=assembly;
+        public static void SetCurrentFunctionAssembly(Assembly assembly)
+            => _currentFunctionAssembly = assembly;
     }
 }

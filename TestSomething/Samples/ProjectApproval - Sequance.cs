@@ -199,7 +199,7 @@ namespace ResumableFunction.Abstraction.Samples
             {
                 //FunctionId = Guid.NewGuid(),
                 InitiatedByClassType = GetType(),
-                //FunctionsStates = new Dictionary<string, int> { { "Start", 1 } }
+                FunctionState = this,
             };
             result.EventData = new ManagerApprovalEvent
             {

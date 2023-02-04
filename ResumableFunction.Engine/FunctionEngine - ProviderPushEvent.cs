@@ -1,4 +1,5 @@
-﻿using ResumableFunction.Abstraction.InOuts;
+﻿using ResumableFunction.Abstraction;
+using ResumableFunction.Abstraction.InOuts;
 using ResumableFunction.Engine.InOuts;
 
 namespace ResumableFunction.Engine
@@ -24,10 +25,7 @@ namespace ResumableFunction.Engine
 
         private async Task HandlePushedEvent(EventWait currentWait)
         {
-            var functionClass = new ResumableFunctionWrapper(currentWait)
-            {
-                FunctionClassInstance = currentWait.CurrntFunction
-            };
+            var functionClass = new ResumableFunctionWrapper(currentWait);
             currentWait.UpdateFunctionData();
 
             if (IsSingleEvent(currentWait) || await IsGroupLastWait(currentWait))
@@ -58,9 +56,15 @@ namespace ResumableFunction.Engine
                 if (nextWaitResult.Result.ReplayType != null)
                     return await ReplayWait(nextWaitResult.Result);
                 else
-                    return await GenericWaitRequested(nextWaitResult.Result);
+                {
+                    //nextWaitResult.Result.FunctionId = currentWait.FunctionId;
+                    nextWaitResult.Result.FunctionRuntimeInfo = currentWait.FunctionRuntimeInfo;
+                    bool result = await GenericWaitRequested(nextWaitResult.Result);
+                    currentWait.Status = WaitStatus.Completed;
+                    return result;
+                }
             }
-            currentWait.Status = WaitStatus.Completed;
+          
             return false;
         }
 
@@ -78,7 +82,7 @@ namespace ResumableFunction.Engine
                     backToCaller = true;
                     break;
                 //many sub functions -> wait function group to complete and return to caller
-                case ManyFunctionsWait allFunctionsWait 
+                case ManyFunctionsWait allFunctionsWait
                     when parentFunctionWait.WaitType == WaitType.AllFunctionsWait:
                     allFunctionsWait.MoveToMatched(lastFunctionWait.ParentFunctionWaitId);
                     if (allFunctionsWait.Status == WaitStatus.Completed)

@@ -37,15 +37,15 @@ namespace Test
             };
         static async Task Main(string[] args)
         {
-            var x = ProjectApprovalFunction.Name;
+            //var x = ProjectApprovalFunction.Name;
             //MatchFunctionTranslation();
 
-            //TestMatchTranslation();
+            TestMatchTranslation();
 
             //TestFunctionClassWrapper();
             //TestSetPropRewrite();
 
-            SaveExpressionAsJson();
+            //SaveExpressionAsJson();
             //SaveExpressionAsBinary();
             //Program2.Main1();
 
