@@ -18,13 +18,15 @@ namespace ResumableFunction.Engine.Helpers
         {
             if (string.IsNullOrEmpty(text)) return null;
             var typeObject = JsonConvert.DeserializeObject<SystemTypeClone>(text);
-            return Assembly.LoadFile(typeObject.AssemblyPath).GetType(typeObject.Name)!;
+            var assembly = Assembly.LoadFile(typeObject.AssemblyPath);
+            Extensions.SetCurrentFunctionAssembly(assembly);
+            return assembly.GetType(typeObject.Name)!;
         }
 
         private static string TypeToString(Type type)
         {
             if (type == null) return null;
-            var typeObject = new SystemTypeClone { Name = type.Name, AssemblyPath = type.Assembly.Location };
+            var typeObject = new SystemTypeClone { Name = type.FullName, AssemblyPath = type.Assembly.Location };
             return JsonConvert.SerializeObject(typeObject, Formatting.Indented);
         }
 

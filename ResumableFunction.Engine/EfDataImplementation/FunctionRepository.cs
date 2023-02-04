@@ -24,15 +24,16 @@ namespace ResumableFunction.Engine.EfDataImplementation
                 .Where(x => x.Name == function.Name)
                 .ToListAsync())
                 .FirstOrDefault(x => x.Type == function.GetType());
-            if (isExist == null)
+            if (isExist != null) return true;
+
+            var item = new TypeInformation
             {
-                folder.FunctionInfos.Add(new TypeInformation
-                {
-                    Id = Guid.NewGuid(),
-                    Name = function.Name,
-                    Type = function.GetType()
-                });
-            }
+                Id = Guid.NewGuid(),
+                Name = function.Name,
+                Type = function.GetType()
+            };
+            folder.FunctionInfos.Add(item);
+            _context.TypeInfos.Add(item);
             return true;
         }
     }

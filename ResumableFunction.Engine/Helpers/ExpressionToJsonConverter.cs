@@ -34,7 +34,7 @@ namespace ResumableFunction.Engine.Helpers
             var settings = new JsonSerializerSettings();
             //Todo:Replace Assembly.GetExecutingAssembly() with "GetCurrentFunctionAssembly()"
             settings.Converters.Add(
-                new ExpressionJsonConverter(Assembly.GetExecutingAssembly()));
+                new ExpressionJsonConverter(Extensions.GetCurrentFunctionAssembly()));
             return settings;
         }
     }

@@ -1,9 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ResumableFunction.Abstraction.InOuts
 {
     public class FunctionRuntimeInfo
     {
+        [Key]
         public Guid FunctionId { get; internal set; }
 
         /// <summary>

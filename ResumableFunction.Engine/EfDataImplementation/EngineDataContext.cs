@@ -5,6 +5,7 @@ using ResumableFunction.Engine.Helpers;
 using ResumableFunction.Engine.InOuts;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -31,7 +32,12 @@ namespace ResumableFunction.Engine.EfDataImplementation
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-           
+
+            //modelBuilder.Entity<Wait>()
+            //.HasDiscriminator(x => x.WaitType)
+            //.HasValue<EventWait>(WaitType.EventWait)
+            //.HasValue<ManyEventsWait>(WaitType.AllEventsWait);
+
             modelBuilder.Entity<FunctionFolder>().HasData(
                 _functionFolders.Select(x => new FunctionFolder { Id = x.Length, Path = x }).ToArray());
 

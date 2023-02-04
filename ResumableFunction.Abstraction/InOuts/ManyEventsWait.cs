@@ -5,11 +5,12 @@ namespace ResumableFunction.Abstraction.InOuts
     public class ManyEventsWait : Wait
     {
         public List<EventWait> WaitingEvents { get; internal set; } = new List<EventWait>();
+        public LambdaExpression WhenCountExpression { get; internal set; }
         public EventWait MatchedEvent => WaitingEvents?.Single(x => x.Status == WaitStatus.Completed);
 
         public List<EventWait> MatchedEvents =>
             WaitingEvents?.Where(x => x.Status == WaitStatus.Completed).ToList();
-        public LambdaExpression WhenCountExpression { get; internal set; }
+       
 
         public ManyEventsWait WhenMatchedCount(Expression<Func<int, bool>> matchCountFilter)
         {

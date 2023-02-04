@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json.Linq;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 namespace ResumableFunction.Abstraction.InOuts
@@ -10,6 +11,7 @@ namespace ResumableFunction.Abstraction.InOuts
         {
             Id = Guid.NewGuid();
         }
+        [Key]
         public Guid Id { get; private set; }
         public WaitStatus Status { get; internal set; }
         public string EventIdentifier { get; internal set; }
@@ -20,6 +22,9 @@ namespace ResumableFunction.Abstraction.InOuts
         public string InitiatedByFunctionName { get; internal set; }
         public int StateAfterWait { get; internal set; }
         public FunctionRuntimeInfo FunctionRuntimeInfo { get; internal set; }
+        
+        [ForeignKey(nameof(FunctionRuntimeInfo))]
+        public Guid FunctionId { get; internal set; }
 
         [NotMapped]
         public ResumableFunctionInstance CurrntFunction
@@ -39,7 +44,11 @@ namespace ResumableFunction.Abstraction.InOuts
             }
         }
 
+        public Wait ParentFunctionWait { get; internal set; }
+
+        [ForeignKey(nameof(ParentFunctionWait))]
         public Guid? ParentFunctionWaitId { get; internal set; }
+
         public bool IsNode { get; internal set; }
 
         public ReplayType? ReplayType { get; internal set; }

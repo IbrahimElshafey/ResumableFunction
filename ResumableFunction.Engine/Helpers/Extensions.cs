@@ -10,6 +10,8 @@ using System.Reflection;
 using System.Text.Json;
 using static System.Linq.Expressions.Expression;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
+
 namespace ResumableFunction.Engine.Helpers
 {
     public static class Extensions
@@ -45,16 +47,17 @@ namespace ResumableFunction.Engine.Helpers
             services.AddScoped<FunctionEngine, FunctionEngine>();
         }
 
-        public static T ToObject<T>(this JsonElement element)
-        {
-            var json = element.GetRawText();
-            return JsonSerializer.Deserialize<T>(json);
-        }
+        //public static T ToObject<T>(this JsonElement element)
+        //{
+        //    var json = element.GetRawText();
+        //    return JsonSerializer.Deserialize<T>(json);
+        //}
 
         public static object ToObject(this PushedEvent element, Type toConvertTo)
         {
-            var json = JsonSerializer.Serialize(element);
-            return JsonSerializer.Deserialize(json, toConvertTo, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            var json = JsonConvert.SerializeObject(element);
+            //new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
+            return JsonConvert.DeserializeObject(json, toConvertTo);
         }
 
         public static (bool IsFunctionData, MemberExpression? NewExpression) GetDataParamterAccess(
@@ -89,5 +92,10 @@ namespace ResumableFunction.Engine.Helpers
                 return false;
             }
         }
+
+        private static Assembly _currentFunctionAssembly;
+        public static Assembly GetCurrentFunctionAssembly() => _currentFunctionAssembly;
+        public static void SetCurrentFunctionAssembly(Assembly assembly) 
+            => _currentFunctionAssembly=assembly;
     }
 }

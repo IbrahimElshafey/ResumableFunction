@@ -1,4 +1,5 @@
-﻿using System.Linq.Expressions;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 
@@ -6,7 +7,7 @@ namespace ResumableFunction.Abstraction.InOuts
 {
     public sealed class FunctionWait : Wait
     {
-        public FunctionWait():base()
+        public FunctionWait() : base()
         {
 
         }
@@ -15,6 +16,9 @@ namespace ResumableFunction.Abstraction.InOuts
             EventIdentifier = eventIdentifier;
             FunctionName = function.Method.Name;
         }
+        public Wait ParentFunctionGroup { get; internal set; }
+        
+        [ForeignKey(nameof(ParentFunctionGroup))]
         public Guid? ParentFunctionGroupId { get; internal set; }
         public Wait CurrentWait { get; internal set; }
         public string FunctionName { get; internal set; }

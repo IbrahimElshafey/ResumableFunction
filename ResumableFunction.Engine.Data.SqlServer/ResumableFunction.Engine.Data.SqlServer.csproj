@@ -19,4 +19,8 @@
     <ProjectReference Include="..\ResumableFunction.Engine\ResumableFunction.Engine.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Migrations\" />
+  </ItemGroup>
+
 </Project>
