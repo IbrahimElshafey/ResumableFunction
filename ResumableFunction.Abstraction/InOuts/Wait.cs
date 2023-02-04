@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
@@ -22,7 +23,7 @@ namespace ResumableFunction.Abstraction.InOuts
         public string InitiatedByFunctionName { get; internal set; }
         public int StateAfterWait { get; internal set; }
         public FunctionRuntimeInfo FunctionRuntimeInfo { get; internal set; }
-        
+
         [ForeignKey(nameof(FunctionRuntimeInfo))]
         public int FunctionId { get; internal set; }
 
@@ -34,9 +35,11 @@ namespace ResumableFunction.Abstraction.InOuts
                 if (FunctionRuntimeInfo is not null)
                     if (FunctionRuntimeInfo.FunctionState is JObject stateAsJson)
                     {
-                        var result = (ResumableFunctionInstance)stateAsJson.ToObject(FunctionRuntimeInfo.InitiatedByClassType);
+                        //todo: desrilization problem here
+                        var result = JsonConvert.DeserializeObject(
+                            stateAsJson.ToString(), FunctionRuntimeInfo.InitiatedByClassType);
                         FunctionRuntimeInfo.FunctionState = result;
-                        return result;
+                        return (ResumableFunctionInstance)result;
                     }
                     else if (FunctionRuntimeInfo.FunctionState is ResumableFunctionInstance funcInstance)
                         return funcInstance;

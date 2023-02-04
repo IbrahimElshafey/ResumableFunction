@@ -89,7 +89,10 @@ namespace ResumableFunction.Engine.EfDataImplementation
             return matchedWaits;
             async Task LoadWaitFunctionInfo(EventWait wait)
             {
-                await _context.Entry(wait).Reference(b => b.FunctionRuntimeInfo).LoadAsync();
+                //await _context.Entry(wait).Reference(b => b.FunctionRuntimeInfo).LoadAsync();
+                wait.FunctionRuntimeInfo = await _context.FunctionRuntimeInfos.FindAsync(wait.FunctionId);
+                //await _context.Entry(wait.FunctionRuntimeInfo).ReloadAsync();
+                var x = wait.CurrntFunction;
             }
         }
 

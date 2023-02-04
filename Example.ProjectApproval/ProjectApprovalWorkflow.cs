@@ -11,8 +11,8 @@ namespace Example.ProjectApproval
 {
     public class ProjectApprovalWorkflow : ResumableFunctionInstance
     {
-        public ProjectSumbitted ProjectSumbitted { get; internal set; }
-        public ManagerApprovalEvent ManagerApprovalEvent { get; internal set; }
+        public ProjectSumbitted ProjectSumbitted { get;  set; }
+        public ManagerApprovalEvent ManagerApprovalEvent { get;  set; }
         public override async IAsyncEnumerable<Wait> Start()
         {
             yield return

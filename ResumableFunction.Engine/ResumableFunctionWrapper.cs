@@ -19,13 +19,9 @@ namespace ResumableFunction.Engine
             if (isResumableFunctionClass is false)
                 throw new Exception("functionClassType must inherit ResumableFunction<>");
 
-            if (eventWait.FunctionRuntimeInfo.FunctionState != null)
-                FunctionClassInstance = eventWait.CurrntFunction;
-            else
-            {
+            if (eventWait.FunctionRuntimeInfo.FunctionState == null)
                 eventWait.FunctionRuntimeInfo.FunctionState = Activator.CreateInstance(functionClassType);
-                FunctionClassInstance = (ResumableFunctionInstance)eventWait.FunctionRuntimeInfo.FunctionState;
-            }
+            FunctionClassInstance = eventWait.CurrntFunction;
 
             if (FunctionClassInstance is null)
                 throw new Exception($"Can't create instance of `{functionClassType}` with .ctor()");

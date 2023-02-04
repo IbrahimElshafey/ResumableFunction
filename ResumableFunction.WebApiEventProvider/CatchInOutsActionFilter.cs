@@ -42,6 +42,7 @@ namespace ResumableFunction.Abstraction.WebApiEventProvider
 
         public async void OnActionExecuted(ActionExecutedContext context)
         {
+            if (IsSuccess(context) is false) return;
             string traceIdentifier = context.HttpContext.TraceIdentifier;
             if (!eventsData.ActiveCalls.ContainsKey(traceIdentifier)) return;
 
@@ -68,6 +69,13 @@ namespace ResumableFunction.Abstraction.WebApiEventProvider
             };
 
             eventsData.ActiveCalls.Remove(traceIdentifier);
+        }
+
+        private bool IsSuccess(ActionExecutedContext context)
+        {
+            var statusCodeIsSuccess = (context.Result as ObjectResult)!
+                .StatusCode?.ToString().StartsWith("2");
+            return statusCodeIsSuccess == true;
         }
 
         private async Task<bool> IsEnabled(ActionExecutingContext context)

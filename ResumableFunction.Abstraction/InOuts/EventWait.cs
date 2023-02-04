@@ -30,20 +30,32 @@ namespace ResumableFunction.Abstraction.InOuts
         //todo:to be used later for enhancements
         public bool NeedFunctionDataForMatch { get; internal set; }
 
-        private static Delegate? _matchExpressionCompiled;
         public bool IsMatch()
         {
-            if (_matchExpressionCompiled is null)
-                _matchExpressionCompiled = MatchExpression.Compile();
-            return (bool)_matchExpressionCompiled.DynamicInvoke(CurrntFunction, EventData);
+            var matchExpressionCompiled = MatchExpression.Compile();
+            try
+            {
+                return (bool)matchExpressionCompiled.DynamicInvoke(CurrntFunction, EventData);
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
 
-        private static Delegate? _setPropExpressionCompiled;
         public void UpdateFunctionData()
         {
-            if (_setPropExpressionCompiled is null)
-                _setPropExpressionCompiled = SetDataExpression.Compile();
-            _setPropExpressionCompiled.DynamicInvoke(CurrntFunction, EventData);
+            var setPropExpressionCompiled = SetDataExpression.Compile();
+            try
+            {
+                setPropExpressionCompiled.DynamicInvoke(CurrntFunction, EventData);
+            }
+            catch (Exception)
+            {
+
+                throw new Exception("Can't set function data.");
+            }
+            
         }
     }
 
