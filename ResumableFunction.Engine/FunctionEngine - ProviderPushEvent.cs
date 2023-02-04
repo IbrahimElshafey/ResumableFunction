@@ -78,12 +78,14 @@ namespace ResumableFunction.Engine
                     backToCaller = true;
                     break;
                 //many sub functions -> wait function group to complete and return to caller
-                case AllFunctionsWait allFunctionsWait:
+                case ManyFunctionsWait allFunctionsWait 
+                    when parentFunctionWait.WaitType == WaitType.AllFunctionsWait:
                     allFunctionsWait.MoveToMatched(lastFunctionWait.ParentFunctionWaitId);
                     if (allFunctionsWait.Status == WaitStatus.Completed)
                         backToCaller = true;
                     break;
-                case AnyFunctionWait anyFunctionWait:
+                case ManyFunctionsWait anyFunctionWait
+                    when parentFunctionWait.WaitType == WaitType.AnyFunctionWait:
                     anyFunctionWait.SetMatchedFunction(lastFunctionWait.ParentFunctionWaitId);
                     if (anyFunctionWait.Status == WaitStatus.Completed)
                         backToCaller = true;
@@ -113,11 +115,13 @@ namespace ResumableFunction.Engine
             var group = await _waitsRepository.GetWaitGroup(currentWait.ParentGroupId);
             switch (group)
             {
-                case AllEventsWait allEventsWait:
+                case ManyEventsWait allEventsWait
+                    when group.WaitType == WaitType.AllEventsWait:
                     allEventsWait.MoveToMatched(currentWait);
                     return allEventsWait.Status == WaitStatus.Completed;
 
-                case AnyEventWait anyEventWait:
+                case ManyEventsWait anyEventWait
+                    when group.WaitType == WaitType.AnyEventWait:
                     anyEventWait.SetMatchedEvent(currentWait); ;
                     return true;
             }
@@ -146,7 +150,7 @@ namespace ResumableFunction.Engine
                 case EventWait eventWait:
                     await SingleWaitRequested(eventWait);
                     break;
-                case ManyWaits manyWaits:
+                case ManyEventsWait manyWaits:
                     await ManyWaitsRequested(manyWaits);
                     break;
                 case FunctionWait functionWait:
@@ -205,7 +209,7 @@ namespace ResumableFunction.Engine
             await _waitsRepository.AddWait(functionWait);
         }
 
-        private async Task ManyWaitsRequested(ManyWaits manyWaits)
+        private async Task ManyWaitsRequested(ManyEventsWait manyWaits)
         {
             foreach (var eventWait in manyWaits.WaitingEvents)
             {

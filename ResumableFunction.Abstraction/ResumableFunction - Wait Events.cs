@@ -18,26 +18,31 @@ namespace ResumableFunction.Abstraction
             var result = new EventWait<T>(eventIdentifier)
             {
                 InitiatedByFunctionName = callerName,
-                IsNode = true
+                IsNode = true,
+                WaitType = WaitType.EventWait
             };
             SetCommonProps(result);
             return result;
         }
 
-        protected AllEventsWait WaitEvents(string eventIdentifier, params EventWait[] events)
+        protected ManyEventsWait WaitEvents(string eventIdentifier, params EventWait[] events)
         {
-            return (AllEventsWait)ManyEvents(eventIdentifier, events);
+            var result = ManyEvents(eventIdentifier, events);
+            result.WaitType = WaitType.AllEventsWait;
+            return result;
         }
 
-        protected AnyEventWait WaitAnyEvent(
+        protected ManyEventsWait WaitAnyEvent(
             string eventIdentifier, params EventWait[] events)
         {
-            return (AnyEventWait)ManyEvents(eventIdentifier, events);
+            var result = ManyEvents(eventIdentifier, events);
+            result.WaitType = WaitType.AnyEventWait;
+            return result;
         }
 
-        private ManyWaits ManyEvents(string eventIdentifier, EventWait[] events)
+        private ManyEventsWait ManyEvents(string eventIdentifier, EventWait[] events)
         {
-            var result = new ManyWaits
+            var result = new ManyEventsWait
             {
                 WaitingEvents = events.ToList(),
                 EventIdentifier = eventIdentifier,

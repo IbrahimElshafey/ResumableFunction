@@ -21,58 +21,44 @@ namespace ResumableFunction.Engine.EfDataImplementation
 
         public Task AddWait(Wait waitToAdd)
         {
+            _context.Waits.Add(waitToAdd);
             //if alerady exist don't add it
-            switch (waitToAdd)
-            {
-                case EventWait wait:
-                    _context.EventWaits.Add(wait);
-                    break;
-                case AllEventsWait wait:
-                    _context.AllEventsWaits.Add(wait);
-                    break;
-                case AnyEventWait wait:
-                    _context.AnyEventWaits.Add(wait);
-                    break;
-                case FunctionWait wait:
-                    _context.FunctionWaits.Add(wait);
-                    break;
-                case AllFunctionsWait wait:
-                    _context.AllFunctionsWaits.Add(wait);
-                    break;
-                case AnyFunctionWait wait:
-                    _context.AnyFunctionWaits.Add(wait);
-                    break;
-            }
+            //switch (waitToAdd)
+            //{
+            //    case EventWait wait:
+            //        _context.EventWaits.Add(wait);
+            //        break;
+            //    case AllEventsWait wait:
+            //        _context.AllEventsWaits.Add(wait);
+            //        break;
+            //    case AnyEventWait wait:
+            //        _context.AnyEventWaits.Add(wait);
+            //        break;
+            //    case FunctionWait wait:
+            //        _context.FunctionWaits.Add(wait);
+            //        break;
+            //    case AllFunctionsWait wait:
+            //        _context.AllFunctionsWaits.Add(wait);
+            //        break;
+            //    case AnyFunctionWait wait:
+            //        _context.AnyFunctionWaits.Add(wait);
+            //        break;
+            //}
             waitToAdd.FunctionRuntimeInfo.FunctionWaits.Add(waitToAdd);
             return Task.CompletedTask;
         }
 
         public async Task<Wait> GetParentFunctionWait(Guid? functionWaitId)
         {
-            var waitFuncs = new Func<Task<Wait?>>[]
+            var result = await _context.FunctionWaits.FindAsync(functionWaitId);
+            if (result == null)
             {
-                async() =>
-                    await _context.FunctionWaits.FindAsync(functionWaitId),
-                async() =>
-                    await _context.AllFunctionsWaits
+                var manyFunc = await _context.ManyFunctionsWaits
                         .Include(x => x.WaitingFunctions)
-                        .Include(x => x.CompletedFunctions)
-                        .FirstOrDefaultAsync(x => x.Id == functionWaitId),
-                async() =>
-                    await _context.AnyFunctionWaits
-                        .Include(x => x.WaitingFunctions)
-                        //.Include(x => x.MatchedFunction)
-                        .FirstOrDefaultAsync(x => x.Id == functionWaitId),
-
-
-            };
-            foreach (var func in waitFuncs)
-            {
-                var wait = await func();
-                if (wait is not null)
-                    return wait;
+                        .FirstOrDefaultAsync(x => x.Id == functionWaitId);
+                return manyFunc!;
             }
-            return null!;
+            return result;
         }
 
         public async Task<List<EventWait>> GetMatchedWaits(PushedEvent pushedEvent)
@@ -92,30 +78,12 @@ namespace ResumableFunction.Engine.EfDataImplementation
             return matchedWaits;
         }
 
-        public async Task<ManyWaits> GetWaitGroup(Guid? parentGroupId)
+        public async Task<ManyEventsWait> GetWaitGroup(Guid? parentGroupId)
         {
-            var waitFuncs = new Func<Task<ManyWaits?>>[]
-            {
-                async() =>
-                    await _context.AllEventsWaits
-                    .Include(x=>x.WaitingEvents)
-                    .Include(x=>x.MatchedEvents)
-                    .FirstOrDefaultAsync(x => x.Id ==parentGroupId),
-                 async() =>
-                    await _context.AnyEventWaits
-                    .Include(x=>x.WaitingEvents)
-                    //.Include(x=>x.MatchedEvent)
-                    .FirstOrDefaultAsync(x => x.Id ==parentGroupId),
-
-
-            };
-            foreach (var func in waitFuncs)
-            {
-                var wait = await func();
-                if (wait is not null)
-                    return wait;
-            }
-            return null!;
+            var result = await _context.ManyEventsWaits
+                        .Include(x => x.WaitingEvents)
+                        .FirstOrDefaultAsync(x => x.Id == parentGroupId);
+            return result!;
         }
 
         public async Task DuplicateWaitIfFirst(EventWait currentWait)
@@ -160,7 +128,7 @@ namespace ResumableFunction.Engine.EfDataImplementation
                 };
                 _context.EventWaits.Add(result);
             }
-            void DuplicateWaitGroup(ManyWaits waitGroup)
+            void DuplicateWaitGroup(ManyEventsWait waitGroup)
             {
 
             }

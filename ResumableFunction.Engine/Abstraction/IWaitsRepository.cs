@@ -11,7 +11,7 @@ namespace ResumableFunction.Engine.Abstraction
         /// Load waits with its ParentFunctionInfo that include function data
         /// </summary>
         Task<List<EventWait>> GetMatchedWaits(PushedEvent pushedEvent);
-        Task<ManyWaits> GetWaitGroup(Guid? parentGroupId);
+        Task<ManyEventsWait> GetWaitGroup(Guid? parentGroupId);
         Task DuplicateWaitIfFirst(EventWait currentWait);
     }
 }

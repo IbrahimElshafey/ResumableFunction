@@ -21,6 +21,7 @@ namespace ResumableFunction.Abstraction
             {
                 InitiatedByFunctionName = callerName,
                 IsNode = true,
+                WaitType = WaitType.FunctionWait
             };
             var asyncEnumerator = function().GetAsyncEnumerator();
             await asyncEnumerator.MoveNextAsync();
@@ -32,31 +33,31 @@ namespace ResumableFunction.Abstraction
             return result;
         }
 
-        protected async Task<AllFunctionsWait> Functions
+        protected async Task<ManyFunctionsWait> Functions
             (string eventIdentifier, Func<IAsyncEnumerable<Wait>>[] subFunctions, [CallerMemberName] string callerName = "")
         {
-            return
-                  (await ManyFunctions(eventIdentifier, subFunctions, callerName)).ToAllFunctionsWait();
+            return await ManyFunctions(eventIdentifier, subFunctions, callerName, WaitType.AllFunctionsWait);
         }
 
 
 
         protected Func<IAsyncEnumerable<Wait>>[] FunctionGroup(params Func<IAsyncEnumerable<Wait>>[] subFunctions) => subFunctions;
-        protected async Task<AnyFunctionWait> AnyFunction
+        protected async Task<ManyFunctionsWait> AnyFunction
             (string eventIdentifier, Func<IAsyncEnumerable<Wait>>[] subFunctions, [CallerMemberName] string callerName = "")
         {
             return
-                (await ManyFunctions(eventIdentifier, subFunctions, callerName)).ToAnyFunctionWait();
+                await ManyFunctions(eventIdentifier, subFunctions, callerName, WaitType.AnyFunctionWait);
         }
 
-        private async Task<ManyFunctionsWait> ManyFunctions(string eventIdentifier, Func<IAsyncEnumerable<Wait>>[] subFunctions, string callerName)
+        private async Task<ManyFunctionsWait> ManyFunctions(string eventIdentifier, Func<IAsyncEnumerable<Wait>>[] subFunctions, string callerName, WaitType waitType)
         {
             var result = new ManyFunctionsWait
             {
                 WaitingFunctions = new List<FunctionWait>(subFunctions.Length),
                 EventIdentifier = eventIdentifier,
                 InitiatedByFunctionName = callerName,
-                IsNode = true
+                IsNode = true,
+                WaitType = waitType,
             };
             for (int i = 0; i < subFunctions.Length; i++)
             {

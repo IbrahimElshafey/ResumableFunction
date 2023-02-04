@@ -43,7 +43,7 @@ namespace ResumableFunction.Abstraction.InOuts
         public bool IsNode { get; internal set; }
 
         public ReplayType? ReplayType { get; internal set; }
-
+        public WaitType WaitType { get; internal set; }
         //internal Wait UpdateForReplay()
         //{
         //    Wait result = null;
@@ -82,6 +82,16 @@ namespace ResumableFunction.Abstraction.InOuts
     {
         ExecuteDontWait,
         WaitSameEventAgain,
+    }
+
+    public enum WaitType
+    {
+        EventWait,
+        AllEventsWait,
+        AnyEventWait,
+        FunctionWait,
+        AllFunctionsWait,
+        AnyFunctionWait,
     }
 
 }
