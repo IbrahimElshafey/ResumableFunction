@@ -44,7 +44,11 @@ namespace ResumableFunction.Engine
         {
             // return await HandleNextWait(nextWaitAftreBacktoCaller, lastFunctionWait, functionClass);
             if (IsFinalExit(nextWaitResult))
+            {
+                currentWait.Status = WaitStatus.Completed;
+                currentWait.FunctionRuntimeInfo.FunctionState = functionClass.FunctionClassInstance;
                 return await _functionRepository.MoveFunctionToRecycleBin(currentWait.FunctionRuntimeInfo);
+            }
             else if (IsSubFunctionExit(nextWaitResult))
             {
                 return await SubFunctionExit(currentWait, functionClass);

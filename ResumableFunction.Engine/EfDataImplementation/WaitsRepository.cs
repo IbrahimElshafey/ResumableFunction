@@ -69,7 +69,8 @@ namespace ResumableFunction.Engine.EfDataImplementation
                 //.Include(x => x.FunctionRuntimeInfo)
                 .Where(x =>
                     x.EventProviderName == pushedEvent.EventProviderName &&
-                    x.EventIdentifier == pushedEvent.EventIdentifier)
+                    x.EventIdentifier == pushedEvent.EventIdentifier &&
+                    x.Status == WaitStatus.Waiting)
                 .ToListAsync();
             foreach (var wait in databaseWaits)
             {

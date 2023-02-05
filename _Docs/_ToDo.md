@@ -1,10 +1,10 @@
 # ToDo
-* Find //todo:if int return is not correct
+* Start resumable function local implementation project
+* Save function state all fields
 * Match expression null handle
-* Duplicate start event
+* Complete Duplicate start event
 * MoveFunctionToRecycleBin
-* Write Implementation for:
-		* Repositories
+
 
 * Validate wait types
 

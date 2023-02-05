@@ -35,9 +35,7 @@ namespace ResumableFunction.Abstraction.InOuts
                 if (FunctionRuntimeInfo is not null)
                     if (FunctionRuntimeInfo.FunctionState is JObject stateAsJson)
                     {
-                        //todo: desrilization problem here
-                        var result = JsonConvert.DeserializeObject(
-                            stateAsJson.ToString(), FunctionRuntimeInfo.InitiatedByClassType);
+                        var result = stateAsJson.ToObject(FunctionRuntimeInfo.InitiatedByClassType);
                         FunctionRuntimeInfo.FunctionState = result;
                         return (ResumableFunctionInstance)result;
                     }
