@@ -234,10 +234,17 @@ namespace ResumableFunction.Engine
             eventWait.SetDataExpression = new RewriteSetDataExpression(eventWait).Result;
             // * Find event provider handler or load it.
             var eventProviderHandler = await _eventProviderRepository.GetByName(eventWait.EventProviderName);
-            // * Start event provider if not started 
-            eventProviderHandler.Start();
-            // * Call SubscribeToEvent with current paylaod type (eventWaiting.EventData)
-            await eventProviderHandler.SubscribeToEvent(eventWait.EventData);
+            try
+            {
+                // * Start event provider if not started 
+                eventProviderHandler.Start();
+                // * Call SubscribeToEvent with current paylaod type (eventWaiting.EventData)
+                await eventProviderHandler.SubscribeToEvent(eventWait.EventData);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error whith event provider handler.");
+            }
             // * Save event to IActiveEventsRepository 
             await _waitsRepository.AddWait(eventWait);
             // ** important ?? must we send some of SingleEventWaiting props to event provider?? this will make filtering more accurate

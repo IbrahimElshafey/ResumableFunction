@@ -27,5 +27,5 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
-
+//app.Urls.Add("http://localhost:7295");
 app.Run();

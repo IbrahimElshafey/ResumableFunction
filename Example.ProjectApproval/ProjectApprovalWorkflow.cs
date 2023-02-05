@@ -36,7 +36,7 @@ namespace Example.ProjectApproval
         {
             using (var client = new HttpClient())
                 await client.PostAsync(
-                    $"https://localhost:7241/api/project/AskManagerApproval?projectId={id}", null);
+                    $"http://localhost:7241/api/project/AskManagerApproval?projectId={id}", null);
         }
     }
 }

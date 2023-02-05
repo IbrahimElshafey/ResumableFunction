@@ -67,7 +67,31 @@ namespace ResumableFunction.Engine
                 throw new Exception(
                     $"Can't initiate runner `{_currentWait.InitiatedByFunctionName}` for {_currentWait.FunctionRuntimeInfo.InitiatedByClassType.FullName}");
             SetActiveRunnerState(_currentWait.StateAfterWait);
-            bool waitExist = await functionRunner.MoveNextAsync();
+            try
+            {
+                var waitExist = await functionRunner.MoveNextAsync();
+                if (waitExist)
+                {
+                    functionRunner.Current.StateAfterWait = GetActiveRunnerState();
+                    return new NextWaitResult(functionRunner.Current, false, false);
+                }
+                else
+                {
+                    //if current Function runner name is the main function start
+                    if (_currentWait.InitiatedByFunctionName == nameof(Start))
+                    {
+                        await OnFunctionEnd();
+                        return new NextWaitResult(null, true, false);
+                    }
+                    return new NextWaitResult(null, false, true);
+                }
+            }
+            catch (Exception)
+            {
+
+                throw new Exception("Error when try to get next wait");
+            }
+           
             //after function resumed data may be changed (for example user set some props)
             //FunctionRuntimeInfo.Data = Data;
             //update current runner state
@@ -76,21 +100,7 @@ namespace ResumableFunction.Engine
             //else
             //    FunctionRuntimeInfo.FunctionsStates.Add(_currentWait.InitiatedByFunction, GetActiveRunnerState());
 
-            if (waitExist)
-            {
-                functionRunner.Current.StateAfterWait = GetActiveRunnerState();
-                return new NextWaitResult(functionRunner.Current, false, false);
-            }
-            else
-            {
-                //if current Function runner name is the main function start
-                if (_currentWait.InitiatedByFunctionName == nameof(Start))
-                {
-                    await OnFunctionEnd();
-                    return new NextWaitResult(null, true, false);
-                }
-                return new NextWaitResult(null, false, true);
-            }
+            
         }
 
 
