@@ -41,7 +41,7 @@ namespace ResumableFunction.Abstraction
 
         private Wait GetWait(string eventIdentifier, string callerName)
         {
-            var eventToReplay = FunctionRuntimeInfo.FunctionWaits
+            var eventToReplay = FunctionRuntimeInfo.Waits
                  .Last(x =>
                  x.EventIdentifier == eventIdentifier &&
                  x.IsNode &&
@@ -54,7 +54,7 @@ namespace ResumableFunction.Abstraction
 
         private Wait GetWait<T>(string eventIdentifier, string callerName) where T : class, IEventData, new()
         {
-            var eventToReplay = FunctionRuntimeInfo.FunctionWaits
+            var eventToReplay = FunctionRuntimeInfo.Waits
                  .LastOrDefault(x =>
                      x is EventWait ew &&
                      (eventIdentifier == null || ew.EventIdentifier == eventIdentifier) &&

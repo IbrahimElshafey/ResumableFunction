@@ -246,7 +246,7 @@ namespace ResumableFunction.Engine.Data.SqlServer.Migrations
             modelBuilder.Entity("ResumableFunction.Abstraction.InOuts.Wait", b =>
                 {
                     b.HasOne("ResumableFunction.Abstraction.InOuts.FunctionRuntimeInfo", "FunctionRuntimeInfo")
-                        .WithMany("FunctionWaits")
+                        .WithMany("Waits")
                         .HasForeignKey("FunctionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -313,7 +313,7 @@ namespace ResumableFunction.Engine.Data.SqlServer.Migrations
 
             modelBuilder.Entity("ResumableFunction.Abstraction.InOuts.FunctionRuntimeInfo", b =>
                 {
-                    b.Navigation("FunctionWaits");
+                    b.Navigation("Waits");
                 });
 
             modelBuilder.Entity("ResumableFunction.Engine.InOuts.FunctionFolder", b =>

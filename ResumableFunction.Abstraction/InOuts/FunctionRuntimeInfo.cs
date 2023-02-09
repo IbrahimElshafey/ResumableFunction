@@ -16,6 +16,6 @@ namespace ResumableFunction.Abstraction.InOuts
         //has the state serialzed
         public object FunctionState { get; internal set; }
 
-        public List<Wait> FunctionWaits { get; internal set; } = new List<Wait>();
+        public List<Wait> Waits { get; internal set; } = new List<Wait>();
     }
 }
