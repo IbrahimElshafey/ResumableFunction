@@ -1,5 +1,4 @@
 # ToDo
-* Start resumable function local implementation project
 * Save function state all fields
 * Match expression null handle
 * Complete Duplicate start event
