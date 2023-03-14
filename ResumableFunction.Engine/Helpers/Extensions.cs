@@ -86,7 +86,7 @@ namespace ResumableFunction.Engine.Helpers
                 var isFunctionDataAccess = subNode.NodeType == ExpressionType.Constant && subNode.Type == functionInstanceArg.Type;
                 if (isFunctionDataAccess)
                     return true;
-                else if (subNode.NodeType == ExpressionType.MemberAccess)
+                if (subNode.NodeType == ExpressionType.MemberAccess)
                     return IsDataAccess((MemberExpression)subNode);
                 return false;
             }

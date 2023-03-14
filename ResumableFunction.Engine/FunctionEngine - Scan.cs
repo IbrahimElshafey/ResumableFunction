@@ -97,10 +97,7 @@ namespace ResumableFunction.Engine
                     firstWait.StateAfterWait = functionClass.GetActiveRunnerState();
                     await GenericWaitRequested(firstWait);
                 }
-                else
-                {
-                    //Log no waits exist for function type x
-                }
+                //Log no waits exist for function type x
             }
         }
         private Type[] GetTypes(string assemblyPath)
