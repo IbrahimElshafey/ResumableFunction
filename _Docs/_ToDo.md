@@ -1,5 +1,4 @@
 # ToDo
-* Start resumable function local implementation project
 * Save function state all fields
 * Match expression null handle
 * Complete Duplicate start event
@@ -11,20 +10,7 @@
 * Use hangfire to 
 	* Queue pushed events requests [Fire and forget]
 	* Implement provider for time based events
-* Test Engine Scenarios
-	* Seqeunce
-	* Wait all
-	* Wait any
-	* Wait function
-	* Wait many functions
-	* Wait any function
-	* ReplayWait Go back [to] and go back [after] for types:
-		* One Event Node
-		* All event Wait
-		* Any Event Wait
-		* function
-		* many functions
-		* any function 
+
 
 
 * Self queuing for 
