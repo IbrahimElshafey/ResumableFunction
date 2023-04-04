@@ -75,16 +75,14 @@ namespace ResumableFunction.Engine
                     functionRunner.Current.StateAfterWait = GetActiveRunnerState();
                     return new NextWaitResult(functionRunner.Current, false, false);
                 }
-                else
+
+                //if current Function runner name is the main function start
+                if (_currentWait.InitiatedByFunctionName == nameof(Start))
                 {
-                    //if current Function runner name is the main function start
-                    if (_currentWait.InitiatedByFunctionName == nameof(Start))
-                    {
-                        await OnFunctionEnd();
-                        return new NextWaitResult(null, true, false);
-                    }
-                    return new NextWaitResult(null, false, true);
+                    await OnFunctionEnd();
+                    return new NextWaitResult(null, true, false);
                 }
+                return new NextWaitResult(null, false, true);
             }
             catch (Exception)
             {

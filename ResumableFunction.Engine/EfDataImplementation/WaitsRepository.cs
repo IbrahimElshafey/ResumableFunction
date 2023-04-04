@@ -35,7 +35,7 @@ namespace ResumableFunction.Engine.EfDataImplementation
             //        _context.AnyEventWaits.Add(wait);
             //        break;
             //    case FunctionWait wait:
-            //        _context.FunctionWaits.Add(wait);
+            //        _context.Waits.Add(wait);
             //        break;
             //    case AllFunctionsWait wait:
             //        _context.AllFunctionsWaits.Add(wait);
@@ -44,7 +44,7 @@ namespace ResumableFunction.Engine.EfDataImplementation
             //        _context.AnyFunctionWaits.Add(wait);
             //        break;
             //}
-            waitToAdd.FunctionRuntimeInfo.FunctionWaits.Add(waitToAdd);
+            waitToAdd.FunctionRuntimeInfo.Waits.Add(waitToAdd);
             return Task.CompletedTask;
         }
 

@@ -49,26 +49,24 @@ namespace ResumableFunction.Engine
                 currentWait.FunctionRuntimeInfo.FunctionState = functionClass.FunctionClassInstance;
                 return await _functionRepository.MoveFunctionToRecycleBin(currentWait.FunctionRuntimeInfo);
             }
-            else if (IsSubFunctionExit(nextWaitResult))
+
+            if (IsSubFunctionExit(nextWaitResult))
             {
                 return await SubFunctionExit(currentWait, functionClass);
             }
-            else if (nextWaitResult.Result is not null)
+            if (nextWaitResult.Result is not null)
             {
                 //this may cause and error in case of 
                 nextWaitResult.Result.ParentFunctionWaitId = currentWait.ParentFunctionWaitId;
                 if (nextWaitResult.Result.ReplayType != null)
                     return await ReplayWait(nextWaitResult.Result);
-                else
-                {
-                    //nextWaitResult.Result.FunctionId = currentWait.FunctionId;
-                    nextWaitResult.Result.FunctionRuntimeInfo = currentWait.FunctionRuntimeInfo;
-                    bool result = await GenericWaitRequested(nextWaitResult.Result);
-                    currentWait.Status = WaitStatus.Completed;
-                    return result;
-                }
+                //nextWaitResult.Result.FunctionId = currentWait.FunctionId;
+                nextWaitResult.Result.FunctionRuntimeInfo = currentWait.FunctionRuntimeInfo;
+                bool result = await GenericWaitRequested(nextWaitResult.Result);
+                currentWait.Status = WaitStatus.Completed;
+                return result;
             }
-          
+
             return false;
         }
 
